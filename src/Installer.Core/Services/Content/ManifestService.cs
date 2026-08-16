@@ -20,7 +20,7 @@ public sealed class ManifestService : IManifestService
         var path = manifestPath ?? _payloads.FindManifestPath();
         if (path is null || !File.Exists(path))
         {
-            return Result<InstallManifest>.Failure("The app payload is missing. Reinstall this program or place app-manifest.json in payloads/current.");
+            return Result<InstallManifest>.Success(InstallManifest.Session);
         }
 
         try
@@ -32,34 +32,47 @@ public sealed class ManifestService : IManifestService
                 return Result<InstallManifest>.Failure("The app payload file is empty.");
             }
 
-            if (!Enum.TryParse<InstallPolicy>(dto.InstallPolicy, ignoreCase: true, out var policy))
+            var policy = InstallManifest.Session.InstallPolicy;
+            if (!string.IsNullOrWhiteSpace(dto.InstallPolicy))
             {
-                return Result<InstallManifest>.Failure($"Unknown install policy '{dto.InstallPolicy}'.");
+                if (!Enum.TryParse<InstallPolicy>(dto.InstallPolicy, ignoreCase: true, out policy))
+                {
+                    return Result<InstallManifest>.Failure($"Unknown install policy '{dto.InstallPolicy}'.");
+                }
             }
 
-            if (string.IsNullOrWhiteSpace(dto.AppId) || string.IsNullOrWhiteSpace(dto.DisplayName) || string.IsNullOrWhiteSpace(dto.ApkPath))
-            {
-                return Result<InstallManifest>.Failure("The app payload is missing required fields.");
-            }
+            var notes = dto.PostInstallNotes.Count == 0
+                ? InstallManifest.Session.PostInstallNotes
+                : dto.PostInstallNotes.ToDictionary(
+                    pair => pair.Key,
+                    pair => (IReadOnlyList<string>)pair.Value,
+                    StringComparer.OrdinalIgnoreCase);
 
-            var notes = dto.PostInstallNotes.ToDictionary(
-                pair => pair.Key,
-                pair => (IReadOnlyList<string>)pair.Value,
-                StringComparer.OrdinalIgnoreCase);
+            var apkPath = string.IsNullOrWhiteSpace(dto.ApkPath)
+                ? ""
+                : _payloads.ResolveApkPath(dto.ApkPath);
+
+            var platforms = dto.TargetPlatforms.Count == 0
+                ? InstallManifest.Session.TargetPlatforms
+                : dto.TargetPlatforms;
+
+            var families = dto.PreferredDeviceFamilies.Count == 0
+                ? InstallManifest.Session.PreferredDeviceFamilies
+                : dto.PreferredDeviceFamilies;
 
             var manifest = new InstallManifest(
-                dto.AppId.Trim(),
-                dto.DisplayName.Trim(),
-                string.IsNullOrWhiteSpace(dto.BuildVersion) ? "unknown" : dto.BuildVersion.Trim(),
-                _payloads.ResolveApkPath(dto.ApkPath),
-                dto.TargetPlatforms,
+                string.IsNullOrWhiteSpace(dto.AppId) ? InstallManifest.UserSelectedAppId : dto.AppId.Trim(),
+                string.IsNullOrWhiteSpace(dto.DisplayName) ? InstallManifest.Session.DisplayName : dto.DisplayName.Trim(),
+                string.IsNullOrWhiteSpace(dto.BuildVersion) ? "" : dto.BuildVersion.Trim(),
+                apkPath,
+                platforms,
                 policy,
                 dto.GrantPermissions,
                 dto.AllowTestApk,
                 dto.LaunchAfterInstall,
-                dto.PreferredDeviceFamilies,
+                families,
                 notes,
-                dto.Support is null ? null : new SupportContact(dto.Support.ContactLabel, dto.Support.ContactEmail));
+                dto.Support is null ? InstallManifest.Session.Support : new SupportContact(dto.Support.ContactLabel, dto.Support.ContactEmail));
 
             return Result<InstallManifest>.Success(manifest);
         }

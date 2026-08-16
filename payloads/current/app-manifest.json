@@ -1,24 +1,20 @@
 {
   "schemaVersion": 1,
-  "appId": "com.singularitysolutions.vrcmediaserver.quest",
-  "displayName": "Halo",
-  "buildVersion": "0.4.2",
-  "apkPath": "payloads/current/Halo.apk",
-  "targetPlatforms": ["quest"],
   "installPolicy": "ReinstallAllowDowngrade",
   "grantPermissions": true,
   "allowTestApk": true,
   "launchAfterInstall": false,
-  "preferredDeviceFamilies": ["meta-quest-2", "meta-quest-3"],
+  "targetPlatforms": ["quest", "android"],
+  "preferredDeviceFamilies": ["meta-quest-2", "meta-quest-3", "pixel", "samsung"],
   "postInstallNotes": {
     "quest": [
       "Open Library.",
       "Open the filter menu.",
       "Select Unknown Sources.",
-      "Launch Halo."
+      "Find the app you installed."
     ],
     "android": [
-      "Halo is a Quest app. Connect a headset to install it."
+      "Find the app in your app drawer and open it."
     ]
   },
   "support": {

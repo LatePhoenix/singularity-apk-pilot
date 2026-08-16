@@ -12,6 +12,15 @@ public sealed class WizardFlowServiceTests
     private readonly WizardFlowService _flow = Create();
 
     [Fact]
+    public void Session_welcome_does_not_name_a_bundled_app()
+    {
+        var state = _flow.CreateInitialState(InstallManifest.Session);
+        Assert.Equal("Install apps on your device", state.Copy.Headline);
+        Assert.DoesNotContain("Halo", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("choose", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
     public void Quest_unauthorized_goes_to_authorization()
     {
         var state = Detected(Quest(DeviceConnectionState.Unauthorized));
@@ -34,6 +43,7 @@ public sealed class WizardFlowServiceTests
         var state = Detected(Quest(DeviceConnectionState.ConnectedReady));
         state = _flow.Advance(state, WizardTrigger.Continue, state.Device);
         Assert.Equal(WizardStep.ReadyToInstall, state.CurrentStep);
+        Assert.Contains("Choose apps", state.Copy.Headline, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -51,6 +61,7 @@ public sealed class WizardFlowServiceTests
         var state = Detected(Phone(DeviceConnectionState.ConnectedReady));
         state = _flow.Advance(state, WizardTrigger.Continue, state.Device);
         Assert.Equal(WizardStep.ReadyToInstall, state.CurrentStep);
+        Assert.Contains("Choose apps", state.Copy.Headline, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

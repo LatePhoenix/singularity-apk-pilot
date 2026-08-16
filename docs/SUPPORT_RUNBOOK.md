@@ -11,9 +11,9 @@ Use this when a tester says the installer “didn’t work.” Ask for the diagn
 1. Open [Releases](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest) or the green **Download** badge on the repo home page.
 2. Run `SingularityApkInstaller-win-x64-setup.exe`. No separate .NET runtime install is required.
 3. If SmartScreen appears (unsigned build), **More info** → **Run anyway**.
-4. Confirm they launched **Singularity APK Installer** from the Start menu after setup.
+4. Confirm they launched **Singularity APK Installer** from the Start menu after setup. If the window never appears, they are on v0.1.1 or earlier and Windows Application Control may be blocking satellite DLLs. Install **v0.2.0** (single-file).
 
-**v0.1.0:** the first GitHub installer included portable `adb` and `payloads\current\app-manifest.json`, but not a test `.apk`. That failed as `UnknownInstallFailure` / `failed to stat … No such file`. **v0.1.1** ships Halo 0.4.2 (`Halo.apk`) and reports missing APK as **MissingPayload** without restarting adb.
+**v0.1.0:** no test `.apk` in the GitHub installer; install failed as `failed to stat`. **v0.1.1** bundled Halo to unblock testers. **v0.2.0** does not ship any app APK: connect a device first, then choose APK files. Publish is a single-file exe so Windows Application Control does not block unsigned DLLs.
 
 ## Bundle contents
 
@@ -78,6 +78,20 @@ Serials are hashed. Do not ask testers to paste raw serial numbers in email.
 **Tester sees:** A different copy of this app is already installed.
 
 **Operator response:** Uninstall the existing app, then install. This deletes that app’s local data. Do not factory-reset the headset.
+
+### App never opens
+
+**Tester sees:** Setup finishes, Start menu shortcut does nothing, or a .NET Runtime Event Log `FileLoadException` / `0x800711C7` (Application Control blocked `Installer.Infrastructure.dll`).
+
+**Operator response:** That is v0.1.1’s multi-DLL publish. Give them **v0.2.0** (single-file). Do not treat this as a missing APK or cable issue.
+
+### Selected APK missing
+
+**Tester sees:** “The APK file could not be found.”
+
+**Likely causes:** File moved after they picked it, or they never added an APK.
+
+**Operator response:** Add the `.apk` again on the choose-apps screen. This installer does not include a test app.
 
 ### Insufficient storage
 

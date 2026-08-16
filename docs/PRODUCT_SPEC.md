@@ -1,17 +1,17 @@
 # Product spec
 
-Windows-first guided installer for non-technical testers. It installs a single bundled test APK onto a Meta Quest 2/3 headset or an Android phone using portable `adb`.
+Windows-first guided installer for non-technical testers. It installs one or more user-selected APKs onto a Meta Quest 2/3 headset or an Android phone using portable `adb`.
 
 ## Promise
 
-Plug in the device, follow one highlighted action per screen, finish. Quest-first, phone second. Not a general ADB toolbox.
+Plug in the device, follow one highlighted action per screen, choose APK files, finish. Quest-first, phone second. Not a general ADB toolbox.
 
 ## Goals
 
 - One obvious next action on every screen.
 - Automatic Quest vs phone classification.
 - Typed recovery for common ADB/package failures.
-- Reusable JSON app manifest so the same shell can ship different test builds.
+- Reusable JSON install policy (`app-manifest.json`) for flags and post-install notes. APK files are chosen in the app, not bundled.
 - Diagnostics ZIP for support, without collecting unrelated device data.
 
 ## Non-goals
@@ -22,7 +22,7 @@ Plug in the device, follow one highlighted action per screen, finish. Quest-firs
 
 ## Primary flow
 
-Welcome → Connect device → Device detected → Authorization / developer mode only if needed → Ready to install → Installing → Problem or Complete.
+Welcome → Connect device → Device detected → Authorization / developer mode only if needed → Choose APKs → Installing → Problem or Complete.
 
 Skip steps when device state already satisfies them. Branch Quest vs phone as soon as classification is known.
 
@@ -35,14 +35,14 @@ Sideloading requires developer mode and USB debugging approval. Current Meta set
 3. Use a USB-C **data** cable (the cable in the Quest box is not suitable).
 4. In-headset: Quick Control → Settings → Developer → MTP Notification on.
 5. Approve USB debugging and choose **Always allow from this computer**.
-6. Install APK, then tell the tester the app may appear under Unknown Sources. Headset UI placement can change across Horizon OS updates.
+6. Choose one or more APK files, install, then tell the tester the app may appear under Unknown Sources. Headset UI placement can change across Horizon OS updates.
 
 ## Phone flow
 
 1. Detect Android phone.
 2. If unauthorized: unlock the phone and accept USB debugging.
-3. Install using the manifest install policy.
-4. Verify package presence.
+3. Choose APK files and install using the default install policy (`-r -d -t -g`).
+4. Skip package verification when the package id is unknown.
 5. Show app-drawer launch notes.
 
 ## Functional requirements
@@ -53,7 +53,7 @@ Sideloading requires developer mode and USB debugging approval. Current Meta set
 
 ### Install
 
-Single APK only. Policies: InstallFresh, ReinstallKeepData, ReinstallAllowDowngrade, UninstallThenInstall, InstallTestBuild. Flags: `-r`, `-d`, `-t`, `-g`. Verify with `pm list packages`.
+One or more independent APKs, chosen after the device is ready. Sequential `adb install`. Policies: InstallFresh, ReinstallKeepData, ReinstallAllowDowngrade, UninstallThenInstall, InstallTestBuild. Flags: `-r`, `-d`, `-t`, `-g`. Verify with `pm list packages` only when a real package id is known.
 
 ### Recovery
 
@@ -65,9 +65,9 @@ ZIP with app/build info, manifest id, device metadata, ADB snapshot, install att
 
 ## Packaging
 
-Mode A for v1: one Windows package contains the WPF shell, portable ADB, one manifest, and optionally one APK. Inno Setup, optional launch-after-install. Testers download **`SingularityApkInstaller-win-x64-setup.exe`** from [GitHub Releases](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest). That stable name is what the repo README download button serves.
+Mode A for v1: one Windows package contains the WPF shell, portable ADB, and optional install-policy JSON. APK files are not packaged. Inno Setup, optional launch-after-install. Testers download **`SingularityApkInstaller-win-x64-setup.exe`** from [GitHub Releases](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest). That stable name is what the repo README download button serves.
 
-**v0.1.1** ships portable `adb` and **Halo 0.4.2** (`payloads/current/Halo.apk`). Missing APK is a typed `MissingPayload` error, not a device/USB failure.
+**v0.2.0** ships portable `adb` only. Testers connect a device, then choose APK files. The published app is a single-file exe so Windows Application Control does not block unsigned satellite DLLs. Missing selected APK is a typed `MissingPayload` error, not a device/USB failure.
 
 Artifact names and pack steps: [`PACKAGING.md`](PACKAGING.md).
 

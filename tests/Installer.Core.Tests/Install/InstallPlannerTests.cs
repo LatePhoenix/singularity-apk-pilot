@@ -23,6 +23,16 @@ public sealed class InstallPlannerTests
     }
 
     [Fact]
+    public void User_selected_apk_skips_package_verify()
+    {
+        var manifest = InstallManifest.ForSelectedApk(@"C:\tmp\game.apk", InstallManifest.Session);
+        var plan = _planner.Create(new InstallRequest(manifest, Device("Quest 3", DeviceKind.MetaQuest, DeviceConnectionState.ConnectedReady)));
+        Assert.False(plan.VerifyAfterInstall);
+        Assert.Equal(@"C:\tmp\game.apk", plan.ApkPath);
+        Assert.Equal(["-r", "-d", "-t", "-g"], plan.AdbFlags);
+    }
+
+    [Fact]
     public void Policy_override_wins()
     {
         var manifest = InstallManifest.Placeholder with { InstallPolicy = InstallPolicy.InstallFresh, GrantPermissions = false, AllowTestApk = false };

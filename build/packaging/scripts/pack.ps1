@@ -9,7 +9,7 @@ param(
     [string]$RepoRoot,
     [ValidateSet("Debug", "Release")]
     [string]$Configuration = "Release",
-    [string]$Version = "0.1.1",
+    [string]$Version = "0.2.0",
     [switch]$SkipInstaller,
     [switch]$DryRun
 )
@@ -43,8 +43,10 @@ if (-not $DryRun) {
         -c $Configuration `
         -r win-x64 `
         --self-contained true `
-        -p:PublishSingleFile=false `
-        -p:PublishReadyToRun=true `
+        -p:PublishSingleFile=true `
+        -p:IncludeNativeLibrariesForSelfExtract=true `
+        -p:EnableCompressionInSingleFile=true `
+        -p:PublishReadyToRun=false `
         -p:DebugType=none `
         -p:Version=$Version `
         -o $publishDir

@@ -69,13 +69,13 @@ public abstract partial class WizardPageViewModel : ObservableObject
             WizardStep.DeveloperMode =>
                 (DeviceIllustrationKind.DeveloperMode, "Turn on developer mode in the Meta Horizon phone app, then reconnect the headset.", "", "Idle"),
             WizardStep.ReadyToInstall =>
-                (DeviceIllustrationKind.Package, $"Ready to install {state.Manifest.DisplayName} on {state.Device?.DisplayName}.", "Ready", "Live"),
+                (DeviceIllustrationKind.Package, $"Choose APK files to install on {state.Device?.DisplayName ?? "your device"}.", "Device ready", "Live"),
             WizardStep.Installing =>
-                (DeviceIllustrationKind.Installing, $"Installing {state.Manifest.DisplayName}. Keep the cable connected.", state.StatusMessage ?? "Installing", "Live"),
+                (DeviceIllustrationKind.Installing, "Installing selected APK files. Keep the cable connected.", state.StatusMessage ?? "Installing", "Live"),
             WizardStep.InstallProblem =>
                 (DeviceIllustrationKind.Problem, state.Copy.Headline, "Install did not finish", "Warning"),
             WizardStep.Complete =>
-                (DeviceIllustrationKind.Complete, $"{state.Manifest.DisplayName} is installed.", "Installed", "Live"),
+                (DeviceIllustrationKind.Complete, "Install complete.", "Installed", "Live"),
             _ => (DeviceIllustrationKind.Cable, "", "", "Idle")
         };
     }

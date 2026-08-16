@@ -18,11 +18,11 @@ Subject to these Terms, Singularity Solutions and Services LLC grants you a limi
 
 ## 2. What the Software does
 
-The Software is a guided Windows tool that installs a bundled test APK onto a USB-connected Meta Quest headset or Android phone using portable `adb`. You must have the right to install that APK. Quest installs require Meta developer mode and USB debugging approval. You are responsible for complying with Meta, Google, and any other third-party terms that apply to the device and the app being installed.
+The Software is a guided Windows tool that installs APK files you choose onto a USB-connected Meta Quest headset or Android phone using portable `adb`. You must have the right to install those APKs. Quest installs require Meta developer mode and USB debugging approval. You are responsible for complying with Meta, Google, and any other third-party terms that apply to the device and the app being installed.
 
 ## 3. Bundled third-party components
 
-The Software may bundle portable Android Debug Bridge (`adb`) and a test APK. Those components remain subject to their own licenses. Nothing in these Terms overrides those licenses. Open-source components remain under their respective licenses.
+The Software may bundle portable Android Debug Bridge (`adb`). That component remains subject to its own license. Nothing in these Terms overrides those licenses. Open-source components remain under their respective licenses. The Software does not bundle a third-party app APK.
 
 ## 4. No warranty
 

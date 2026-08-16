@@ -47,12 +47,12 @@ Welcome
  → DeviceDetected         (classification known)
  → Authorization          (if unauthorized)
  → DeveloperMode          (Quest, if developer mode likely missing)
- → ReadyToInstall
+ → ReadyToInstall (choose APK files)
  → Installing
  → InstallProblem | Complete
 ```
 
-Transitions are driven by `DeviceInfo` and `InstallResult`, not by button order. An already-authorized Quest skips to ReadyToInstall.
+Transitions are driven by `DeviceInfo` and `InstallResult`, not by button order. An already-authorized Quest skips to ReadyToInstall (APK picker).
 
 ## Install planning
 

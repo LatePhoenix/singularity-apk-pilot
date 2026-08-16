@@ -27,7 +27,7 @@ public sealed class AutoFixExecutor
 
         if (failure.Error is InstallError.MissingPayload)
         {
-            _logger.Info("Auto-fix skipped: app file is missing from the payload.");
+            _logger.Info("Auto-fix skipped: selected APK file is missing.");
             return null;
         }
 

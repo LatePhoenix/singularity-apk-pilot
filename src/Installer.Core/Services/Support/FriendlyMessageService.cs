@@ -15,7 +15,7 @@ public sealed class FriendlyMessageService
         InstallError.InsufficientStorage => "The device does not have enough free space",
         InstallError.DeveloperModeLikelyDisabled => "Developer mode may still be off",
         InstallError.CableOrUsbModeIssue => "The cable or USB mode looks wrong",
-        InstallError.MissingPayload => "The app file is missing from this installer",
+        InstallError.MissingPayload => "The APK file could not be found",
         _ => "The install did not complete"
     };
 
@@ -30,7 +30,7 @@ public sealed class FriendlyMessageService
         InstallError.InsufficientStorage => "The headset or phone storage is full.",
         InstallError.DeveloperModeLikelyDisabled => "Quest developer mode is required before this computer can install apps.",
         InstallError.CableOrUsbModeIssue => "A charge-only cable or the wrong USB mode is likely.",
-        InstallError.MissingPayload => "The test app was not included in this installer package.",
+        InstallError.MissingPayload => "The selected APK is missing or was moved. Add the file again and retry.",
         _ => "See advanced details or export diagnostics."
     };
 }

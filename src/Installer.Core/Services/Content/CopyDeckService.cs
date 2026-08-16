@@ -19,15 +19,16 @@ public sealed class CopyDeckService : IContentService
         var version = manifest.BuildVersion;
         var model = device?.DisplayName ?? "your device";
         var quest = device?.IsQuest == true || device?.Kind == DeviceKind.MetaQuest;
+        var userPicked = string.Equals(manifest.AppId, InstallManifest.UserSelectedAppId, StringComparison.OrdinalIgnoreCase);
 
         return step switch
         {
             WizardStep.Welcome => new WizardCopy(
-                $"Install {name}",
-                $"This tool installs {name} ({version}) on your headset or phone. You only need a USB cable and about two minutes.",
+                "Install apps on your device",
+                "Connect a headset or phone first. After it is ready, you choose the APK files to install. You only need a USB cable.",
                 "Start",
-                "You will plug in the device, approve a permission if asked, then this app does the rest.",
-                $"App id: {manifest.AppId}"),
+                "You will plug in the device, approve a permission if asked, then pick one or more APK files. Privacy and Terms open from the header.",
+                "No app is bundled. APK files are chosen after the device is connected."),
             WizardStep.ConnectDevice => new WizardCopy(
                 "Connect your device",
                 "Plug the headset or phone into this computer with a USB cable that can transfer files, then wait a moment.",
@@ -61,17 +62,17 @@ public sealed class CopyDeckService : IContentService
                 "You need a Meta developer account on a developer team. After turning it on, connect a USB-C data cable, put the headset on, open Quick Control → Settings → Developer, and turn on MTP Notification. When asked, choose Always allow from this computer.",
                 "Meta Horizon app path: Headset Settings → Developer Mode"),
             WizardStep.ReadyToInstall => new WizardCopy(
-                $"Ready to install {name}",
-                $"{name} {version} will be installed on {model}. This usually takes less than a minute.",
+                "Choose apps to install",
+                $"{model} is ready. Add one or more APK files, then install.",
                 "Install now",
-                "Existing test builds may be replaced according to the selected install mode. Your photos and other apps are not touched.",
+                "Existing copies of the same app may be replaced. Your photos and other apps are not touched.",
                 $"Install mode: {manifest.InstallPolicy}"),
             WizardStep.Installing => new WizardCopy(
-                $"Installing {name}",
+                userPicked && (string.IsNullOrWhiteSpace(name) || name == "apps") ? "Installing" : $"Installing {name}",
                 "Keep the cable connected. Do not unplug the device.",
                 "Cancel",
                 "If this sits on one step for several minutes, wait until it finishes or fails. Cancel stops the current attempt.",
-                "Sending and verifying the app."),
+                "Sending the selected APK files."),
             WizardStep.InstallProblem => new WizardCopy(
                 error is null ? "We could not finish installing" : _messages.TitleFor(error.Value),
                 error is null
@@ -81,13 +82,13 @@ public sealed class CopyDeckService : IContentService
                 "Most failures are a missing permission, a full device, or an older build that cannot be replaced until it is removed.",
                 error?.ToString() ?? "UnknownInstallFailure"),
             WizardStep.Complete => new WizardCopy(
-                $"{name} is installed",
+                userPicked ? "Install complete" : $"{name} is installed",
                 quest
-                    ? $"Put on the headset and look for {name} under Unknown Sources in Library. Headset menus move between software updates, so check the Library filter if you do not see it."
-                    : $"Find {name} in your app drawer and open it.",
+                    ? "Put on the headset and look under Unknown Sources in Library. Headset menus move between software updates, so check the Library filter if you do not see the app."
+                    : "Find the app in your app drawer and open it.",
                 "Done",
                 "If the app does not appear, unplug, put the headset on, and search Library again. Then export diagnostics.",
-                $"Package: {manifest.AppId} {version}"),
+                userPicked ? "Package id is unknown for user-selected APK files." : $"Package: {manifest.AppId} {version}"),
             _ => new WizardCopy(name, "", "Continue", "", "")
         };
     }

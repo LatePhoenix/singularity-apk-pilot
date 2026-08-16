@@ -4,13 +4,13 @@
   "title": "InstallManifest",
   "type": "object",
   "additionalProperties": false,
-  "required": ["appId", "displayName", "buildVersion", "apkPath", "targetPlatforms", "installPolicy"],
+  "required": ["installPolicy"],
   "properties": {
     "schemaVersion": { "type": "integer", "default": 1 },
-    "appId": { "type": "string", "minLength": 1 },
-    "displayName": { "type": "string", "minLength": 1 },
-    "buildVersion": { "type": "string", "minLength": 1 },
-    "apkPath": { "type": "string", "minLength": 1 },
+    "appId": { "type": "string" },
+    "displayName": { "type": "string" },
+    "buildVersion": { "type": "string" },
+    "apkPath": { "type": "string" },
     "targetPlatforms": {
       "type": "array",
       "minItems": 1,

@@ -15,7 +15,7 @@ powershell -ExecutionPolicy Bypass -File build\packaging\scripts\pack.ps1
 This will:
 
 1. Copy portable `adb` from Android SDK `platform-tools` (or `ANDROID_HOME` / `-AdbSource`) into `payloads\tools\adb\`
-2. Publish a self-contained `win-x64` build of the WPF app
+2. Publish a self-contained **single-file** `win-x64` build of the WPF app
 3. Compile the Inno Setup 7 wizard
 4. Write checksums
 
@@ -34,7 +34,7 @@ Requires [Inno Setup 7](https://jrsoftware.org/isinfo.php). If `ISCC.exe` is mis
 .\build\packaging\scripts\pack.ps1 -SkipInstaller
 
 # Override version (must match csproj / release tag)
-.\build\packaging\scripts\pack.ps1 -Version 0.1.1
+.\build\packaging\scripts\pack.ps1 -Version 0.2.0
 ```
 
 Code signing is not implemented (`build/packaging/scripts/sign.ps1`). Testers may see SmartScreen on first run.
@@ -43,25 +43,25 @@ Code signing is not implemented (`build/packaging/scripts/sign.ps1`). Testers ma
 
 | Path | Git | Packaged |
 | --- | --- | --- |
-| `payloads/current/app-manifest.json` | yes | yes |
-| `payloads/current/*.apk` | gitignored | included when present |
+| `payloads/current/app-manifest.json` | yes | yes (install policy / notes only) |
+| `payloads/current/*.apk` | gitignored | **not packaged** — testers choose APKs in the app |
 | `payloads/tools/adb/` | gitignored | copied at pack time |
 
-Missing APK is a tester-facing missing-payload message, not a pack failure.
+APK files in `payloads/current` are excluded from the setup. Testers pick files after a device is connected.
 
 ## Publish a GitHub Release
 
 1. Merge the work to `main`.
-2. Tag `v<version>` (example: `v0.1.1`).
+2. Tag `v<version>` (example: `v0.2.0`).
 3. Attach the three files from `artifacts/installer/`.
 
 ```powershell
-gh release create v0.1.1 `
-  --title "APK Installer 0.1.1" `
-  --notes-file docs/releases/v0.1.1.md `
-  artifacts/installer/SingularityApkInstaller-0.1.1-win-x64-setup.exe `
+gh release create v0.2.0 `
+  --title "APK Installer 0.2.0" `
+  --notes-file docs/releases/v0.2.0.md `
+  artifacts/installer/SingularityApkInstaller-0.2.0-win-x64-setup.exe `
   artifacts/installer/SingularityApkInstaller-win-x64-setup.exe `
-  artifacts/installer/SHA256SUMS-0.1.1.txt
+  artifacts/installer/SHA256SUMS-0.2.0.txt
 ```
 
 Keep the stable filename on every release so `/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe` keeps working.
