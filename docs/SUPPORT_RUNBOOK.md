@@ -1,6 +1,17 @@
 # Support runbook
 
+Testers should run **`SingularityApkInstaller-win-x64-setup.exe`** from the [latest GitHub Release](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe). Direct them to the repo README download button, not a random Dropbox/email copy.
+
 Use this when a tester says the installer “didn’t work.” Ask for the diagnostics ZIP first. Do not ask them to run ADB.
+
+## Getting the Windows installer
+
+1. Open [Releases](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest) or the green **Download** badge on the repo home page.
+2. Run `SingularityApkInstaller-win-x64-setup.exe`. No separate .NET runtime install is required.
+3. If SmartScreen appears (unsigned build), **More info** → **Run anyway**.
+4. Confirm they launched **Singularity APK Installer** from the Start menu after setup.
+
+**Missing APK (v0.1.0):** the GitHub installer includes portable `adb` and `payloads\current\app-manifest.json`, but not a test `.apk`. Until an operator drops an APK into the installed `payloads\current\` folder and matches `apkPath` / `appId` in the manifest, the wizard will stop on a missing-payload message. That is expected, not a device failure.
 
 ## Bundle contents
 

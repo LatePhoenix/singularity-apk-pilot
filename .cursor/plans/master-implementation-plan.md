@@ -52,7 +52,7 @@ Build a Windows WPF guided installer for non-technical users to install APKs on 
 
 8\. Diagnostics export
 
-9\. Packaging and installer
+9\. Packaging and installer — **done.** Testers get `SingularityApkInstaller-win-x64-setup.exe` from GitHub Releases (`docs/PACKAGING.md`).
 
 
 
@@ -67,4 +67,6 @@ Build a Windows WPF guided installer for non-technical users to install APKs on 
 \- Manual test path documented for Android phone unauthorized -> authorized -> install.
 
 \- Installer package launches app post-install.
+
+\- GitHub README download button serves `/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe`.
 

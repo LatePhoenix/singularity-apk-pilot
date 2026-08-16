@@ -17,6 +17,7 @@ Primary goals:
 Working rules:
 - Read `.cursor/plans/master-implementation-plan.md` before major work.
 - Follow project architecture documents in `docs/`.
+- Testers download `SingularityApkInstaller-win-x64-setup.exe` from GitHub Releases; keep that stable filename on every release.
 - Prefer typed models and services over stringly-typed glue code.
 - Keep logic out of XAML code-behind except view wiring.
 - Never place raw adb command assembly in ViewModels.

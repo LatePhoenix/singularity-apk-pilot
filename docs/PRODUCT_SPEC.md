@@ -65,7 +65,11 @@ ZIP with app/build info, manifest id, device metadata, ADB snapshot, install att
 
 ## Packaging
 
-Mode A for v1: one Windows package contains the WPF shell, portable ADB, one manifest, and one APK. Inno Setup, optional launch-after-install.
+Mode A for v1: one Windows package contains the WPF shell, portable ADB, one manifest, and optionally one APK. Inno Setup, optional launch-after-install. Testers download **`SingularityApkInstaller-win-x64-setup.exe`** from [GitHub Releases](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest). That stable name is what the repo README download button serves.
+
+**v0.1.0** ships portable `adb` and the example manifest. The test APK is not in git; operators copy it into `payloads\current\` (installed app directory or pack input) before a full install path will succeed.
+
+Artifact names and pack steps: [`PACKAGING.md`](PACKAGING.md).
 
 ## Manual acceptance paths
 

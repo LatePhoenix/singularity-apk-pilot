@@ -2,9 +2,12 @@
 ; TODO(signing): add SignTool once a code-signing certificate is available.
 
 #define MyAppName "Singularity APK Installer"
-#define MyAppVersion "0.1.0"
 #define MyAppPublisher "Singularity Solutions and Services"
 #define MyAppExeName "SingularityApkInstaller.exe"
+
+#ifndef MyAppVersion
+  #define MyAppVersion "0.1.0"
+#endif
 
 #ifndef PublishDir
   #define PublishDir "..\\..\\..\\artifacts\\publish\\Installer.App"
@@ -26,7 +29,12 @@ AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}\Singularity\APK Installer
 DefaultGroupName={#MyAppName}
 OutputDir={#OutputDir}
-OutputBaseFilename=SingularityApkInstaller-{#MyAppVersion}
+OutputBaseFilename=SingularityApkInstaller-{#MyAppVersion}-win-x64-setup
+VersionInfoVersion={#MyAppVersion}
+VersionInfoProductName={#MyAppName}
+AppPublisherURL=https://github.com/LatePhoenix/singularity-apk-installer
+AppSupportURL=https://github.com/LatePhoenix/singularity-apk-installer/issues
+AppUpdatesURL=https://github.com/LatePhoenix/singularity-apk-installer/releases/latest
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern

@@ -6,30 +6,55 @@
 
 [CmdletBinding()]
 param(
-    [string]$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..")).Path,
+    [string]$RepoRoot,
     [string]$AdbSource,
     [switch]$DryRun
 )
 
 $ErrorActionPreference = "Stop"
 
+if (-not $RepoRoot) {
+    $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..")).Path
+}
+
 $adbDest = Join-Path $RepoRoot "payloads\tools\adb"
 $manifest = Join-Path $RepoRoot "payloads\current\app-manifest.json"
 
-if (-not $AdbSource) {
-    $sdk = $env:ANDROID_HOME
-    if (-not $sdk) { $sdk = $env:ANDROID_SDK_ROOT }
-    if ($sdk) {
-        $AdbSource = Join-Path $sdk "platform-tools"
+function Find-PlatformTools {
+    param([string]$Explicit)
+    if ($Explicit -and (Test-Path (Join-Path $Explicit "adb.exe"))) {
+        return (Resolve-Path $Explicit).Path
     }
+
+    $sdkRoots = @(
+        $env:ANDROID_HOME,
+        $env:ANDROID_SDK_ROOT,
+        (Join-Path $env:LOCALAPPDATA "Android\Sdk")
+    ) | Where-Object { $_ }
+
+    foreach ($root in $sdkRoots) {
+        $pt = Join-Path $root "platform-tools"
+        if (Test-Path (Join-Path $pt "adb.exe")) {
+            return $pt
+        }
+    }
+
+    $onPath = Get-Command adb.exe -ErrorAction SilentlyContinue
+    if ($onPath) {
+        return (Split-Path -Parent $onPath.Source)
+    }
+
+    return $null
 }
+
+$AdbSource = Find-PlatformTools -Explicit $AdbSource
 
 New-Item -ItemType Directory -Force -Path $adbDest | Out-Null
 
-if ($AdbSource -and (Test-Path (Join-Path $AdbSource "adb.exe"))) {
+if ($AdbSource) {
     Write-Host "Copying adb from $AdbSource"
     if (-not $DryRun) {
-        Copy-Item -Path (Join-Path $AdbSource "*") -Destination $adbDest -Recurse -Force
+        Copy-Item -Path (Join-Path $AdbSource "*") -Destination $adbDest -Force
     }
 }
 else {

@@ -44,9 +44,21 @@ Requirements:
 
 After changes:
 
-\- Summarize produced packaging artifacts.
+Produced artifacts (gitignored under `artifacts/installer/`):
 
-\- Explain how to run the packaging script.
+\- `SingularityApkInstaller-<version>-win-x64-setup.exe`
 
-\- Note manual prerequisites like Inno Setup installation if needed.
+\- `SingularityApkInstaller-win-x64-setup.exe` (stable name for GitHub latest download)
+
+\- `SHA256SUMS-<version>.txt`
+
+Run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File build\packaging\scripts\pack.ps1
+```
+
+Prerequisite: Inno Setup 7 (`ISCC.exe`). Portable adb is copied from the Android SDK at pack time. Test APK is optional; missing APK is a tester message, not a pack failure.
+
+Publish by tagging `v<version>` and attaching the three files. README always links the stable filename.
 

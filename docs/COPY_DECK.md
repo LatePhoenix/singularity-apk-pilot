@@ -4,6 +4,8 @@ Plain language only. Do not say ADB, sideload, package manager, or USB transport
 
 Primary button is the only required action on each page. Help expander label: **Why am I seeing this?**
 
+Testers get the Windows setup from the GitHub README download button (`SingularityApkInstaller-win-x64-setup.exe`). This deck is in-app copy after that setup has launched.
+
 ## Welcome
 
 - Headline: Install {displayName}

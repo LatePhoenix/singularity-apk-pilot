@@ -14,3 +14,4 @@ alwaysApply: false
 - Inno Setup should support optional post-install launch using [Run] with postinstall behavior.
 - Do not hardcode machine-specific paths.
 - Build scripts should be PowerShell and idempotent where practical.
+- GitHub README must keep serving `SingularityApkInstaller-win-x64-setup.exe` from `/releases/latest/download/`.
