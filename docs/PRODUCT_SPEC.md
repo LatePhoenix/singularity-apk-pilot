@@ -71,6 +71,11 @@ Mode A for v1: one Windows package contains the WPF shell, portable ADB, one man
 
 Artifact names and pack steps: [`PACKAGING.md`](PACKAGING.md).
 
+## Legal
+
+Company Privacy Policy and Terms of Service: https://singularity.mhbross725.workers.dev/  
+Product copies: [`legal/PrivacyPolicy.md`](legal/PrivacyPolicy.md), [`legal/TermsOfService.md`](legal/TermsOfService.md).
+
 ## Manual acceptance paths
 
 - Quest: unauthorized → authorized → install.

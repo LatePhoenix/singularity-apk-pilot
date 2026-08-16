@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:wizard="clr-namespace:Installer.App.ViewModels.Wizard"
         xmlns:controls="clr-namespace:Installer.App.Controls"
+        xmlns:legal="clr-namespace:Installer.App"
         Title="APK Installer"
         Height="720" Width="960"
         MinHeight="600" MinWidth="800"
@@ -73,10 +74,22 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <StackPanel>
-                <TextBlock Text="INSTALLER" Style="{StaticResource Eyebrow}"/>
-                <TextBlock Text="APK Installer" FontSize="15" FontWeight="SemiBold" Margin="0,4,0,0"/>
-            </StackPanel>
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right"
+                           VerticalAlignment="Center"
+                           Style="{StaticResource Label}"
+                           AutomationProperties.Name="Legal links">
+                    <Hyperlink NavigateUri="{x:Static legal:PublisherLegal.PrivacyUri}"
+                               RequestNavigate="OnLegalNavigate">Privacy</Hyperlink>
+                    <Run Text="  ·  "/>
+                    <Hyperlink NavigateUri="{x:Static legal:PublisherLegal.TermsUri}"
+                               RequestNavigate="OnLegalNavigate">Terms</Hyperlink>
+                </TextBlock>
+                <StackPanel>
+                    <TextBlock Text="INSTALLER" Style="{StaticResource Eyebrow}"/>
+                    <TextBlock Text="APK Installer" FontSize="15" FontWeight="SemiBold" Margin="0,4,0,0"/>
+                </StackPanel>
+            </DockPanel>
             <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,24,0,24">
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Bottom">

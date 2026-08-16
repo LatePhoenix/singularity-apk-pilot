@@ -11,7 +11,7 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 - Headline: Install {displayName}
 - Body: This tool installs {displayName} ({buildVersion}) on your headset or phone. You only need a USB cable and about two minutes.
 - Primary: Start
-- Help: You will plug in the device, approve a permission if asked, then this app does the rest.
+- Help: You will plug in the device, approve a permission if asked, then this app does the rest. Privacy and Terms open from the header.
 - Advanced: Shows bundled app id, policy, and payload path.
 
 ## Connect device

@@ -2,6 +2,8 @@
 
 Testers should run **`SingularityApkInstaller-win-x64-setup.exe`** from the [latest GitHub Release](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe). Direct them to the repo README download button, not a random Dropbox/email copy.
 
+Legal: [Privacy Policy](https://singularity.mhbross725.workers.dev/privacy) · [Terms of Service](https://singularity.mhbross725.workers.dev/terms) · [legal home](https://singularity.mhbross725.workers.dev/).
+
 Use this when a tester says the installer “didn’t work.” Ask for the diagnostics ZIP first. Do not ask them to run ADB.
 
 ## Getting the Windows installer
