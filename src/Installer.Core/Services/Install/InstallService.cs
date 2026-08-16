@@ -36,6 +36,13 @@ public sealed class InstallService : IInstallService
 
         try
         {
+            if (!File.Exists(plan.ApkPath))
+            {
+                var missing = $"The app file is missing: {plan.ApkPath}";
+                _logger.Warn(missing);
+                return InstallResult.Failed(InstallError.MissingPayload, missing, [], plan);
+            }
+
             if (plan.RequiresUninstallFirst)
             {
                 var uninstall = await _adb.UninstallAsync(serial, plan.PackageId, cancellationToken);

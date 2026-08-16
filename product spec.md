@@ -1,4 +1,4 @@
-> Canonical product spec: [`docs/PRODUCT_SPEC.md`](docs/PRODUCT_SPEC.md). Testers download **v0.1.0** from [GitHub Releases](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe).
+> Canonical product spec: [`docs/PRODUCT_SPEC.md`](docs/PRODUCT_SPEC.md). Testers download **v0.1.1** from [GitHub Releases](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe).
 
 <img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
 

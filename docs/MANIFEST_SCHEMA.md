@@ -68,5 +68,5 @@ Unknown values fail manifest load. Do not guess.
 
 - Resolve `apkPath` relative to the app install directory, then the working directory.
 - Missing APK is a startup error with a plain-language message, not a crash.
-- GitHub Release **v0.1.0** does not attach a test APK. Operators add one under `payloads/current/` after installing the Windows setup, or before running `pack.ps1`.
+- GitHub Release **v0.1.1** attaches Halo 0.4.2 as `payloads/current/Halo.apk` (APK files stay gitignored). Operators can swap the APK and `app-manifest.json` for a different test build.
 - `targetPlatforms` is used to warn when a detected device family is not listed; it does not block install in v1.

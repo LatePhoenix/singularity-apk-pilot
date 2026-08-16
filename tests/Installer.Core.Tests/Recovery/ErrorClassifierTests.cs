@@ -18,6 +18,7 @@ public sealed class ErrorClassifierTests
     [InlineData("developer mode is required", InstallError.DeveloperModeLikelyDisabled)]
     [InlineData("device disconnected / usb closed", InstallError.CableOrUsbModeIssue)]
     [InlineData("Failure [INSTALL_PARSE_FAILED_NO_CERTIFICATES]", InstallError.UnknownInstallFailure)]
+    [InlineData("adb.exe: failed to stat C:\\payloads\\current\\example-app.apk: No such file or directory", InstallError.MissingPayload)]
     public void Classifies_sample_output(string output, InstallError expected)
     {
         Assert.Equal(expected, _sut.Classify(output));

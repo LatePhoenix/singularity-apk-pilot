@@ -11,7 +11,7 @@ Use this when a tester says the installer “didn’t work.” Ask for the diagn
 3. If SmartScreen appears (unsigned build), **More info** → **Run anyway**.
 4. Confirm they launched **Singularity APK Installer** from the Start menu after setup.
 
-**Missing APK (v0.1.0):** the GitHub installer includes portable `adb` and `payloads\current\app-manifest.json`, but not a test `.apk`. Until an operator drops an APK into the installed `payloads\current\` folder and matches `apkPath` / `appId` in the manifest, the wizard will stop on a missing-payload message. That is expected, not a device failure.
+**v0.1.0:** the first GitHub installer included portable `adb` and `payloads\current\app-manifest.json`, but not a test `.apk`. That failed as `UnknownInstallFailure` / `failed to stat … No such file`. **v0.1.1** ships Halo 0.4.2 (`Halo.apk`) and reports missing APK as **MissingPayload** without restarting adb.
 
 ## Bundle contents
 

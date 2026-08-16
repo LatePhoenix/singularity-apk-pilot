@@ -48,6 +48,9 @@ public sealed class RecoveryService : IRecoveryService
             case InstallError.InsufficientStorage:
                 actions.Add(Action("retry", "Try again", "Free some space on the device, then retry.", RecoveryActionKind.RetryInstall, false));
                 break;
+            case InstallError.MissingPayload:
+                actions.Add(Action("payload", "The app file is missing", "This installer package does not include the test app. Ask for a new installer, or place the .apk in payloads\\current and try again.", RecoveryActionKind.RetryInstall, false));
+                break;
             default:
                 actions.Add(Action("restart", "Restart connection helper", "Restart the helper and try the install again.", RecoveryActionKind.RestartAdbServer, true));
                 actions.Add(Action("retry", "Try again", "Run the install one more time.", RecoveryActionKind.RetryInstall, true));

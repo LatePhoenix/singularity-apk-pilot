@@ -34,7 +34,7 @@ Requires [Inno Setup 7](https://jrsoftware.org/isinfo.php). If `ISCC.exe` is mis
 .\build\packaging\scripts\pack.ps1 -SkipInstaller
 
 # Override version (must match csproj / release tag)
-.\build\packaging\scripts\pack.ps1 -Version 0.1.0
+.\build\packaging\scripts\pack.ps1 -Version 0.1.1
 ```
 
 Code signing is not implemented (`build/packaging/scripts/sign.ps1`). Testers may see SmartScreen on first run.
@@ -52,16 +52,16 @@ Missing APK is a tester-facing missing-payload message, not a pack failure.
 ## Publish a GitHub Release
 
 1. Merge the work to `main`.
-2. Tag `v<version>` (example: `v0.1.0`).
+2. Tag `v<version>` (example: `v0.1.1`).
 3. Attach the three files from `artifacts/installer/`.
 
 ```powershell
-gh release create v0.1.0 `
-  --title "APK Installer 0.1.0" `
-  --notes-file docs/releases/v0.1.0.md `
-  artifacts/installer/SingularityApkInstaller-0.1.0-win-x64-setup.exe `
+gh release create v0.1.1 `
+  --title "APK Installer 0.1.1" `
+  --notes-file docs/releases/v0.1.1.md `
+  artifacts/installer/SingularityApkInstaller-0.1.1-win-x64-setup.exe `
   artifacts/installer/SingularityApkInstaller-win-x64-setup.exe `
-  artifacts/installer/SHA256SUMS-0.1.0.txt
+  artifacts/installer/SHA256SUMS-0.1.1.txt
 ```
 
 Keep the stable filename on every release so `/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe` keeps working.

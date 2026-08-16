@@ -57,7 +57,11 @@ public sealed partial class ShellViewModel : ObservableObject
 
         var loaded = _manifests.Load();
         Manifest = loaded.IsSuccess && loaded.Value is not null ? loaded.Value : InstallManifest.Placeholder;
-        PayloadWarning = loaded.IsSuccess ? "" : loaded.Error ?? "";
+        PayloadWarning = loaded.IsSuccess
+            ? File.Exists(Manifest.ApkPath)
+                ? ""
+                : "The app file is missing from this installer. Place the .apk in payloads\\current and restart."
+            : loaded.Error ?? "";
         State = _flow.CreateInitialState(Manifest);
         ApplyState();
         _monitor.DevicesChanged += OnDevicesChanged;

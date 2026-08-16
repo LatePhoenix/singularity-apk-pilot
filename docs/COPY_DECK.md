@@ -96,6 +96,7 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 | InsufficientStorage | The device does not have enough free space | Headset/phone storage full |
 | DeveloperModeLikelyDisabled | Developer mode may still be off | Quest not visible to this computer |
 | CableOrUsbModeIssue | The cable or USB mode looks wrong | Charge-only cable or USB mode |
+| MissingPayload | The app file is missing from this installer | Test APK not packaged |
 | UnknownInstallFailure | The install did not complete | See advanced details |
 
 ## Complete
