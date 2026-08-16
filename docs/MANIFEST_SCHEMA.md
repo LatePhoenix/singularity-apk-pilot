@@ -1,20 +1,20 @@
 # Manifest schema
 
-One JSON file per packaged test build, shipped at `payloads/current/app-manifest.json`. Schema copy: `src/Installer.Contracts/Manifests/install-manifest.schema.json`.
+Optional JSON at `payloads/current/app-manifest.json` for install policy and post-install notes. APK files are chosen in the app after a device is connected. Schema copy: `src/Installer.Contracts/Manifests/install-manifest.schema.json`.
 
 ## Fields
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `schemaVersion` | number | no | Default `1`. Bump when fields are incompatible. |
-| `appId` | string | yes | Android package name, e.g. `com.singularity.exampleapp`. |
-| `displayName` | string | yes | User-facing app name. |
-| `buildVersion` | string | yes | Tester-visible version label. |
-| `apkPath` | string | yes | Path relative to the payload root, e.g. `payloads/current/example-app.apk`. |
-| `targetPlatforms` | string[] | yes | `quest`, `android`, or both. |
-| `installPolicy` | string | yes | See policies below. |
-| `grantPermissions` | bool | no | Default `false`. Adds `adb install -g`. |
-| `allowTestApk` | bool | no | Default `false`. Adds `-t`. |
+| `appId` | string | no | Android package name when known. Default `user.selected` (no `pm` verify). |
+| `displayName` | string | no | Unused for user-picked files (file name is shown instead). |
+| `buildVersion` | string | no | Tester-visible version label when bundling is re-enabled later. |
+| `apkPath` | string | no | Unused in v0.2.0. Testers pick APKs in the UI. |
+| `targetPlatforms` | string[] | no | `quest`, `android`, or both. Defaults to both. |
+| `installPolicy` | string | no | See policies below. Default `ReinstallAllowDowngrade`. |
+| `grantPermissions` | bool | no | Default `false` when present in JSON; shipped defaults set `true`. Adds `adb install -g`. |
+| `allowTestApk` | bool | no | Default `false` when present in JSON; shipped defaults set `true`. Adds `-t`. |
 | `launchAfterInstall` | bool | no | Default `false`. Offer in-app launch when the device supports it. |
 | `preferredDeviceFamilies` | string[] | no | Hints only: `meta-quest-2`, `meta-quest-3`, `pixel`, `samsung`. |
 | `postInstallNotes` | object | no | `quest` / `android` string arrays shown on Complete. |
@@ -36,37 +36,27 @@ Unknown values fail manifest load. Do not guess.
 ```json
 {
   "schemaVersion": 1,
-  "appId": "com.singularity.exampleapp",
-  "displayName": "Example App",
-  "buildVersion": "0.9.3-test7",
-  "apkPath": "payloads/current/example-app.apk",
-  "targetPlatforms": ["quest", "android"],
   "installPolicy": "ReinstallAllowDowngrade",
   "grantPermissions": true,
   "allowTestApk": true,
-  "launchAfterInstall": false,
-  "preferredDeviceFamilies": ["meta-quest-2", "meta-quest-3", "pixel", "samsung"],
+  "targetPlatforms": ["quest", "android"],
   "postInstallNotes": {
     "quest": [
       "Open Library.",
       "Open the filter menu.",
       "Select Unknown Sources.",
-      "Launch Example App."
+      "Find the app you installed."
     ],
     "android": [
-      "Find Example App in your app drawer and open it."
+      "Find the app in your app drawer and open it."
     ]
-  },
-  "support": {
-    "contactLabel": "Send diagnostics to support",
-    "contactEmail": "support@example.com"
   }
 }
 ```
 
 ## Load rules
 
-- Resolve `apkPath` relative to the app install directory, then the working directory.
-- Missing APK is a startup error with a plain-language message, not a crash.
-- GitHub Release **v0.1.1** attaches Halo 0.4.2 as `payloads/current/Halo.apk` (APK files stay gitignored). Operators can swap the APK and `app-manifest.json` for a different test build.
+- Missing `app-manifest.json` is not an error. The app uses session defaults (`-r -d -t -g`) and asks for APK files after the device is ready.
+- If `apkPath` is present, it is resolved relative to the app install directory, then the working directory. It is not required.
+- APK files stay gitignored and are excluded from the Windows setup.
 - `targetPlatforms` is used to warn when a detected device family is not listed; it does not block install in v1.

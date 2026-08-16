@@ -44,7 +44,7 @@ public sealed class InstallPlanner
             manifest.ApkPath,
             flags,
             uninstallFirst,
-            VerifyAfterInstall: true,
+            VerifyAfterInstall: manifest.CanVerifyPackage,
             manifest.LaunchAfterInstall,
             policy);
     }

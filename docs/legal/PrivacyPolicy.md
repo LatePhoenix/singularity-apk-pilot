@@ -21,11 +21,11 @@ Depending on how you use the Software, it may process:
 - USB device connection state from portable Android Debug Bridge (`adb`)
 - Device manufacturer, model, and Android version used to tell Quest from phone
 - A hashed form of the device serial in exported diagnostics (the raw serial is not written into the ZIP)
-- Package id and version of the bundled test APK
+- File names of APKs you choose to install
 - Command results from install, uninstall, and verification
 - Package-filtered logcat, only when you export diagnostics and the device is authorized
 
-This processing happens on your machine so the wizard can install the bundled test app. The Software does not scan the device filesystem for unrelated files, accounts, contacts, or other packages.
+This processing happens on your machine so the wizard can install the APK files you select. The Software does not scan the device filesystem for unrelated files, accounts, contacts, or other packages.
 
 ## 3. Diagnostics export
 

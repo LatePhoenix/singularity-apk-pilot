@@ -16,11 +16,17 @@ public sealed record InstallManifest(
     IReadOnlyDictionary<string, IReadOnlyList<string>> PostInstallNotes,
     SupportContact? Support)
 {
-    public static InstallManifest Placeholder { get; } = new(
-        AppId: "com.singularity.exampleapp",
-        DisplayName: "Example App",
-        BuildVersion: "0.0.0",
-        ApkPath: "payloads/current/example-app.apk",
+    public const string UserSelectedAppId = "user.selected";
+
+    public bool CanVerifyPackage =>
+        AppId.Contains('.', StringComparison.Ordinal)
+        && !string.Equals(AppId, UserSelectedAppId, StringComparison.OrdinalIgnoreCase);
+
+    public static InstallManifest Session { get; } = new(
+        AppId: UserSelectedAppId,
+        DisplayName: "apps",
+        BuildVersion: "",
+        ApkPath: "",
         TargetPlatforms: ["quest", "android"],
         InstallPolicy: InstallPolicy.ReinstallAllowDowngrade,
         GrantPermissions: true,
@@ -29,8 +35,46 @@ public sealed record InstallManifest(
         PreferredDeviceFamilies: ["meta-quest-2", "meta-quest-3", "pixel", "samsung"],
         PostInstallNotes: new Dictionary<string, IReadOnlyList<string>>
         {
-            ["quest"] = ["Open Library.", "Open the filter menu.", "Select Unknown Sources.", "Launch Example App."],
-            ["android"] = ["Find Example App in your app drawer and open it."]
+            ["quest"] = ["Open Library.", "Open the filter menu.", "Select Unknown Sources.", "Find the app you installed."],
+            ["android"] = ["Find the app in your app drawer and open it."]
         },
         Support: new SupportContact("Send diagnostics to support", "support@example.com"));
+
+    public static InstallManifest Placeholder { get; } = Session with
+    {
+        AppId = "com.singularity.exampleapp",
+        DisplayName = "Example App",
+        BuildVersion = "0.0.0",
+        ApkPath = "payloads/current/example-app.apk",
+        PostInstallNotes = new Dictionary<string, IReadOnlyList<string>>
+        {
+            ["quest"] = ["Open Library.", "Open the filter menu.", "Select Unknown Sources.", "Launch Example App."],
+            ["android"] = ["Find Example App in your app drawer and open it."]
+        }
+    };
+
+    public static InstallManifest ForSelectedApk(string apkPath, InstallManifest policy) =>
+        policy with
+        {
+            AppId = UserSelectedAppId,
+            DisplayName = Path.GetFileName(apkPath),
+            BuildVersion = "",
+            ApkPath = apkPath
+        };
+
+    public static InstallManifest ForSelectedApks(IReadOnlyList<string> apkPaths, InstallManifest policy)
+    {
+        if (apkPaths.Count == 1)
+        {
+            return ForSelectedApk(apkPaths[0], policy);
+        }
+
+        return policy with
+        {
+            AppId = UserSelectedAppId,
+            DisplayName = $"{apkPaths.Count} apps",
+            BuildVersion = "",
+            ApkPath = apkPaths[0]
+        };
+    }
 }

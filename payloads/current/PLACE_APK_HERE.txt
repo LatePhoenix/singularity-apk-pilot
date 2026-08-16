@@ -1,2 +1,1 @@
-Place the test APK next to this file (Halo.apk by default) or update apkPath in app-manifest.json.
-This folder is copied into the app output and the Windows installer payload.
+APK files are not bundled. After a headset or phone is connected, the installer asks you to choose one or more .apk files.

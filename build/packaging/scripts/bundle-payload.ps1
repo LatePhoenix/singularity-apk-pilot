@@ -66,8 +66,8 @@ if (-not (Test-Path $manifest)) {
 }
 
 $apk = Get-ChildItem (Join-Path $RepoRoot "payloads\current") -Filter *.apk -ErrorAction SilentlyContinue
-if (-not $apk) {
-    Write-Warning "No APK in payloads\current. Testers will get a missing-payload message until one is added."
+if ($apk) {
+    Write-Warning "APK files in payloads\current are not packaged. Testers choose APKs in the app after a device is connected."
 }
 
 Write-Host "Payload root: $(Join-Path $RepoRoot 'payloads')"

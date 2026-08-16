@@ -8,11 +8,11 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 
 ## Welcome
 
-- Headline: Install {displayName}
-- Body: This tool installs {displayName} ({buildVersion}) on your headset or phone. You only need a USB cable and about two minutes.
+- Headline: Install apps on your device
+- Body: Connect a headset or phone first. After it is ready, you choose the APK files to install. You only need a USB cable.
 - Primary: Start
-- Help: You will plug in the device, approve a permission if asked, then this app does the rest. Privacy and Terms open from the header.
-- Advanced: Shows bundled app id, policy, and payload path.
+- Help: You will plug in the device, approve a permission if asked, then pick one or more APK files. Privacy and Terms open from the header.
+- Advanced: No app is bundled. APK files are chosen after the device is connected.
 
 ## Connect device
 
@@ -56,19 +56,20 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 - Help: You need a Meta developer account on a developer team. After turning it on, connect a USB-C data cable, put the headset on, open Quick Control → Settings → Developer, and turn on MTP Notification. When asked, choose Always allow from this computer.
 - Advanced: Link to Meta device-setup docs.
 
-## Ready to install
+## Choose apps to install
 
-- Headline: Ready to install {displayName}
-- Body: {displayName} {buildVersion} will be installed on {model}. This usually takes less than a minute.
-- Primary: Install now
-- Help: Existing test builds may be replaced according to the selected install mode. Your photos and other apps are not touched.
+- Headline: Choose apps to install
+- Body: {model} is ready. Add one or more APK files, then install.
+- Primary: Install now (disabled until at least one APK is added)
+- Secondary in page: Add APK files (multi-select `*.apk`)
+- Help: Existing copies of the same app may be replaced. Your photos and other apps are not touched.
 - Advanced: Policy name and install flags.
 
 ## Installing
 
-- Headline: Installing {displayName}
+- Headline: Installing {file name or “N apps”}
 - Body: Keep the cable connected. Do not unplug the device.
-- Status labels: Starting → Sending app → Installing → Verifying
+- Status labels: Installing 1 of N: filename.apk
 - Primary: none (page is busy)
 - Secondary: Cancel
 - Help: If this sits on one step for several minutes, wait until it finishes or fails. Cancel stops the current attempt.
@@ -96,15 +97,15 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 | InsufficientStorage | The device does not have enough free space | Headset/phone storage full |
 | DeveloperModeLikelyDisabled | Developer mode may still be off | Quest not visible to this computer |
 | CableOrUsbModeIssue | The cable or USB mode looks wrong | Charge-only cable or USB mode |
-| MissingPayload | The app file is missing from this installer | Test APK not packaged |
+| MissingPayload | The APK file could not be found | Selected file missing or moved |
 | UnknownInstallFailure | The install did not complete | See advanced details |
 
 ## Complete
 
-- Headline: {displayName} is installed
-- Body (Quest): Put on the headset and look for {displayName} under Unknown Sources in Library. Headset menus move between software updates, so check the Library filter if you do not see it.
-- Body (phone): Find {displayName} in your app drawer and open it.
+- Headline: Install complete
+- Body (Quest): Put on the headset and look under Unknown Sources in Library. Headset menus move between software updates, so check the Library filter if you do not see the app.
+- Body (phone): Find the app in your app drawer and open it.
 - Primary: Done
 - Secondary: Export diagnostics
 - Help: If the app does not appear, unplug, put the headset on, and search Library again. Then export diagnostics.
-- Advanced: Installed package id and version if known.
+- Advanced: Package id unknown for user-selected APK files.

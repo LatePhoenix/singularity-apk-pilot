@@ -55,17 +55,18 @@ public sealed partial class ShellViewModel : ObservableObject
             [WizardStep.Complete] = new CompletePageViewModel()
         };
 
+        ChoosePage.FilesChanged += () => OnPropertyChanged(nameof(CanPrimary));
+
         var loaded = _manifests.Load();
-        Manifest = loaded.IsSuccess && loaded.Value is not null ? loaded.Value : InstallManifest.Placeholder;
-        PayloadWarning = loaded.IsSuccess
-            ? File.Exists(Manifest.ApkPath)
-                ? ""
-                : "The app file is missing from this installer. Place the .apk in payloads\\current and restart."
-            : loaded.Error ?? "";
+        Manifest = loaded.IsSuccess && loaded.Value is not null ? loaded.Value : InstallManifest.Session;
+        PayloadWarning = loaded.IsSuccess ? "" : loaded.Error ?? "";
         State = _flow.CreateInitialState(Manifest);
         ApplyState();
         _monitor.DevicesChanged += OnDevicesChanged;
     }
+
+    private ReadyToInstallPageViewModel ChoosePage =>
+        (ReadyToInstallPageViewModel)_pages[WizardStep.ReadyToInstall];
 
     public InstallManifest Manifest { get; }
 
@@ -87,6 +88,8 @@ public sealed partial class ShellViewModel : ObservableObject
     public bool ShowPrimary => State.CurrentStep != WizardStep.Installing;
 
     public bool ShowCancel => State.CurrentStep == WizardStep.Installing;
+
+    public bool CanPrimary => State.CurrentStep != WizardStep.ReadyToInstall || ChoosePage.HasFiles;
 
     [RelayCommand]
     private async Task PrimaryAsync()
@@ -116,6 +119,7 @@ public sealed partial class ShellViewModel : ObservableObject
                 await AutoFixOrRetryAsync();
                 break;
             case WizardStep.Complete:
+                ChoosePage.ClearFiles();
                 Advance(WizardTrigger.Done);
                 break;
         }
@@ -152,21 +156,48 @@ public sealed partial class ShellViewModel : ObservableObject
 
     private async Task InstallAsync()
     {
+        var paths = ChoosePage.SelectedPaths;
+        if (paths.Count == 0)
+        {
+            PayloadWarning = "Add at least one APK file.";
+            return;
+        }
+
         if (State.Device is null)
         {
             Advance(WizardTrigger.Continue);
             return;
         }
 
+        PayloadWarning = "";
+        State = State with { Manifest = InstallManifest.ForSelectedApks(paths, Manifest) };
         Advance(WizardTrigger.Install, State.Device);
         _installCts = new CancellationTokenSource();
         try
         {
-            var request = new InstallRequest(Manifest, State.Device);
-            var result = await _install.InstallAsync(request, _installCts.Token);
-            if (!result.Success && result.Error is not null)
+            InstallResult? result = null;
+            for (var i = 0; i < paths.Count; i++)
             {
-                result = result with { SuggestedActions = _recovery.Suggest(result.Error.Value, Manifest) };
+                var apkPath = paths[i];
+                if (CurrentPage is InstallingPageViewModel installing)
+                {
+                    installing.StatusLabel = paths.Count == 1
+                        ? $"Installing {Path.GetFileName(apkPath)}"
+                        : $"Installing {i + 1} of {paths.Count}: {Path.GetFileName(apkPath)}";
+                }
+
+                var request = new InstallRequest(InstallManifest.ForSelectedApk(apkPath, State.Manifest), State.Device);
+                result = await _install.InstallAsync(request, _installCts.Token);
+                if (!result.Success)
+                {
+                    if (result.Error is not null)
+                    {
+                        result = result with { SuggestedActions = _recovery.Suggest(result.Error.Value, request.Manifest) };
+                    }
+
+                    Advance(WizardTrigger.InstallFinished, State.Device, result);
+                    return;
+                }
             }
 
             Advance(WizardTrigger.InstallFinished, State.Device, result);
@@ -192,12 +223,17 @@ public sealed partial class ShellViewModel : ObservableObject
             return;
         }
 
-        var request = new InstallRequest(Manifest, State.Device);
+        var last = State.LastInstallResult;
+        var failedPath = last.Plan?.ApkPath;
+        var retryManifest = string.IsNullOrWhiteSpace(failedPath)
+            ? State.Manifest
+            : InstallManifest.ForSelectedApk(failedPath, Manifest);
+        var request = new InstallRequest(retryManifest, State.Device);
         Advance(WizardTrigger.AutoFix, State.Device);
         try
         {
-            var fixedResult = await _recovery.TryAutoFixAsync(request, State.LastInstallResult);
-            var result = fixedResult ?? State.LastInstallResult;
+            var fixedResult = await _recovery.TryAutoFixAsync(request, last);
+            var result = fixedResult ?? last;
             if (result is { Success: false, Error: not null })
             {
                 result = result with { SuggestedActions = _recovery.Suggest(result.Error.Value, Manifest) };
@@ -268,5 +304,6 @@ public sealed partial class ShellViewModel : ObservableObject
         OnPropertyChanged(nameof(ShowSecondaryExport));
         OnPropertyChanged(nameof(ShowPrimary));
         OnPropertyChanged(nameof(ShowCancel));
+        OnPropertyChanged(nameof(CanPrimary));
     }
 }
