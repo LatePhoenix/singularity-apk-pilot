@@ -4,7 +4,7 @@
 
 [![Latest release](https://img.shields.io/github/v/release/LatePhoenix/singularity-apk-installer?style=for-the-badge&label=release&color=0F1722)](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest)
 
-**⬇️ [Download SingularityApkInstaller-win-x64-setup.exe](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe)** — currently **v0.1.0**. That link always serves the latest GitHub Release asset.
+**⬇️ [Download SingularityApkInstaller-win-x64-setup.exe](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe)** — currently **v0.1.1**. That link always serves the latest GitHub Release asset.
 
 Windows guided installer for non-technical testers. Plug in a Meta Quest 2/3 or Android phone, follow one highlighted action per screen, and install a bundled test APK with portable `adb`.
 
@@ -18,7 +18,7 @@ Windows guided installer for non-technical testers. Plug in a Meta Quest 2/3 or 
 
 The installer is not code-signed yet, so Windows SmartScreen may warn on first run. Choose **More info** → **Run anyway**.
 
-**v0.1.0** ships portable `adb` and an example manifest. Drop the test `.apk` into the installed `payloads\current\` folder (and update `app-manifest.json`) before testers can finish an install. See [`docs/SUPPORT_RUNBOOK.md`](docs/SUPPORT_RUNBOOK.md).
+**v0.1.1** ships portable `adb` and **Halo 0.4.2** for Quest testers. See [`docs/SUPPORT_RUNBOOK.md`](docs/SUPPORT_RUNBOOK.md).
 
 ## Requirements
 
@@ -35,7 +35,7 @@ dotnet test SingularityTesterInstaller.sln
 powershell -ExecutionPolicy Bypass -File build\packaging\scripts\pack.ps1
 ```
 
-Requires .NET SDK 8.0.424 (`global.json`) and [Inno Setup 7](https://jrsoftware.org/isinfo.php). Output: `artifacts\installer\SingularityApkInstaller-0.1.0-win-x64-setup.exe`. Details: [`docs/PACKAGING.md`](docs/PACKAGING.md).
+Requires .NET SDK 8.0.424 (`global.json`) and [Inno Setup 7](https://jrsoftware.org/isinfo.php). Output: `artifacts\installer\SingularityApkInstaller-0.1.1-win-x64-setup.exe`. Details: [`docs/PACKAGING.md`](docs/PACKAGING.md).
 
 ## Docs
 

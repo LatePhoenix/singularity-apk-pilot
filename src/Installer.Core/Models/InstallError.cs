@@ -12,5 +12,6 @@ public enum InstallError
     DebuggingNotApproved = 7,
     DeveloperModeLikelyDisabled = 8,
     CableOrUsbModeIssue = 9,
-    UnknownInstallFailure = 10
+    UnknownInstallFailure = 10,
+    MissingPayload = 11
 }

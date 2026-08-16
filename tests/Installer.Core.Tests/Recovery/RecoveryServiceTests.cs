@@ -19,6 +19,7 @@ public sealed class RecoveryServiceTests
     [InlineData(InstallError.DeveloperModeLikelyDisabled)]
     [InlineData(InstallError.CableOrUsbModeIssue)]
     [InlineData(InstallError.UnknownInstallFailure)]
+    [InlineData(InstallError.MissingPayload)]
     public void Suggests_at_most_three_actions(InstallError error)
     {
         var actions = _sut.Suggest(error, InstallManifest.Placeholder);

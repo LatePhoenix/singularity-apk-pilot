@@ -25,7 +25,13 @@ public sealed class AutoFixExecutor
             return null;
         }
 
-        if (failure.Error is InstallError.NoDevicesFound or InstallError.CableOrUsbModeIssue or InstallError.UnknownInstallFailure)
+        if (failure.Error is InstallError.MissingPayload)
+        {
+            _logger.Info("Auto-fix skipped: app file is missing from the payload.");
+            return null;
+        }
+
+        if (failure.Error is InstallError.NoDevicesFound or InstallError.CableOrUsbModeIssue)
         {
             _logger.Info("Auto-fix: restart adb server.");
             await _adb.RestartServerAsync(cancellationToken);

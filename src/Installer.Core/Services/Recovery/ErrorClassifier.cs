@@ -9,6 +9,11 @@ public sealed class ErrorClassifier
         var text = output ?? "";
         var lower = text.ToLowerInvariant();
 
+        if (ContainsAny(lower, "failed to stat", "no such file", "cannot find the path", "the system cannot find"))
+        {
+            return InstallError.MissingPayload;
+        }
+
         if (ContainsAny(lower, "unauthorized", "debugging is not allowed"))
         {
             return InstallError.UnauthorizedDevice;
