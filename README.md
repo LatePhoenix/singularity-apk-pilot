@@ -20,6 +20,13 @@ The installer is not code-signed yet, so Windows SmartScreen may warn on first r
 
 **v0.1.1** ships portable `adb` and **Halo 0.4.2** for Quest testers. See [`docs/SUPPORT_RUNBOOK.md`](docs/SUPPORT_RUNBOOK.md).
 
+## Legal
+
+- [Privacy Policy](https://singularity.mhbross725.workers.dev/privacy)
+- [Terms of Service](https://singularity.mhbross725.workers.dev/terms)
+- Company legal home: [singularity.mhbross725.workers.dev](https://singularity.mhbross725.workers.dev/)
+- Product copies: [`docs/legal/PrivacyPolicy.md`](docs/legal/PrivacyPolicy.md), [`docs/legal/TermsOfService.md`](docs/legal/TermsOfService.md)
+
 ## Requirements
 
 - Windows 10/11 x64
@@ -45,3 +52,5 @@ Requires .NET SDK 8.0.424 (`global.json`) and [Inno Setup 7](https://jrsoftware.
 - [`docs/MANIFEST_SCHEMA.md`](docs/MANIFEST_SCHEMA.md)
 - [`docs/SUPPORT_RUNBOOK.md`](docs/SUPPORT_RUNBOOK.md)
 - [`docs/PACKAGING.md`](docs/PACKAGING.md)
+- [`docs/legal/PrivacyPolicy.md`](docs/legal/PrivacyPolicy.md)
+- [`docs/legal/TermsOfService.md`](docs/legal/TermsOfService.md)
