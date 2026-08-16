@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Installer.Core\Installer.Core.csproj" />
+    <ProjectReference Include="..\Installer.Contracts\Installer.Contracts.csproj" />
+    <ProjectReference Include="..\Installer.Infrastructure\Installer.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+  </ItemGroup>
+
+    <PropertyGroup>
+      <OutputType>WinExe</OutputType>
+      <TargetFramework>net8.0-windows</TargetFramework>
+      <Nullable>enable</Nullable>
+      <ImplicitUsings>enable</ImplicitUsings>
+      <UseWPF>true</UseWPF>
+      <AssemblyName>SingularityApkInstaller</AssemblyName>
+      <RootNamespace>Installer.App</RootNamespace>
+      <Version>0.1.0</Version>
+      <Product>Singularity APK Installer</Product>
+      <Company>Singularity Solutions and Services LLC</Company>
+      <ApplicationIcon>Assets\app-icon.ico</ApplicationIcon>
+    </PropertyGroup>
+    <ItemGroup>
+      <None Include="..\..\payloads\**\*" Link="payloads\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+      <Resource Include="Resources\Fonts\Inter\*.ttf" />
+      <Resource Include="Resources\Fonts\JetBrainsMono\*.ttf" />
+      <Resource Include="Assets\app-icon.png" />
+    </ItemGroup>
+
+</Project>

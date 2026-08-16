@@ -1,0 +1,69 @@
+using Installer.App.ViewModels;
+using Installer.App.Views;
+using Installer.Core.Abstractions;
+using Installer.Core.Services.Adb;
+using Installer.Core.Services.Content;
+using Installer.Core.Services.Devices;
+using Installer.Core.Services.Diagnostics;
+using Installer.Core.Services.Flow;
+using Installer.Core.Services.Install;
+using Installer.Core.Services.Recovery;
+using Installer.Core.Services.Support;
+using Installer.Infrastructure;
+using Installer.Infrastructure.Logging;
+using Installer.Infrastructure.Packaging;
+using Installer.Infrastructure.Process;
+using Installer.Infrastructure.Storage;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Installer.App.Bootstrap;
+
+public static class ServiceRegistration
+{
+    public static IServiceProvider Create()
+    {
+        var services = new ServiceCollection();
+
+        services.AddSingleton<IClock, SystemClock>();
+        services.AddSingleton<SessionLogWriter>();
+        services.AddSingleton<IAppLogger, FileLogger>();
+        services.AddSingleton<IPortableAdbLocator, PortableAdbLocator>();
+        services.AddSingleton<IPayloadLocator, PayloadLocator>();
+        services.AddSingleton<IUserDataPaths, UserDataPaths>();
+        services.AddSingleton<IZipBundleWriter, ZipBundleWriter>();
+        services.AddSingleton<ProcessService>();
+        services.AddSingleton<IAdbProcessRunner, AdbProcessRunner>();
+        services.AddSingleton<AdbCommandFactory>();
+        services.AddSingleton<AdbOutputParser>();
+        services.AddSingleton<IAdbClient, AdbClient>();
+        services.AddSingleton<DeviceClassificationService>();
+        services.AddSingleton<DevicePropertyService>();
+        services.AddSingleton<IDeviceService, DeviceDetectionService>();
+        services.AddSingleton<IDeviceMonitorService, DeviceMonitorService>();
+        services.AddSingleton<InstallPlanner>();
+        services.AddSingleton<InstallVerifier>();
+        services.AddSingleton<PackageConflictService>();
+        services.AddSingleton<PermissionGrantService>();
+        services.AddSingleton<ErrorClassifier>();
+        services.AddSingleton<RetryPolicyFactory>();
+        services.AddSingleton<FriendlyMessageService>();
+        services.AddSingleton<IInstallService, InstallService>();
+        services.AddSingleton<AutoFixExecutor>();
+        services.AddSingleton<IRecoveryService, RecoveryService>();
+        services.AddSingleton<QuestFlowStrategy>();
+        services.AddSingleton<AndroidPhoneFlowStrategy>();
+        services.AddSingleton<FlowDecisionEngine>();
+        services.AddSingleton<IContentService, CopyDeckService>();
+        services.AddSingleton<IWizardFlowService, WizardFlowService>();
+        services.AddSingleton<IManifestService, ManifestService>();
+        services.AddSingleton<LogcatCollector>();
+        services.AddSingleton<EnvironmentSnapshotService>();
+        services.AddSingleton<IDiagnosticsService, DiagnosticsService>();
+        services.AddSingleton<ContentPackResolver>();
+        services.AddSingleton<BuildStampReader>();
+        services.AddSingleton<ShellViewModel>();
+        services.AddSingleton<ShellWindow>();
+
+        return services.BuildServiceProvider();
+    }
+}

@@ -1,0 +1,16 @@
+---
+description: Inno Setup 7 and payload packaging rules
+globs:
+  - "build/**/*"
+  - "**/*.iss"
+alwaysApply: false
+---
+
+# Packaging rules
+
+- Packaging is Windows-first.
+- Bundle portable adb with the app.
+- Keep payload layout predictable and relative-path based.
+- Inno Setup should support optional post-install launch using [Run] with postinstall behavior.
+- Do not hardcode machine-specific paths.
+- Build scripts should be PowerShell and idempotent where practical.

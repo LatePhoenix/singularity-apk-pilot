@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://singularity.local/schemas/diagnostics-bundle.json",
+  "title": "DiagnosticBundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["createdUtc", "installerVersion", "appId"],
+  "properties": {
+    "createdUtc": { "type": "string", "format": "date-time" },
+    "installerVersion": { "type": "string" },
+    "appId": { "type": "string" },
+    "buildVersion": { "type": "string" },
+    "deviceKind": { "type": "string" },
+    "installError": { "type": ["string", "null"] }
+  }
+}

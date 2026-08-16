@@ -1,0 +1,10 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+artifacts/
+build/packaging/out/
+payloads/tools/adb/
+payloads/current/*.apk
+*.log

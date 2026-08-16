@@ -1,0 +1,29 @@
+---
+description: Always-applied repo guidance for Singularity Tester Installer
+alwaysApply: true
+---
+
+# Singularity Tester Installer
+
+This repository is a Windows-first C#/.NET 8 WPF application that helps non-technical users install test APKs onto Meta Quest headsets and Android phones.
+
+Primary goals:
+- Novice-friendly wizard UX.
+- Deterministic device detection and install flow.
+- Clear recovery actions for common ADB/package failures.
+- Strict architecture separation: UI -> Core abstractions -> Infrastructure.
+- Small, additive changes only. Do not rewrite unrelated files.
+
+Working rules:
+- Read `.cursor/plans/master-implementation-plan.md` before major work.
+- Follow project architecture documents in `docs/`.
+- Prefer typed models and services over stringly-typed glue code.
+- Keep logic out of XAML code-behind except view wiring.
+- Never place raw adb command assembly in ViewModels.
+- Before finishing any task, run or document acceptance checks.
+- When uncertain, choose the smaller implementation that preserves extensibility.
+
+Output expectations:
+- Summarize plan first.
+- Then implement.
+- End with changed files, verification status, and remaining risks/TODOs.
