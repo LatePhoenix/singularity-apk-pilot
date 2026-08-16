@@ -1,0 +1,10 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <FontFamily x:Key="Font.Ui">Satoshi, Inter, Segoe UI, sans-serif</FontFamily>
+    <FontFamily x:Key="Font.Mono">JetBrains Mono, Cascadia Mono, Consolas, Courier New</FontFamily>
+    <Style TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource Font.Ui}" />
+        <Setter Property="Foreground" Value="{StaticResource Brush.Text}" />
+        <Setter Property="FontSize" Value="15" />
+    </Style>
+</ResourceDictionary>

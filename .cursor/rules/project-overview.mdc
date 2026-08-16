@@ -1,0 +1,20 @@
+---
+description: Project overview and product intent
+globs:
+  - "**/*"
+alwaysApply: false
+---
+
+# Product intent
+
+This app is a guided installer for non-technical testers.
+
+Supported targets:
+- Meta Quest 2 and 3 headsets via adb-based sideload flow.
+- Android phones via adb-based install flow.
+
+Design principles:
+- One obvious next action per screen.
+- Friendly language; avoid exposing adb jargon in end-user copy.
+- Quest flow and phone flow must branch early and remain device-specific.
+- Recovery actions must be explicit and finite, never vague.

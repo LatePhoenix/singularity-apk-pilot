@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "appId": "com.singularity.exampleapp",
+  "displayName": "Example App",
+  "buildVersion": "0.9.3-test7",
+  "apkPath": "payloads/current/example-app.apk",
+  "targetPlatforms": ["quest", "android"],
+  "installPolicy": "ReinstallAllowDowngrade",
+  "grantPermissions": true,
+  "allowTestApk": true,
+  "launchAfterInstall": false,
+  "preferredDeviceFamilies": ["meta-quest-2", "meta-quest-3", "pixel", "samsung"],
+  "postInstallNotes": {
+    "quest": [
+      "Open Library.",
+      "Open the filter menu.",
+      "Select Unknown Sources.",
+      "Launch Example App."
+    ],
+    "android": [
+      "Find Example App in your app drawer and open it."
+    ]
+  },
+  "support": {
+    "contactLabel": "Send diagnostics to support",
+    "contactEmail": "support@example.com"
+  }
+}

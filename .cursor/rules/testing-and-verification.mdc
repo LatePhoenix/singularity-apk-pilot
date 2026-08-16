@@ -1,0 +1,22 @@
+---
+description: Tests and acceptance verification rules
+globs:
+  - "tests/**/*.cs"
+  - "src/**/*.cs"
+alwaysApply: false
+---
+
+# Testing and verification
+
+- Add unit tests for parser and decision logic.
+- Prioritize tests for:
+  - adb devices output parsing
+  - device classification
+  - install flag planning
+  - error classification
+  - wizard next-step decision logic
+- Do not overinvest in UI tests early.
+- Each work order must include acceptance checks:
+  - build status
+  - targeted tests
+  - manual verification notes

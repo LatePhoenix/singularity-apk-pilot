@@ -1,0 +1,22 @@
+---
+description: Enforce layered architecture and boundaries
+globs:
+  - "src/**/*.cs"
+alwaysApply: false
+---
+
+# Architecture boundaries
+
+Projects:
+- Installer.App = WPF presentation and view orchestration only.
+- Installer.Core = domain models, service abstractions, business logic.
+- Installer.Infrastructure = process, filesystem, logging, packaging, OS integration.
+- Installer.Contracts = DTOs and schemas only.
+
+Rules:
+- UI must depend on Core abstractions, not Infrastructure concrete types directly.
+- ViewModels may call service interfaces only.
+- adb execution lives in Infrastructure/Core services, never in XAML code-behind.
+- Do not introduce static god classes.
+- Prefer small service classes with narrow responsibility.
+- Keep methods short and testable.

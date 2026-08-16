@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://singularity.local/schemas/install-manifest.json",
+  "title": "InstallManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["appId", "displayName", "buildVersion", "apkPath", "targetPlatforms", "installPolicy"],
+  "properties": {
+    "schemaVersion": { "type": "integer", "default": 1 },
+    "appId": { "type": "string", "minLength": 1 },
+    "displayName": { "type": "string", "minLength": 1 },
+    "buildVersion": { "type": "string", "minLength": 1 },
+    "apkPath": { "type": "string", "minLength": 1 },
+    "targetPlatforms": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "enum": ["quest", "android"] }
+    },
+    "installPolicy": {
+      "type": "string",
+      "enum": [
+        "InstallFresh",
+        "ReinstallKeepData",
+        "ReinstallAllowDowngrade",
+        "UninstallThenInstall",
+        "InstallTestBuild"
+      ]
+    },
+    "grantPermissions": { "type": "boolean", "default": false },
+    "allowTestApk": { "type": "boolean", "default": false },
+    "launchAfterInstall": { "type": "boolean", "default": false },
+    "preferredDeviceFamilies": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "postInstallNotes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    },
+    "support": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contactLabel": { "type": "string" },
+        "contactEmail": { "type": "string" }
+      }
+    }
+  }
+}

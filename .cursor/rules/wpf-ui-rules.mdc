@@ -1,0 +1,21 @@
+---
+description: WPF UI and wizard-flow rules
+globs:
+  - "src/Installer.App/**/*.xaml"
+  - "src/Installer.App/**/*.cs"
+alwaysApply: false
+---
+
+# WPF UI rules
+
+- Use MVVM.
+- Avoid business logic in code-behind.
+- Use pages/user controls for wizard steps and a single shell window.
+- End-user copy must be plain language and action-driven.
+- Each wizard screen should have:
+  - headline
+  - short explanation
+  - primary action
+  - optional help/advanced expander
+- Keep visual density low and novice-friendly.
+- Device-specific copy should be resolved by ViewModel state, not hardcoded in the view.

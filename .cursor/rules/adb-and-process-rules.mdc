@@ -1,0 +1,23 @@
+---
+description: adb process handling and command rules
+globs:
+  - "src/Installer.Core/**/*.cs"
+  - "src/Installer.Infrastructure/**/*.cs"
+alwaysApply: false
+---
+
+# ADB and process rules
+
+- Use adb as the source of truth for attached devices and install status.
+- Encapsulate adb calls behind IAdbClient.
+- Prefer typed request/response models instead of returning raw strings everywhere.
+- Parse `adb devices -l` into typed device objects.
+- Use `adb shell getprop` for device properties.
+- Installation logic must support:
+  - normal install
+  - reinstall (-r)
+  - downgrade (-d)
+  - test APK (-t)
+  - grant permissions (-g)
+- Translate raw adb/package errors into typed InstallError values.
+- Log raw command output for diagnostics, but return friendly messages to UI.
