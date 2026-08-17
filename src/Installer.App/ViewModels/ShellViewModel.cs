@@ -18,6 +18,7 @@ public sealed partial class ShellViewModel : ObservableObject
     private readonly IDiagnosticsService _diagnostics;
     private readonly IManifestService _manifests;
     private readonly IUserDataPaths _userData;
+    private readonly IWirelessAdbService _wireless;
     private readonly IAppLogger _logger;
     private readonly Dictionary<WizardStep, WizardPageViewModel> _pages;
     private CancellationTokenSource? _installCts;
@@ -31,6 +32,7 @@ public sealed partial class ShellViewModel : ObservableObject
         IDiagnosticsService diagnostics,
         IManifestService manifests,
         IUserDataPaths userData,
+        IWirelessAdbService wireless,
         IAppLogger logger)
     {
         _flow = flow;
@@ -41,6 +43,7 @@ public sealed partial class ShellViewModel : ObservableObject
         _diagnostics = diagnostics;
         _manifests = manifests;
         _userData = userData;
+        _wireless = wireless;
         _logger = logger;
         _pages = new Dictionary<WizardStep, WizardPageViewModel>
         {
@@ -56,6 +59,10 @@ public sealed partial class ShellViewModel : ObservableObject
         };
 
         ChoosePage.FilesChanged += () => OnPropertyChanged(nameof(CanPrimary));
+        ChoosePage.UseWifiRequested += () => _ = UseWifiFromUsbAsync();
+        ConnectPage.ConnectRememberedRequested += () => _ = ConnectRememberedWifiAsync();
+        ConnectPage.ConnectAdvancedRequested += request => _ = ConnectAdvancedWifiAsync(request);
+        ConnectPage.BindEndpoint(_wireless.LastEndpoint);
 
         var loaded = _manifests.Load();
         Manifest = loaded.IsSuccess && loaded.Value is not null ? loaded.Value : InstallManifest.Session;
@@ -67,6 +74,9 @@ public sealed partial class ShellViewModel : ObservableObject
 
     private ReadyToInstallPageViewModel ChoosePage =>
         (ReadyToInstallPageViewModel)_pages[WizardStep.ReadyToInstall];
+
+    private ConnectDevicePageViewModel ConnectPage =>
+        (ConnectDevicePageViewModel)_pages[WizardStep.ConnectDevice];
 
     public InstallManifest Manifest { get; }
 
@@ -245,6 +255,82 @@ public sealed partial class ShellViewModel : ObservableObject
         {
             _logger.Error("Auto-fix failed.", ex);
             Advance(WizardTrigger.InstallFinished, State.Device, State.LastInstallResult);
+        }
+    }
+
+    private async Task ConnectRememberedWifiAsync()
+    {
+        var endpoint = _wireless.LastEndpoint;
+        if (endpoint is null)
+        {
+            PayloadWarning = "No saved Wi-Fi address yet. Plug in with a USB cable first, or enter an address below.";
+            return;
+        }
+
+        await RunWirelessAsync(() => _wireless.ConnectAsync(endpoint));
+    }
+
+    private Task ConnectAdvancedWifiAsync(WirelessFormRequest request)
+    {
+        if (request.Pairing is not null && !string.IsNullOrWhiteSpace(request.PairingCode))
+        {
+            var pairing = request.Pairing;
+            var code = request.PairingCode;
+            return RunWirelessAsync(() => _wireless.PairThenConnectAsync(pairing, code, request.Connect));
+        }
+
+        return RunWirelessAsync(() => _wireless.ConnectAsync(request.Connect));
+    }
+
+    private Task UseWifiFromUsbAsync()
+    {
+        if (State.Device is null || State.Device.IsWireless)
+        {
+            PayloadWarning = "Connect the device with a USB cable first, then use Wi-Fi.";
+            return Task.CompletedTask;
+        }
+
+        var serial = State.Device.Serial;
+        return RunWirelessAsync(() => _wireless.EnableFromUsbAsync(serial));
+    }
+
+    private async Task RunWirelessAsync(Func<Task<Installer.Core.Utilities.Result<WirelessEndpoint>>> operation)
+    {
+        PayloadWarning = "";
+        ConnectPage.WifiStatus = "";
+        ConnectPage.IsWifiBusy = true;
+        ChoosePage.IsWifiBusy = true;
+        try
+        {
+            var result = await operation();
+            if (!result.IsSuccess || result.Value is null)
+            {
+                var message = result.Error ?? "Could not connect over Wi-Fi.";
+                PayloadWarning = message;
+                ConnectPage.WifiStatus = message;
+                return;
+            }
+
+            ConnectPage.BindEndpoint(_wireless.LastEndpoint);
+            var primary = await DetectPrimaryAsync();
+            if (primary is null)
+            {
+                PayloadWarning = "Wi-Fi is on. Wait a moment, then continue.";
+                return;
+            }
+
+            Advance(WizardTrigger.DeviceRefresh, primary);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Wi-Fi connection failed.", ex);
+            PayloadWarning = "Could not connect over Wi-Fi.";
+            ConnectPage.WifiStatus = PayloadWarning;
+        }
+        finally
+        {
+            ConnectPage.IsWifiBusy = false;
+            ChoosePage.IsWifiBusy = false;
         }
     }
 

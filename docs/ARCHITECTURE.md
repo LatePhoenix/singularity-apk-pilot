@@ -24,8 +24,9 @@ ViewModels call service interfaces only. `App/Bootstrap` is the only place that 
 
 ## Core modules
 
-- **Adb:** `IAdbClient`, `AdbCommandFactory`, output parsers. Command strings are built here; process launch is not.
-- **Devices:** parse `adb devices -l`, classify Quest vs phone, poll for WPF binding.
+- **Adb:** `IAdbClient`, `AdbCommandFactory`, output parsers. Command strings are built here; process launch is not. Wireless commands: `tcpip`, `connect`, `disconnect`, `pair`, and Wi-Fi address via `ip`.
+- **Wireless:** `IWirelessAdbService` enables USB-first Wi-Fi, reconnects a saved endpoint, and pairs then connects. Last address is stored in AppData, never pairing codes.
+- **Devices:** parse `adb devices -l`, classify Quest vs phone, prefer a Wi-Fi record when USB and Wi-Fi both appear, poll for WPF binding.
 - **Install:** plan flags from `InstallPolicy` + manifest, execute, verify package.
 - **Flow:** deterministic wizard state machine with Quest and Android strategies.
 - **Recovery:** classify stderr into `InstallError`, return ≤3 actions, optional auto-fix.

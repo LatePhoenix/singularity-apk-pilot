@@ -9,7 +9,7 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 ## Welcome
 
 - Headline: Install apps on your device
-- Body: Connect a headset or phone first. After it is ready, you choose the APK files to install. You only need a USB cable.
+- Body: Connect a headset or phone first. After it is ready, you choose the APK files to install. A USB cable is the usual way. Wi-Fi is optional after the device has approved this computer.
 - Primary: Start
 - Help: You will plug in the device, approve a permission if asked, then pick one or more APK files. Privacy and Terms open from the header.
 - Advanced: No app is bundled. APK files are chosen after the device is connected.
@@ -19,8 +19,9 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 - Headline: Connect your device
 - Body: Plug the headset or phone into this computer with a USB cable that can transfer files, then wait a moment.
 - Primary: I connected it
-- Help: Charge-only cables will not work. The cable that ships with Quest is often charge-only. Try another USB-C data cable and a USB port on the computer, not a hub.
+- Help: Charge-only cables will not work. The cable that ships with Quest is often charge-only. Try another USB-C data cable and a USB port on the computer, not a hub. To use Wi-Fi, the device must be on the same network as this computer. Pairing codes are optional and go in the form below.
 - Advanced: Last detection status and raw device list.
+- In-page (not the footer primary): **Connect over Wi-Fi** when a last address is saved. Compact form: address, optional pairing port and six-digit code, then Connect.
 
 ## Device detected
 
@@ -62,13 +63,14 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 - Body: {model} is ready. Add one or more APK files, then install.
 - Primary: Install now (disabled until at least one APK is added)
 - Secondary in page: Add APK files (multi-select `*.apk`)
+- Secondary in page: Use Wi-Fi (only when the device is USB and ready)
 - Help: Existing copies of the same app may be replaced. Your photos and other apps are not touched.
 - Advanced: Policy name and install flags.
 
 ## Installing
 
 - Headline: Installing {file name or “N apps”}
-- Body: Keep the cable connected. Do not unplug the device.
+- Body: Keep the cable connected. Do not unplug the device. (Wi-Fi: Keep the device awake and on the same Wi-Fi as this computer.)
 - Status labels: Installing 1 of N: filename.apk
 - Primary: none (page is busy)
 - Secondary: Cancel
@@ -98,6 +100,7 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 | DeveloperModeLikelyDisabled | Developer mode may still be off | Quest not visible to this computer |
 | CableOrUsbModeIssue | The cable or USB mode looks wrong | Charge-only cable or USB mode |
 | MissingPayload | The APK file could not be found | Selected file missing or moved |
+| WirelessConnectFailed | Wi-Fi connection did not work | Wrong network, reboot cleared wireless, or pairing port vs connect port |
 | UnknownInstallFailure | The install did not complete | See advanced details |
 
 ## Complete

@@ -18,7 +18,7 @@ Subject to these Terms, Singularity Solutions and Services LLC grants you a limi
 
 ## 2. What the Software does
 
-The Software is a guided Windows tool that installs APK files you choose onto a USB-connected Meta Quest headset or Android phone using portable `adb`. You must have the right to install those APKs. Quest installs require Meta developer mode and USB debugging approval. You are responsible for complying with Meta, Google, and any other third-party terms that apply to the device and the app being installed.
+The Software is a guided Windows tool that installs APK files you choose onto a Meta Quest headset or Android phone using portable `adb`, over USB or Wi-Fi. You must have the right to install those APKs. Quest installs require Meta developer mode and USB debugging approval. You are responsible for complying with Meta, Google, and any other third-party terms that apply to the device and the app being installed.
 
 ## 3. Bundled third-party components
 

@@ -78,6 +78,35 @@ public sealed class AdbClient : IAdbClient
             .Where(line => line.Contains(packageId, StringComparison.OrdinalIgnoreCase)));
     }
 
+    public Task<AdbProcessResult> TcpIpAsync(string serial, int port = 5555, CancellationToken cancellationToken = default)
+    {
+        Guard.NotBlank(serial, nameof(serial));
+        return RunAsync(_commands.TcpIp(serial, port), cancellationToken);
+    }
+
+    public Task<AdbProcessResult> ConnectAsync(string endpoint, CancellationToken cancellationToken = default)
+    {
+        Guard.NotBlank(endpoint, nameof(endpoint));
+        return RunAsync(_commands.Connect(endpoint), cancellationToken);
+    }
+
+    public Task<AdbProcessResult> DisconnectAsync(string? endpoint = null, CancellationToken cancellationToken = default) =>
+        RunAsync(_commands.Disconnect(endpoint), cancellationToken);
+
+    public Task<AdbProcessResult> PairAsync(string endpoint, string pairingCode, CancellationToken cancellationToken = default)
+    {
+        Guard.NotBlank(endpoint, nameof(endpoint));
+        Guard.NotBlank(pairingCode, nameof(pairingCode));
+        return RunAsync(_commands.Pair(endpoint, pairingCode), cancellationToken);
+    }
+
+    public async Task<string?> GetWifiAddressAsync(string serial, CancellationToken cancellationToken = default)
+    {
+        Guard.NotBlank(serial, nameof(serial));
+        var result = await RunAsync(_commands.WifiAddresses(serial), cancellationToken);
+        return _parser.ParseWifiAddress(result.CombinedOutput);
+    }
+
     private async Task<AdbProcessResult> RunAsync(AdbCommand command, CancellationToken cancellationToken)
     {
         _logger.Info($"adb {command.ArgumentString}");

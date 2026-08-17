@@ -36,6 +36,8 @@ public static class ServiceRegistration
         services.AddSingleton<AdbCommandFactory>();
         services.AddSingleton<AdbOutputParser>();
         services.AddSingleton<IAdbClient, AdbClient>();
+        services.AddSingleton<IWirelessEndpointStore, WirelessEndpointStore>();
+        services.AddSingleton<IWirelessAdbService, WirelessAdbService>();
         services.AddSingleton<DeviceClassificationService>();
         services.AddSingleton<DevicePropertyService>();
         services.AddSingleton<IDeviceService, DeviceDetectionService>();

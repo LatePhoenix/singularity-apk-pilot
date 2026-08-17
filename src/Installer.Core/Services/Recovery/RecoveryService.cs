@@ -51,6 +51,10 @@ public sealed class RecoveryService : IRecoveryService
             case InstallError.MissingPayload:
                 actions.Add(Action("payload", "Choose the APK again", "The selected APK is missing or was moved. Go back, add the file, and install again.", RecoveryActionKind.RetryInstall, false));
                 break;
+            case InstallError.WirelessConnectFailed:
+                actions.Add(Action("retrywifi", "Try Wi-Fi again", "Keep the device awake on the same network and retry.", RecoveryActionKind.RetryDetection, true));
+                actions.Add(Action("cable", "Use a USB cable", "Plug in a USB cable that can transfer files, then continue.", RecoveryActionKind.ShowCableHelp, false));
+                break;
             default:
                 actions.Add(Action("restart", "Restart connection helper", "Restart the helper and try the install again.", RecoveryActionKind.RestartAdbServer, true));
                 actions.Add(Action("retry", "Try again", "Run the install one more time.", RecoveryActionKind.RetryInstall, true));

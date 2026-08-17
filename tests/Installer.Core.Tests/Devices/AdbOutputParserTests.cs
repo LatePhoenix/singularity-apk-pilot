@@ -59,6 +59,41 @@ public sealed class AdbOutputParserTests
     }
 
     [Fact]
+    public void Parses_wifi_serial()
+    {
+        const string output = """
+            List of devices attached
+            192.168.1.42:5555    device product:eureka model:Quest_3 device:eureka transport_id:2
+            """;
+
+        var device = Assert.Single(_parser.ParseDevices(output));
+        Assert.Equal("192.168.1.42:5555", device.Serial);
+        Assert.Equal("Quest_3", device.Properties["model"]);
+        Assert.Equal(DeviceConnectionState.ConnectedReady, _parser.ParseConnectionState(device.State));
+    }
+
+    [Fact]
+    public void Parses_wifi_address_and_skips_usb_tether()
+    {
+        const string output = """
+            7: usb0    inet 192.168.42.129/24 brd 192.168.42.255 scope global usb0
+            8: wlan0    inet 192.168.1.42/24 brd 192.168.1.255 scope global wlan0
+            """;
+
+        Assert.Equal("192.168.1.42", _parser.ParseWifiAddress(output));
+    }
+
+    [Fact]
+    public void Connect_and_pair_success_text()
+    {
+        Assert.True(_parser.IsConnectSuccess("connected to 192.168.1.42:5555"));
+        Assert.True(_parser.IsConnectSuccess("already connected to 192.168.1.42:5555"));
+        Assert.False(_parser.IsConnectSuccess("failed to connect to 192.168.1.42:5555"));
+        Assert.True(_parser.IsPairSuccess("Successfully paired to 192.168.1.42:37123 [guid=adb-xxx]"));
+        Assert.False(_parser.IsPairSuccess("Failed: Wrong password"));
+    }
+
+    [Fact]
     public void Package_list_matches_id()
     {
         Assert.True(_parser.IsPackageListed("package:com.singularity.exampleapp\n", "com.singularity.exampleapp"));

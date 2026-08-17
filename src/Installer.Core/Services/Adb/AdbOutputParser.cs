@@ -9,6 +9,12 @@ public sealed class AdbOutputParser
         @"^(?<serial>\S+)\s+(?<state>device|unauthorized|offline|no permissions|unknown)(?:\s+(?<rest>.*))?$",
         RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
+    private static readonly Regex WifiAddressLine = new(
+        @"^\d+:\s+(?<iface>\S+)\s+inet\s+(?<ip>\d{1,3}(?:\.\d{1,3}){3})/",
+        RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Multiline);
+
+    private static readonly string[] SkipInterfaceTokens = ["lo", "usb", "rndis", "tether", "dummy"];
+
     public IReadOnlyList<AdbDeviceRecord> ParseDevices(string output)
     {
         var devices = new List<AdbDeviceRecord>();
@@ -50,6 +56,38 @@ public sealed class AdbOutputParser
             _ => DeviceConnectionState.Offline
         };
 
+    public string? ParseWifiAddress(string output)
+    {
+        if (string.IsNullOrWhiteSpace(output))
+        {
+            return null;
+        }
+
+        foreach (Match match in WifiAddressLine.Matches(output))
+        {
+            var iface = match.Groups["iface"].Value;
+            var ip = match.Groups["ip"].Value;
+            if (ip.StartsWith("127.", StringComparison.Ordinal) || ShouldSkipInterface(iface))
+            {
+                continue;
+            }
+
+            return ip;
+        }
+
+        return null;
+    }
+
+    public bool IsConnectSuccess(string output)
+    {
+        var lower = (output ?? "").ToLowerInvariant();
+        return lower.Contains("connected to", StringComparison.Ordinal)
+               || lower.Contains("already connected", StringComparison.Ordinal);
+    }
+
+    public bool IsPairSuccess(string output) =>
+        (output ?? "").Contains("successfully paired", StringComparison.OrdinalIgnoreCase);
+
     public bool IsPackageListed(string output, string packageId)
     {
         if (string.IsNullOrWhiteSpace(output) || string.IsNullOrWhiteSpace(packageId))
@@ -83,5 +121,18 @@ public sealed class AdbOutputParser
         }
 
         return properties;
+    }
+
+    private static bool ShouldSkipInterface(string iface)
+    {
+        foreach (var token in SkipInterfaceTokens)
+        {
+            if (iface.Contains(token, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -3,6 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:wizard="clr-namespace:Installer.App.ViewModels.Wizard">
     <StackPanel Margin="0,16,0,0">
+        <Button Content="Use Wi-Fi"
+                Style="{StaticResource SecondaryPill}"
+                Command="{Binding UseWifiCommand}"
+                IsEnabled="{Binding CanUseWifi}"
+                HorizontalAlignment="Left"
+                Margin="0,0,0,16"
+                Visibility="{Binding ShowUseWifi, Converter={StaticResource BoolToVisibility}}"
+                AutomationProperties.Name="Use Wi-Fi"
+                AutomationProperties.AutomationId="UseWifi"/>
         <ItemsControl ItemsSource="{Binding ApkFiles}"
                       AutomationProperties.Name="Selected APK files">
             <ItemsControl.ItemTemplate>

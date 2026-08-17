@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Installer.Core.Models;
 using Microsoft.Win32;
 
 namespace Installer.App.ViewModels.Wizard;
@@ -15,9 +16,21 @@ public sealed partial class ReadyToInstallPageViewModel : WizardPageViewModel
     [NotifyPropertyChangedFor(nameof(EmptyHint))]
     private bool hasFiles;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanUseWifi))]
+    private bool showUseWifi;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanUseWifi))]
+    private bool isWifiBusy;
+
     public string EmptyHint => HasFiles ? "" : "No APK files selected yet.";
 
+    public bool CanUseWifi => ShowUseWifi && !IsWifiBusy;
+
     public event Action? FilesChanged;
+
+    public event Action? UseWifiRequested;
 
     public ReadyToInstallPageViewModel()
     {
@@ -31,6 +44,20 @@ public sealed partial class ReadyToInstallPageViewModel : WizardPageViewModel
     public IReadOnlyList<string> SelectedPaths => ApkFiles.Select(file => file.Path).ToList();
 
     public void ClearFiles() => ApkFiles.Clear();
+
+    protected override void OnApplied(WizardState state)
+    {
+        ShowUseWifi = state.Device is { State: DeviceConnectionState.ConnectedReady, IsWireless: false };
+    }
+
+    [RelayCommand]
+    private void UseWifi()
+    {
+        if (CanUseWifi)
+        {
+            UseWifiRequested?.Invoke();
+        }
+    }
 
     [RelayCommand]
     private void AddApks()

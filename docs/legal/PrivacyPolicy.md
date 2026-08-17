@@ -18,7 +18,8 @@ The Software does not require an account and does not operate a user registratio
 
 Depending on how you use the Software, it may process:
 
-- USB device connection state from portable Android Debug Bridge (`adb`)
+- USB or Wi-Fi device connection state from portable Android Debug Bridge (`adb`)
+- Last Wi-Fi address used to reconnect a device (stored locally; pairing codes are not saved)
 - Device manufacturer, model, and Android version used to tell Quest from phone
 - A hashed form of the device serial in exported diagnostics (the raw serial is not written into the ZIP)
 - File names of APKs you choose to install

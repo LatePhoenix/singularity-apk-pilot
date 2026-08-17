@@ -56,7 +56,9 @@ public sealed class DeviceDetectionService : IDeviceService
             return null;
         }
 
-        return devices.FirstOrDefault(d => d.Kind == DeviceKind.MetaQuest && d.State == DeviceConnectionState.ConnectedReady)
+        return devices.FirstOrDefault(d => d.Kind == DeviceKind.MetaQuest && d.State == DeviceConnectionState.ConnectedReady && d.IsWireless)
+               ?? devices.FirstOrDefault(d => d.Kind == DeviceKind.MetaQuest && d.State == DeviceConnectionState.ConnectedReady)
+               ?? devices.FirstOrDefault(d => d.State == DeviceConnectionState.ConnectedReady && d.IsWireless)
                ?? devices.FirstOrDefault(d => d.State == DeviceConnectionState.ConnectedReady)
                ?? devices.FirstOrDefault(d => d.State == DeviceConnectionState.Unauthorized)
                ?? devices[0];

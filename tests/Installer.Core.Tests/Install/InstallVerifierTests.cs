@@ -36,5 +36,15 @@ public sealed class InstallVerifierTests
             Task.FromResult(new AdbProcessResult(0, "Success", "", TimeSpan.Zero, []));
         public Task<bool> IsPackageInstalledAsync(string serial, string packageId, CancellationToken cancellationToken = default) => Task.FromResult(PackageInstalled);
         public Task<string> GetLogcatAsync(string serial, string? packageId, CancellationToken cancellationToken = default) => Task.FromResult("");
+        public Task<AdbProcessResult> TcpIpAsync(string serial, int port = 5555, CancellationToken cancellationToken = default) =>
+            Task.FromResult(new AdbProcessResult(0, "", "", TimeSpan.Zero, []));
+        public Task<AdbProcessResult> ConnectAsync(string endpoint, CancellationToken cancellationToken = default) =>
+            Task.FromResult(new AdbProcessResult(0, "", "", TimeSpan.Zero, []));
+        public Task<AdbProcessResult> DisconnectAsync(string? endpoint = null, CancellationToken cancellationToken = default) =>
+            Task.FromResult(new AdbProcessResult(0, "", "", TimeSpan.Zero, []));
+        public Task<AdbProcessResult> PairAsync(string endpoint, string pairingCode, CancellationToken cancellationToken = default) =>
+            Task.FromResult(new AdbProcessResult(0, "", "", TimeSpan.Zero, []));
+        public Task<string?> GetWifiAddressAsync(string serial, CancellationToken cancellationToken = default) =>
+            Task.FromResult<string?>(null);
     }
 }
