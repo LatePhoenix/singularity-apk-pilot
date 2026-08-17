@@ -1,3 +1,4 @@
+using System.Globalization;
 using Installer.Core.Models;
 
 namespace Installer.Core.Services.Adb;
@@ -9,6 +10,29 @@ public sealed class AdbCommandFactory
     public AdbCommand KillServer() => new(["kill-server"], "Restart connection helper");
 
     public AdbCommand Devices() => new(["devices", "-l"], "List devices");
+
+    public AdbCommand TcpIp(string serial, int port) =>
+        new(["-s", serial, "tcpip", port.ToString(CultureInfo.InvariantCulture)], "Enable Wi-Fi connection");
+
+    public AdbCommand Connect(string endpoint) =>
+        new(["connect", endpoint], "Connect over Wi-Fi");
+
+    public AdbCommand Disconnect(string? endpoint = null)
+    {
+        var args = new List<string> { "disconnect" };
+        if (!string.IsNullOrWhiteSpace(endpoint))
+        {
+            args.Add(endpoint);
+        }
+
+        return new AdbCommand(args, "Disconnect Wi-Fi");
+    }
+
+    public AdbCommand Pair(string endpoint, string pairingCode) =>
+        new(["pair", endpoint, pairingCode], "Pair over Wi-Fi");
+
+    public AdbCommand WifiAddresses(string serial) =>
+        new(["-s", serial, "shell", "ip", "-o", "-4", "addr", "show", "scope", "global"], "Read Wi-Fi address");
 
     public AdbCommand GetProperty(string serial, string key) =>
         new(["-s", serial, "shell", "getprop", key], $"Read device property {key}");

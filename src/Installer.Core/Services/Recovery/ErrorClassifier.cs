@@ -56,6 +56,11 @@ public sealed class ErrorClassifier
             return InstallError.DeveloperModeLikelyDisabled;
         }
 
+        if (ContainsAny(lower, "failed to connect", "cannot connect to", "failed to pair", "wrong password", "connection refused"))
+        {
+            return InstallError.WirelessConnectFailed;
+        }
+
         if (ContainsAny(lower, "usb", "not found", "device disconnected", "closed"))
         {
             return InstallError.CableOrUsbModeIssue;

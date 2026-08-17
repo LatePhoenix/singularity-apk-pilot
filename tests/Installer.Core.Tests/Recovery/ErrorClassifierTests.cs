@@ -19,6 +19,8 @@ public sealed class ErrorClassifierTests
     [InlineData("device disconnected / usb closed", InstallError.CableOrUsbModeIssue)]
     [InlineData("Failure [INSTALL_PARSE_FAILED_NO_CERTIFICATES]", InstallError.UnknownInstallFailure)]
     [InlineData("adb.exe: failed to stat C:\\payloads\\current\\example-app.apk: No such file or directory", InstallError.MissingPayload)]
+    [InlineData("failed to connect to 192.168.1.42:5555", InstallError.WirelessConnectFailed)]
+    [InlineData("Failed: Wrong password", InstallError.WirelessConnectFailed)]
     public void Classifies_sample_output(string output, InstallError expected)
     {
         Assert.Equal(expected, _sut.Classify(output));

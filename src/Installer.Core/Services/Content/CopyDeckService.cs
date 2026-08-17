@@ -25,7 +25,7 @@ public sealed class CopyDeckService : IContentService
         {
             WizardStep.Welcome => new WizardCopy(
                 "Install apps on your device",
-                "Connect a headset or phone first. After it is ready, you choose the APK files to install. You only need a USB cable.",
+                "Connect a headset or phone first. After it is ready, you choose the APK files to install. A USB cable is the usual way. Wi-Fi is optional after the device has approved this computer.",
                 "Start",
                 "You will plug in the device, approve a permission if asked, then pick one or more APK files. Privacy and Terms open from the header.",
                 "No app is bundled. APK files are chosen after the device is connected."),
@@ -33,7 +33,7 @@ public sealed class CopyDeckService : IContentService
                 "Connect your device",
                 "Plug the headset or phone into this computer with a USB cable that can transfer files, then wait a moment.",
                 "I connected it",
-                "Charge-only cables will not work. The cable that ships with Quest is often charge-only. Try another USB-C data cable and a USB port on the computer, not a hub.",
+                "Charge-only cables will not work. The cable that ships with Quest is often charge-only. Try another USB-C data cable and a USB port on the computer, not a hub. To use Wi-Fi, the device must be on the same network as this computer. Pairing codes are optional and go in the form below.",
                 "Waiting for a connected device."),
             WizardStep.DeviceDetected => new WizardCopy(
                 $"{model} detected",
@@ -69,7 +69,9 @@ public sealed class CopyDeckService : IContentService
                 $"Install mode: {manifest.InstallPolicy}"),
             WizardStep.Installing => new WizardCopy(
                 userPicked && (string.IsNullOrWhiteSpace(name) || name == "apps") ? "Installing" : $"Installing {name}",
-                "Keep the cable connected. Do not unplug the device.",
+                device?.IsWireless == true
+                    ? "Keep the device awake and on the same Wi-Fi as this computer."
+                    : "Keep the cable connected. Do not unplug the device.",
                 "Cancel",
                 "If this sits on one step for several minutes, wait until it finishes or fails. Cancel stops the current attempt.",
                 "Sending the selected APK files."),

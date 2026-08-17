@@ -1,46 +1,69 @@
 using Installer.Core.Abstractions;
 using Installer.Core.Models;
-using Installer.Core.Services.Recovery;
+using Installer.Core.Services.Adb;
+using Installer.Core.Services.Devices;
 
-namespace Installer.Core.Tests.Recovery;
+namespace Installer.Core.Tests.Devices;
 
-public sealed class RecoveryServiceTests
+public sealed class DeviceDetectionServiceTests
 {
-    private readonly RecoveryService _sut = new(new AutoFixExecutor(new NoopAdb(), new NoopInstall(), new RetryPolicyFactory(), new NoopLog()));
+    private readonly DeviceDetectionService _sut = new(
+        new NoopAdb(),
+        new AdbOutputParser(),
+        new DevicePropertyService(new NoopAdb()),
+        new DeviceClassificationService(),
+        new NoopLog());
 
-    [Theory]
-    [InlineData(InstallError.UnauthorizedDevice)]
-    [InlineData(InstallError.OfflineDevice)]
-    [InlineData(InstallError.NoDevicesFound)]
-    [InlineData(InstallError.VersionDowngrade)]
-    [InlineData(InstallError.PackageAlreadyExists)]
-    [InlineData(InstallError.SignatureMismatch)]
-    [InlineData(InstallError.InsufficientStorage)]
-    [InlineData(InstallError.DeveloperModeLikelyDisabled)]
-    [InlineData(InstallError.CableOrUsbModeIssue)]
-    [InlineData(InstallError.UnknownInstallFailure)]
-    [InlineData(InstallError.MissingPayload)]
-    [InlineData(InstallError.WirelessConnectFailed)]
-    public void Suggests_at_most_three_actions(InstallError error)
+    [Fact]
+    public void SelectPrimary_prefers_wifi_quest_when_usb_also_ready()
     {
-        var actions = _sut.Suggest(error, InstallManifest.Placeholder);
-        Assert.InRange(actions.Count, 1, 3);
-        Assert.Contains(actions, a => a.Kind == RecoveryActionKind.ExportDiagnostics || a.IsAutomatic || !string.IsNullOrWhiteSpace(a.Title));
+        var usb = Device("1WMHH000000001", DeviceKind.MetaQuest, DeviceConnectionState.ConnectedReady);
+        var wifi = Device("192.168.1.42:5555", DeviceKind.MetaQuest, DeviceConnectionState.ConnectedReady);
+
+        var selected = _sut.SelectPrimary([usb, wifi]);
+
+        Assert.NotNull(selected);
+        Assert.Equal(wifi.Serial, selected.Serial);
+        Assert.True(selected.IsWireless);
     }
 
     [Fact]
-    public void Downgrade_offers_automatic_replace()
+    public void Usb_serial_is_not_wireless()
     {
-        var actions = _sut.Suggest(InstallError.VersionDowngrade, InstallManifest.Placeholder);
-        Assert.Contains(actions, a => a.Kind == RecoveryActionKind.RetryWithDowngrade && a.IsAutomatic);
+        var device = Device("1WMHH000000001", DeviceKind.MetaQuest, DeviceConnectionState.ConnectedReady);
+        Assert.Equal(DeviceTransport.Usb, device.Transport);
+        Assert.False(device.IsWireless);
     }
+
+    [Theory]
+    [InlineData("192.168.1.42:5555", true)]
+    [InlineData("10.0.0.8", true)]
+    [InlineData("1WMHH000000001", false)]
+    [InlineData("emulator-5554", false)]
+    public void Parses_wireless_endpoints(string value, bool expected)
+    {
+        Assert.Equal(expected, WirelessEndpoint.TryParse(value, out _));
+        Assert.Equal(expected, WirelessEndpoint.IsWifiSerial(value));
+    }
+
+    private static DeviceInfo Device(string serial, DeviceKind kind, DeviceConnectionState state) =>
+        new(serial,
+            kind == DeviceKind.MetaQuest ? "Oculus" : "Google",
+            kind == DeviceKind.MetaQuest ? "Quest 3" : "Pixel 9",
+            "14",
+            kind,
+            state,
+            state == DeviceConnectionState.ConnectedReady,
+            kind == DeviceKind.MetaQuest,
+            new Dictionary<string, string>());
 
     private sealed class NoopAdb : IAdbClient
     {
         public Task StartServerAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
         public Task KillServerAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
         public Task RestartServerAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
-        public Task<IReadOnlyList<AdbDeviceRecord>> ListDevicesAsync(CancellationToken cancellationToken = default) => Task.FromResult<IReadOnlyList<AdbDeviceRecord>>([]);
+        public Task<IReadOnlyList<AdbDeviceRecord>> ListDevicesAsync(CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<AdbDeviceRecord>>([]);
         public Task<string> GetPropertyAsync(string serial, string key, CancellationToken cancellationToken = default) => Task.FromResult("");
         public Task<AdbProcessResult> InstallAsync(string serial, string apkPath, IReadOnlyList<string> flags, CancellationToken cancellationToken = default) =>
             Task.FromResult(new AdbProcessResult(0, "Success", "", TimeSpan.Zero, []));
@@ -58,13 +81,6 @@ public sealed class RecoveryServiceTests
             Task.FromResult(new AdbProcessResult(0, "", "", TimeSpan.Zero, []));
         public Task<string?> GetWifiAddressAsync(string serial, CancellationToken cancellationToken = default) =>
             Task.FromResult<string?>(null);
-    }
-
-    private sealed class NoopInstall : IInstallService
-    {
-        public InstallPlan CreatePlan(InstallRequest request) => new(request.Manifest.AppId, request.Manifest.ApkPath, [], false, true, false, request.Manifest.InstallPolicy);
-        public Task<InstallResult> InstallAsync(InstallRequest request, CancellationToken cancellationToken = default) =>
-            Task.FromResult(InstallResult.Succeeded("1", "Success", CreatePlan(request)));
     }
 
     private sealed class NoopLog : IAppLogger

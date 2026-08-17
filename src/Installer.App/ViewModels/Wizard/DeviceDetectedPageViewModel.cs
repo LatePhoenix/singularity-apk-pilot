@@ -12,6 +12,7 @@ public sealed partial class DeviceDetectedPageViewModel : WizardPageViewModel
     {
         DeviceSummary = state.Device is null
             ? ""
-            : $"{state.Device.DisplayName} · {state.Device.Kind}";
+            : $"{state.Device.DisplayName} · {state.Device.Kind}" +
+              (state.Device.IsWireless ? " · Wi-Fi" : "");
     }
 }

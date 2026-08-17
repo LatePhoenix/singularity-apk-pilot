@@ -36,4 +36,23 @@ public sealed class AdbCommandFactoryTests
         Assert.Equal(["-s", "S1", "uninstall", "com.app"], _factory.Uninstall("S1", "com.app").Arguments);
         Assert.Equal(["-s", "S1", "shell", "pm", "list", "packages", "com.app"], _factory.ListPackages("S1", "com.app").Arguments);
     }
+
+    [Fact]
+    public void TcpIp_targets_serial_and_port() =>
+        Assert.Equal(["-s", "S1", "tcpip", "5555"], _factory.TcpIp("S1", 5555).Arguments);
+
+    [Fact]
+    public void Connect_and_pair_use_endpoint()
+    {
+        Assert.Equal(["connect", "192.168.1.42:5555"], _factory.Connect("192.168.1.42:5555").Arguments);
+        Assert.Equal(["pair", "192.168.1.42:37123", "123456"], _factory.Pair("192.168.1.42:37123", "123456").Arguments);
+        Assert.Equal(["disconnect", "192.168.1.42:5555"], _factory.Disconnect("192.168.1.42:5555").Arguments);
+        Assert.Equal(["disconnect"], _factory.Disconnect().Arguments);
+    }
+
+    [Fact]
+    public void WifiAddresses_reads_global_ipv4() =>
+        Assert.Equal(
+            ["-s", "S1", "shell", "ip", "-o", "-4", "addr", "show", "scope", "global"],
+            _factory.WifiAddresses("S1").Arguments);
 }

@@ -18,7 +18,6 @@ Plug in the device, follow one highlighted action per screen, choose APK files, 
 
 - File manager, debloater, store replacement, or developer console.
 - Split APK / APKS (Phase 2).
-- Wireless ADB pairing (Phase 3).
 
 ## Primary flow
 
@@ -35,7 +34,8 @@ Sideloading requires developer mode and USB debugging approval. Current Meta set
 3. Use a USB-C **data** cable (the cable in the Quest box is not suitable).
 4. In-headset: Quick Control → Settings → Developer → MTP Notification on.
 5. Approve USB debugging and choose **Always allow from this computer**.
-6. Choose one or more APK files, install, then tell the tester the app may appear under Unknown Sources. Headset UI placement can change across Horizon OS updates.
+6. Optional: on Choose apps, tap **Use Wi-Fi**, then unplug. Later sessions can tap **Connect over Wi-Fi** or enter an address / pairing code on Connect device.
+7. Choose one or more APK files, install, then tell the tester the app may appear under Unknown Sources. Headset UI placement can change across Horizon OS updates.
 
 ## Phone flow
 
@@ -49,7 +49,7 @@ Sideloading requires developer mode and USB debugging approval. Current Meta set
 
 ### Detection
 
-`adb` is the source of truth. Poll `adb devices -l`, then `getprop` for manufacturer, model, and Android version. States: not connected, unauthorized, offline, connected-ready.
+`adb` is the source of truth. Poll `adb devices -l`, then `getprop` for manufacturer, model, and Android version. States: not connected, unauthorized, offline, connected-ready. USB is the default path. After the device is authorized, testers can switch to Wi-Fi (`tcpip` then connect to the device address). Later sessions can reconnect the last address, or enter an address and optional pairing code.
 
 ### Install
 
@@ -79,5 +79,6 @@ Product copies: [`legal/PrivacyPolicy.md`](legal/PrivacyPolicy.md), [`legal/Term
 ## Manual acceptance paths
 
 - Quest: unauthorized → authorized → install.
+- Quest: authorized USB → Use Wi-Fi → unplug → install.
 - Phone: unauthorized → authorized → install.
 - Installer package launches the app when the post-install checkbox is selected.

@@ -11,6 +11,11 @@ public sealed record DeviceInfo(
     bool IsQuest,
     IReadOnlyDictionary<string, string> Properties)
 {
+    public DeviceTransport Transport =>
+        WirelessEndpoint.IsWifiSerial(Serial) ? DeviceTransport.Wifi : DeviceTransport.Usb;
+
+    public bool IsWireless => Transport == DeviceTransport.Wifi;
+
     public static DeviceInfo None { get; } = new(
         Serial: "",
         Manufacturer: "",

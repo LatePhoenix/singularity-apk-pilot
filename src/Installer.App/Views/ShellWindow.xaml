@@ -17,6 +17,9 @@
         KeyboardNavigation.TabNavigation="Cycle"
         AutomationProperties.Name="APK Installer">
     <Window.Resources>
+        <DataTemplate DataType="{x:Type wizard:ConnectDevicePageViewModel}">
+            <pages:ConnectDevicePage/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type wizard:ReadyToInstallPageViewModel}">
             <pages:ReadyToInstallPage/>
         </DataTemplate>

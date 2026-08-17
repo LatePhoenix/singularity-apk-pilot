@@ -107,6 +107,19 @@ Serials are hashed. Do not ask testers to paste raw serial numbers in email.
 
 **Operator response:** Unplug everything except the target device and retry. Multi-device picker is not in v1.
 
+### Wi-Fi connection failed
+
+**Tester sees:** “Wi-Fi connection did not work,” or Connect over Wi-Fi does nothing.
+
+**Likely causes:** Device and PC are on different networks, headset rebooted (USB-first Wi-Fi is cleared until they plug in again), they entered the pairing port instead of the connect port, or the pairing code expired.
+
+**Operator response:**
+
+1. Same Wi-Fi as the PC. Guest networks and client isolation will fail.
+2. Plug in USB, approve debugging, then tap **Use Wi-Fi** on the choose-apps screen. That is the reliable Quest path.
+3. Pairing: the six-digit code and pairing port are only for first-time wireless debugging. After pairing, connect to the install address (usually port 5555), not the pairing port.
+4. After a headset reboot, USB-first switch is required again unless they re-pair.
+
 ### ADB server unhappy
 
 **Symptoms:** Empty device list despite a known-good cable, or stale unauthorized state.
