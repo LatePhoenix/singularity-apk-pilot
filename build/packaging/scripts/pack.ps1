@@ -9,7 +9,7 @@ param(
     [string]$RepoRoot,
     [ValidateSet("Debug", "Release")]
     [string]$Configuration = "Release",
-    [string]$Version = "0.2.0",
+    [string]$Version = "0.3.0",
     [switch]$SkipInstaller,
     [switch]$DryRun
 )
@@ -55,6 +55,20 @@ if (-not $DryRun) {
     }
 }
 
+$sign = Join-Path $PSScriptRoot "sign.ps1"
+function Invoke-Sign([string]$File) {
+    if (-not (Test-Path $File)) {
+        return
+    }
+    & $sign -Path $File -DryRun:$DryRun
+    if ($LASTEXITCODE -ne 0) {
+        throw "sign.ps1 failed for $File"
+    }
+}
+
+$publishedExe = Join-Path $publishDir "SingularityApkInstaller.exe"
+Invoke-Sign $publishedExe
+
 if ($SkipInstaller) {
     Write-Host "Published to $publishDir"
     return
@@ -86,7 +100,14 @@ if (-not $DryRun) {
     }
 
     Copy-Item $versionedPath (Join-Path $installerDir $stableName) -Force
+}
 
+$versionedPath = Join-Path $installerDir $versionedName
+$stablePath = Join-Path $installerDir $stableName
+Invoke-Sign $versionedPath
+Invoke-Sign $stablePath
+
+if (-not $DryRun -and (Test-Path $versionedPath) -and (Test-Path $stablePath)) {
     $sums = Join-Path $installerDir "SHA256SUMS-$Version.txt"
     $lines = foreach ($name in @($versionedName, $stableName)) {
         $hash = (Get-FileHash (Join-Path $installerDir $name) -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -94,7 +115,7 @@ if (-not $DryRun) {
     }
     Set-Content -Path $sums -Value $lines -Encoding utf8
     Write-Host "Installer: $versionedPath"
-    Write-Host "Stable:    $(Join-Path $installerDir $stableName)"
+    Write-Host "Stable:    $stablePath"
     Write-Host "Checksums: $sums"
 }
 

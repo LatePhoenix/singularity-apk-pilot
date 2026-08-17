@@ -45,6 +45,14 @@ public sealed class AdbCommandFactory
         return new AdbCommand(args, "Install app");
     }
 
+    public AdbCommand InstallMultiple(string serial, IReadOnlyList<string> apkPaths, IReadOnlyList<string> flags)
+    {
+        var args = new List<string> { "-s", serial, "install-multiple" };
+        args.AddRange(flags.Where(flag => !string.IsNullOrWhiteSpace(flag)));
+        args.AddRange(apkPaths.Where(path => !string.IsNullOrWhiteSpace(path)));
+        return new AdbCommand(args, "Install app files");
+    }
+
     public AdbCommand Uninstall(string serial, string packageId) =>
         new(["-s", serial, "uninstall", packageId], "Remove previous app");
 
@@ -70,4 +78,10 @@ public sealed class AdbCommandFactory
 
         return new AdbCommand(args, "Collect device log");
     }
+
+    public AdbCommand ResolveLauncher(string serial, string packageId) =>
+        new(["-s", serial, "shell", "cmd", "package", "resolve-activity", "--brief", packageId], "Find app to open");
+
+    public AdbCommand Launch(string serial, string component) =>
+        new(["-s", serial, "shell", "am", "start", "-n", component], "Open app");
 }

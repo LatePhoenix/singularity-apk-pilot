@@ -75,6 +75,13 @@ public sealed class FlowDecisionEngine
             return WizardStep.DeviceDetected;
         }
 
+        if (trigger == WizardTrigger.DeviceRefresh
+            && state.CurrentStep == WizardStep.DeviceDetected
+            && state.NeedsDevicePicker)
+        {
+            return WizardStep.DeviceDetected;
+        }
+
         if (state.CurrentStep == WizardStep.DeviceDetected ||
             state.CurrentStep == WizardStep.Authorization ||
             state.CurrentStep == WizardStep.DeveloperMode ||

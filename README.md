@@ -16,9 +16,9 @@ Windows guided installer for non-technical testers. Plug in a Meta Quest 2/3 or 
 2. Run the setup wizard. No separate .NET install is required (self-contained win-x64).
 3. Launch **Singularity APK Installer** from the Start menu, plug in the device, then choose the APK files to install.
 
-The installer is not code-signed yet, so Windows SmartScreen may warn on first run. Choose **More info** → **Run anyway**.
+The installer is unsigned unless `pack.ps1` is run with a code-signing certificate configured. Windows SmartScreen may warn on first run of an unsigned build. Choose **More info** → **Run anyway**.
 
-**v0.2.0** connects a device first, then asks you to choose one or more APK files. It ships portable `adb` only — no bundled test app. See [`docs/SUPPORT_RUNBOOK.md`](docs/SUPPORT_RUNBOOK.md).
+**v0.3.0** connects a device first, then asks you to choose APK, APKS, or XAPK files. It ships portable `adb` only — no bundled test app. See [`docs/SUPPORT_RUNBOOK.md`](docs/SUPPORT_RUNBOOK.md).
 
 ## Legal
 
@@ -42,7 +42,7 @@ dotnet test SingularityTesterInstaller.sln
 powershell -ExecutionPolicy Bypass -File build\packaging\scripts\pack.ps1
 ```
 
-Requires .NET SDK 8.0.424 (`global.json`) and [Inno Setup 7](https://jrsoftware.org/isinfo.php). Output: `artifacts\installer\SingularityApkInstaller-0.2.0-win-x64-setup.exe`. Details: [`docs/PACKAGING.md`](docs/PACKAGING.md).
+Requires .NET SDK 8.0.424 (`global.json`) and [Inno Setup 7](https://jrsoftware.org/isinfo.php). Output: `artifacts\installer\SingularityApkInstaller-0.3.0-win-x64-setup.exe`. Details: [`docs/PACKAGING.md`](docs/PACKAGING.md).
 
 ## Docs
 

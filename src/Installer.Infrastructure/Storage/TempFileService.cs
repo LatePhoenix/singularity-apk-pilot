@@ -1,6 +1,8 @@
+using Installer.Core.Abstractions;
+
 namespace Installer.Infrastructure.Storage;
 
-public sealed class TempFileService
+public sealed class TempFileService : ITempFileService
 {
     public string CreateTempDirectory(string prefix = "sai-")
     {

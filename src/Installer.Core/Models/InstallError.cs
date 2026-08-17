@@ -13,6 +13,7 @@ public enum InstallError
     DeveloperModeLikelyDisabled = 8,
     CableOrUsbModeIssue = 9,
     UnknownInstallFailure = 10,
-        MissingPayload = 11,
-        WirelessConnectFailed = 12
+    MissingPayload = 11,
+    WirelessConnectFailed = 12,
+    MissingSplit = 13
 }

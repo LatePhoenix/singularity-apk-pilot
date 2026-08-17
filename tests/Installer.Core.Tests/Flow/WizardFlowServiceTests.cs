@@ -106,6 +106,31 @@ public sealed class WizardFlowServiceTests
         Assert.DoesNotContain("cable", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    public void Two_ready_devices_need_picker_and_refresh_stays()
+    {
+        var quest = Quest(DeviceConnectionState.ConnectedReady);
+        var phone = Phone(DeviceConnectionState.ConnectedReady);
+        var state = _flow.CreateInitialState(InstallManifest.Placeholder);
+        state = _flow.Advance(state, WizardTrigger.Start);
+        state = _flow.Advance(state, WizardTrigger.DeviceRefresh, quest, readyDevices: [quest, phone]);
+        Assert.Equal(WizardStep.DeviceDetected, state.CurrentStep);
+        Assert.True(state.NeedsDevicePicker);
+        state = _flow.Advance(state, WizardTrigger.DeviceRefresh, phone, readyDevices: [quest, phone]);
+        Assert.Equal(WizardStep.DeviceDetected, state.CurrentStep);
+        Assert.Equal(phone.Serial, state.Device?.Serial);
+    }
+
+    [Fact]
+    public void One_ready_device_skips_picker()
+    {
+        var quest = Quest(DeviceConnectionState.ConnectedReady);
+        var state = Detected(quest);
+        Assert.False(state.NeedsDevicePicker);
+        state = _flow.Advance(state, WizardTrigger.Continue, quest, readyDevices: [quest]);
+        Assert.Equal(WizardStep.ReadyToInstall, state.CurrentStep);
+    }
+
     private WizardState Detected(DeviceInfo device)
     {
         var state = _flow.CreateInitialState(InstallManifest.Placeholder);
@@ -149,6 +174,12 @@ public sealed class WizardFlowServiceTests
             Task.FromResult(new AdbProcessResult(0, "", "", TimeSpan.Zero, []));
         public Task<string?> GetWifiAddressAsync(string serial, CancellationToken cancellationToken = default) =>
             Task.FromResult<string?>(null);
+        public Task<AdbProcessResult> InstallMultipleAsync(string serial, IReadOnlyList<string> apkPaths, IReadOnlyList<string> flags, CancellationToken cancellationToken = default) =>
+            Task.FromResult(new AdbProcessResult(0, "Success", "", TimeSpan.Zero, []));
+        public Task<string?> ResolveLauncherAsync(string serial, string packageId, CancellationToken cancellationToken = default) =>
+            Task.FromResult<string?>(null);
+        public Task<AdbProcessResult> LaunchAsync(string serial, string packageId, string? activity, CancellationToken cancellationToken = default) =>
+            Task.FromResult(new AdbProcessResult(0, "Starting", "", TimeSpan.Zero, []));
     }
 
     private sealed class NoopInstall : IInstallService

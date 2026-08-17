@@ -39,13 +39,21 @@ public sealed class InstallPlanner
             flags.Add("-g");
         }
 
+        var set = request.Set;
+        var packageId = set?.CanVerify == true ? set.PackageId : manifest.AppId;
+        var apkPath = set?.PrimaryPath is { Length: > 0 } primary ? primary : manifest.ApkPath;
+        var files = set?.ApkPaths is { Count: > 0 } paths ? paths : string.IsNullOrWhiteSpace(apkPath) ? [] : [apkPath];
+        var verify = set?.CanVerify == true || manifest.CanVerifyPackage;
+
         return new InstallPlan(
-            manifest.AppId,
-            manifest.ApkPath,
+            packageId,
+            apkPath,
             flags,
             uninstallFirst,
-            VerifyAfterInstall: manifest.CanVerifyPackage,
-            manifest.LaunchAfterInstall,
-            policy);
+            verify,
+            set?.CanVerify == true || manifest.LaunchAfterInstall,
+            policy,
+            files,
+            set?.LauncherActivity);
     }
 }

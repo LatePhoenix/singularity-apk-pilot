@@ -1,12 +1,12 @@
 ; Singularity APK Installer — Inno Setup 7 script
-; TODO(signing): add SignTool once a code-signing certificate is available.
+; Signing is handled by pack.ps1 → sign.ps1 when SIGNING_PFX or Azure Trusted Signing env is set.
 
 #define MyAppName "Singularity APK Installer"
 #define MyAppPublisher "Singularity Solutions and Services"
 #define MyAppExeName "SingularityApkInstaller.exe"
 
 #ifndef MyAppVersion
-  #define MyAppVersion "0.2.0"
+  #define MyAppVersion "0.3.0"
 #endif
 
 #ifndef PublishDir

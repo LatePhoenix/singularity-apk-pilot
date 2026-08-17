@@ -17,6 +17,7 @@ public sealed class FriendlyMessageService
         InstallError.CableOrUsbModeIssue => "The cable or USB mode looks wrong",
         InstallError.MissingPayload => "The APK file could not be found",
         InstallError.WirelessConnectFailed => "Wi-Fi connection did not work",
+        InstallError.MissingSplit => "This looks like only part of the app",
         _ => "The install did not complete"
     };
 
@@ -33,6 +34,7 @@ public sealed class FriendlyMessageService
         InstallError.CableOrUsbModeIssue => "A charge-only cable or the wrong USB mode is likely.",
         InstallError.MissingPayload => "The selected APK is missing or was moved. Add the file again and retry.",
         InstallError.WirelessConnectFailed => "The headset or phone is not reachable over Wi-Fi. Use a USB cable, or confirm it is on the same network.",
+        InstallError.MissingSplit => "Add the other app files or an .apks / .xapk package, then install again.",
         _ => "See advanced details or export diagnostics."
     };
 }

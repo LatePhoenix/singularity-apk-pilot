@@ -99,4 +99,14 @@ public sealed class AdbOutputParserTests
         Assert.True(_parser.IsPackageListed("package:com.singularity.exampleapp\n", "com.singularity.exampleapp"));
         Assert.False(_parser.IsPackageListed("package:com.other\n", "com.singularity.exampleapp"));
     }
+
+    [Fact]
+    public void Parses_launcher_component()
+    {
+        Assert.Equal("com.demo/.MainActivity", _parser.ParseLauncher("com.demo/.MainActivity\n", "com.demo"));
+        Assert.Equal("com.demo/com.demo.MainActivity", _parser.ParseLauncher("priority=0\ncom.demo/com.demo.MainActivity", "com.demo"));
+        Assert.Null(_parser.ParseLauncher("No activity found\n", "com.demo"));
+        Assert.Equal("com.demo/.MainActivity", AdbOutputParser.ToComponent("com.demo", ".MainActivity"));
+        Assert.Equal("com.demo/com.demo.Ui", AdbOutputParser.ToComponent("com.demo", "com.demo/com.demo.Ui"));
+    }
 }

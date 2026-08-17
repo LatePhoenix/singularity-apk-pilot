@@ -40,6 +40,27 @@ public sealed class InstallPlannerTests
         Assert.Equal(["-r", "-d"], plan.AdbFlags);
     }
 
+    [Fact]
+    public void Install_set_enables_verify_and_multiple_files()
+    {
+        var set = new InstallSet(
+            "com.singularity.demo",
+            "Demo",
+            "1.2.3",
+            ["base.apk", "config.apk"],
+            true,
+            false,
+            ".MainActivity",
+            null);
+        var manifest = InstallManifest.ForInstallSet(set, InstallManifest.Session);
+        var plan = _planner.Create(new InstallRequest(manifest, Device("Quest 3", DeviceKind.MetaQuest, DeviceConnectionState.ConnectedReady), Set: set));
+        Assert.True(plan.VerifyAfterInstall);
+        Assert.True(plan.UsesMultiple);
+        Assert.Equal("com.singularity.demo", plan.PackageId);
+        Assert.Equal(".MainActivity", plan.LauncherActivity);
+        Assert.True(plan.OfferLaunchAfterInstall);
+    }
+
     private static DeviceInfo Device(string model, DeviceKind kind, DeviceConnectionState state) =>
         new("serial", kind == DeviceKind.MetaQuest ? "Meta" : "Google", model, "14", kind, state, state == DeviceConnectionState.ConnectedReady, kind == DeviceKind.MetaQuest, new Dictionary<string, string>());
 }

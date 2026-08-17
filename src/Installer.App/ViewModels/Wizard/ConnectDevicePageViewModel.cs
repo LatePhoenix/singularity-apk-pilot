@@ -33,6 +33,9 @@ public sealed partial class ConnectDevicePageViewModel : WizardPageViewModel
     [ObservableProperty]
     private string wifiStatus = "";
 
+    [ObservableProperty]
+    private string healthHint = "";
+
     public bool CanConnectRemembered => HasRememberedEndpoint && !IsWifiBusy;
 
     public bool CanConnectAdvanced => !IsWifiBusy && !string.IsNullOrWhiteSpace(Address);
@@ -84,5 +87,10 @@ public sealed partial class ConnectDevicePageViewModel : WizardPageViewModel
 
         WifiStatus = "";
         ConnectAdvancedRequested?.Invoke(new WirelessFormRequest(connect, pairing, code));
+    }
+
+    protected override void OnApplied(WizardState state)
+    {
+        HealthHint = state.Health?.Hint ?? "";
     }
 }

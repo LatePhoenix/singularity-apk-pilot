@@ -36,21 +36,23 @@ public sealed class InstallService : IInstallService
 
         try
         {
-            if (!File.Exists(plan.ApkPath))
+            if (plan.Files.Count == 0 || plan.Files.Any(file => !File.Exists(file)))
             {
                 var missing = $"The app file is missing: {plan.ApkPath}";
                 _logger.Warn(missing);
                 return InstallResult.Failed(InstallError.MissingPayload, missing, [], plan);
             }
 
-            if (plan.RequiresUninstallFirst)
+            if (plan.RequiresUninstallFirst && plan.VerifyAfterInstall)
             {
                 var uninstall = await _adb.UninstallAsync(serial, plan.PackageId, cancellationToken);
                 combined = uninstall.CombinedOutput;
                 _logger.Info($"Uninstall exit {uninstall.ExitCode}");
             }
 
-            var install = await _adb.InstallAsync(serial, plan.ApkPath, plan.AdbFlags, cancellationToken);
+            var install = plan.UsesMultiple
+                ? await _adb.InstallMultipleAsync(serial, plan.Files, plan.AdbFlags, cancellationToken)
+                : await _adb.InstallAsync(serial, plan.ApkPath, plan.AdbFlags, cancellationToken);
             combined = string.IsNullOrWhiteSpace(combined)
                 ? install.CombinedOutput
                 : combined + Environment.NewLine + install.CombinedOutput;

@@ -56,6 +56,11 @@ public sealed class ErrorClassifier
             return InstallError.DeveloperModeLikelyDisabled;
         }
 
+        if (ContainsAny(lower, "install_failed_missing_split", "missing split", "missing_split"))
+        {
+            return InstallError.MissingSplit;
+        }
+
         if (ContainsAny(lower, "failed to connect", "cannot connect to", "failed to pair", "wrong password", "connection refused"))
         {
             return InstallError.WirelessConnectFailed;

@@ -13,13 +13,14 @@ public sealed class CopyDeckService : IContentService
         _messages = messages;
     }
 
-    public WizardCopy GetCopy(WizardStep step, InstallManifest manifest, DeviceInfo? device, InstallError? error = null)
+    public WizardCopy GetCopy(WizardStep step, InstallManifest manifest, DeviceInfo? device, InstallError? error = null, DeviceHealth? health = null)
     {
         var name = manifest.DisplayName;
         var version = manifest.BuildVersion;
         var model = device?.DisplayName ?? "your device";
         var quest = device?.IsQuest == true || device?.Kind == DeviceKind.MetaQuest;
         var userPicked = string.Equals(manifest.AppId, InstallManifest.UserSelectedAppId, StringComparison.OrdinalIgnoreCase);
+        var healthHint = health?.Hint;
 
         return step switch
         {
@@ -33,7 +34,7 @@ public sealed class CopyDeckService : IContentService
                 "Connect your device",
                 "Plug the headset or phone into this computer with a USB cable that can transfer files, then wait a moment.",
                 "I connected it",
-                "Charge-only cables will not work. The cable that ships with Quest is often charge-only. Try another USB-C data cable and a USB port on the computer, not a hub. To use Wi-Fi, the device must be on the same network as this computer. Pairing codes are optional and go in the form below.",
+                AppendHealth("Charge-only cables will not work. The cable that ships with Quest is often charge-only. Try another USB-C data cable and a USB port on the computer, not a hub. To use Wi-Fi, the device must be on the same network as this computer. Pairing codes are optional and go in the form below.", healthHint),
                 "Waiting for a connected device."),
             WizardStep.DeviceDetected => new WizardCopy(
                 $"{model} detected",
@@ -41,7 +42,7 @@ public sealed class CopyDeckService : IContentService
                     ? "Your headset is connected. Next we will check that it has approved this computer."
                     : "Your phone is connected. Next we will check that it has approved this computer.",
                 "Continue",
-                "If this is the wrong device, unplug extras so only one device is connected.",
+                "If this is the wrong device, pick it in the list or unplug extras.",
                 $"Manufacturer: {device?.Manufacturer}; Android: {device?.AndroidVersion}"),
             WizardStep.Authorization when quest => new WizardCopy(
                 "Put on your headset now",
@@ -59,13 +60,13 @@ public sealed class CopyDeckService : IContentService
                 "Turn on developer mode",
                 "On your phone, open the Meta Horizon app. Tap the headset icon, then your headset, then Headset Settings, then Developer Mode, and turn it on.",
                 "I turned it on",
-                "You need a Meta developer account on a developer team. After turning it on, connect a USB-C data cable, put the headset on, open Quick Control → Settings → Developer, and turn on MTP Notification. When asked, choose Always allow from this computer.",
+                AppendHealth("You need a Meta developer account on a developer team. After turning it on, connect a USB-C data cable, put the headset on, open Quick Control → Settings → Developer, and turn on MTP Notification. When asked, choose Always allow from this computer.", healthHint),
                 "Meta Horizon app path: Headset Settings → Developer Mode"),
             WizardStep.ReadyToInstall => new WizardCopy(
                 "Choose apps to install",
                 $"{model} is ready. Add one or more APK files, then install.",
                 "Install now",
-                "Existing copies of the same app may be replaced. Your photos and other apps are not touched.",
+                "Existing copies of the same app may be replaced. Your photos and other apps are not touched. If a file looks like only part of an app, add the other files or an .apks package.",
                 $"Install mode: {manifest.InstallPolicy}"),
             WizardStep.Installing => new WizardCopy(
                 userPicked && (string.IsNullOrWhiteSpace(name) || name == "apps") ? "Installing" : $"Installing {name}",
@@ -84,14 +85,17 @@ public sealed class CopyDeckService : IContentService
                 "Most failures are a missing permission, a full device, or an older build that cannot be replaced until it is removed.",
                 error?.ToString() ?? "UnknownInstallFailure"),
             WizardStep.Complete => new WizardCopy(
-                userPicked ? "Install complete" : $"{name} is installed",
+                manifest.CanVerifyPackage ? $"{name} is installed" : "Install complete",
                 quest
                     ? "Put on the headset and look under Unknown Sources in Library. Headset menus move between software updates, so check the Library filter if you do not see the app."
                     : "Find the app in your app drawer and open it.",
                 "Done",
-                "If the app does not appear, unplug, put the headset on, and search Library again. Then export diagnostics.",
-                userPicked ? "Package id is unknown for user-selected APK files." : $"Package: {manifest.AppId} {version}"),
+                "If the app does not appear, put the headset on and search Library again. Then export diagnostics.",
+                manifest.CanVerifyPackage ? $"Package: {manifest.AppId} {version}" : "Package id is unknown for this file."),
             _ => new WizardCopy(name, "", "Continue", "", "")
         };
     }
+
+    private static string AppendHealth(string help, string? healthHint) =>
+        string.IsNullOrWhiteSpace(healthHint) ? help : help + " " + healthHint;
 }

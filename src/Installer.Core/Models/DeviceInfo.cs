@@ -16,6 +16,10 @@ public sealed record DeviceInfo(
 
     public bool IsWireless => Transport == DeviceTransport.Wifi;
 
+    public string ConnectionLabel => IsWireless ? "Wi-Fi" : "USB";
+
+    public string PickerLabel => $"{DisplayName} · {ConnectionLabel}";
+
     public static DeviceInfo None { get; } = new(
         Serial: "",
         Manufacturer: "",
