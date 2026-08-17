@@ -21,6 +21,7 @@ public sealed class RecoveryServiceTests
     [InlineData(InstallError.UnknownInstallFailure)]
     [InlineData(InstallError.MissingPayload)]
     [InlineData(InstallError.WirelessConnectFailed)]
+    [InlineData(InstallError.MissingSplit)]
     public void Suggests_at_most_three_actions(InstallError error)
     {
         var actions = _sut.Suggest(error, InstallManifest.Placeholder);
@@ -33,6 +34,13 @@ public sealed class RecoveryServiceTests
     {
         var actions = _sut.Suggest(InstallError.VersionDowngrade, InstallManifest.Placeholder);
         Assert.Contains(actions, a => a.Kind == RecoveryActionKind.RetryWithDowngrade && a.IsAutomatic);
+    }
+
+    [Fact]
+    public void Already_exists_offers_replace_this_app()
+    {
+        var actions = _sut.Suggest(InstallError.PackageAlreadyExists, InstallManifest.Placeholder);
+        Assert.Contains(actions, a => a.Kind == RecoveryActionKind.ReplaceExistingApp && a.Title.Contains("Replace", StringComparison.OrdinalIgnoreCase));
     }
 
     private sealed class NoopAdb : IAdbClient
@@ -58,6 +66,12 @@ public sealed class RecoveryServiceTests
             Task.FromResult(new AdbProcessResult(0, "", "", TimeSpan.Zero, []));
         public Task<string?> GetWifiAddressAsync(string serial, CancellationToken cancellationToken = default) =>
             Task.FromResult<string?>(null);
+        public Task<AdbProcessResult> InstallMultipleAsync(string serial, IReadOnlyList<string> apkPaths, IReadOnlyList<string> flags, CancellationToken cancellationToken = default) =>
+            Task.FromResult(new AdbProcessResult(0, "Success", "", TimeSpan.Zero, []));
+        public Task<string?> ResolveLauncherAsync(string serial, string packageId, CancellationToken cancellationToken = default) =>
+            Task.FromResult<string?>(null);
+        public Task<AdbProcessResult> LaunchAsync(string serial, string packageId, string? activity, CancellationToken cancellationToken = default) =>
+            Task.FromResult(new AdbProcessResult(0, "Starting", "", TimeSpan.Zero, []));
     }
 
     private sealed class NoopInstall : IInstallService

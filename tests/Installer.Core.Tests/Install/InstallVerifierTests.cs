@@ -46,5 +46,11 @@ public sealed class InstallVerifierTests
             Task.FromResult(new AdbProcessResult(0, "", "", TimeSpan.Zero, []));
         public Task<string?> GetWifiAddressAsync(string serial, CancellationToken cancellationToken = default) =>
             Task.FromResult<string?>(null);
+        public Task<AdbProcessResult> InstallMultipleAsync(string serial, IReadOnlyList<string> apkPaths, IReadOnlyList<string> flags, CancellationToken cancellationToken = default) =>
+            Task.FromResult(new AdbProcessResult(0, "Success", "", TimeSpan.Zero, []));
+        public Task<string?> ResolveLauncherAsync(string serial, string packageId, CancellationToken cancellationToken = default) =>
+            Task.FromResult<string?>(null);
+        public Task<AdbProcessResult> LaunchAsync(string serial, string packageId, string? activity, CancellationToken cancellationToken = default) =>
+            Task.FromResult(new AdbProcessResult(0, "Starting", "", TimeSpan.Zero, []));
     }
 }

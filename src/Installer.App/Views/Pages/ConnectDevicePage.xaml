@@ -2,6 +2,11 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <StackPanel Margin="0,8,0,0">
+        <TextBlock Text="{Binding HealthHint}"
+                   Foreground="{DynamicResource WarningTextBrush}"
+                   TextWrapping="Wrap"
+                   Margin="0,0,0,12"
+                   Visibility="{Binding HealthHint, Converter={StaticResource StringNotEmptyToVisibility}}"/>
         <TextBlock Text="{Binding WifiStatus}"
                    Foreground="{DynamicResource WarningTextBrush}"
                    TextWrapping="Wrap"

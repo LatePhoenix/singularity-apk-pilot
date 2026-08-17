@@ -24,21 +24,22 @@ ViewModels call service interfaces only. `App/Bootstrap` is the only place that 
 
 ## Core modules
 
-- **Adb:** `IAdbClient`, `AdbCommandFactory`, output parsers. Command strings are built here; process launch is not. Wireless commands: `tcpip`, `connect`, `disconnect`, `pair`, and Wi-Fi address via `ip`.
+- **Adb:** `IAdbClient`, `AdbCommandFactory`, output parsers. Command strings are built here; process launch is not. Wireless commands: `tcpip`, `connect`, `disconnect`, `pair`, and Wi-Fi address via `ip`. Install commands include `install-multiple`, `cmd package resolve-activity`, and `am start`.
+- **Packages:** `IApkInspector` reads package id / version / split name from APK zip manifests (binary AXML or XML). `.apks` / `.xapk` are zip-of-apks. `IInstallSetFactory` groups files into install sets.
 - **Wireless:** `IWirelessAdbService` enables USB-first Wi-Fi, reconnects a saved endpoint, and pairs then connects. Last address is stored in AppData, never pairing codes.
-- **Devices:** parse `adb devices -l`, classify Quest vs phone, prefer a Wi-Fi record when USB and Wi-Fi both appear, poll for WPF binding.
-- **Install:** plan flags from `InstallPolicy` + manifest, execute, verify package.
-- **Flow:** deterministic wizard state machine with Quest and Android strategies.
-- **Recovery:** classify stderr into `InstallError`, return ≤3 actions, optional auto-fix.
-- **Diagnostics:** assemble a sanitized ZIP from snapshots already in memory plus filtered logcat.
-- **Content:** load `app-manifest.json`, resolve copy for the current step/device.
+- **Devices:** parse `adb devices -l`, classify Quest vs phone, prefer a Wi-Fi record when USB and Wi-Fi both appear, poll for WPF binding. `IDeviceHealthService` plus an Infrastructure USB registry probe distinguish empty `adb` from Windows seeing a headset.
+- **Install:** plan flags from `InstallPolicy` + manifest + `InstallSet`, execute `install` or `install-multiple`, verify package, optional launch.
+- **Flow:** deterministic wizard state machine with Quest and Android strategies. Device refresh does not leave Device detected while two or more ready devices are unresolved.
+- **Recovery:** classify stderr into `InstallError`, return ≤3 actions, optional auto-fix, explicit replace/remove using the known package id.
+- **Diagnostics:** assemble a sanitized ZIP from snapshots already in memory plus filtered logcat. Export is available on Connect, Authorization, Developer mode, Problem, and Complete.
+- **Content:** load `app-manifest.json`, resolve copy for the current step/device. Recents store last files/folder next to the Wi-Fi endpoint.
 
 ## Infrastructure modules
 
 - Process execution (`ProcessService`, `AdbProcessRunner`).
 - Portable ADB and payload path resolution.
 - File logger / session log.
-- ZIP writer and temp files.
+- ZIP writer, temp files, recents JSON, GitHub latest-release check, USB presence probe.
 
 ## Wizard state machine
 

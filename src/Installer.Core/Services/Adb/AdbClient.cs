@@ -52,6 +52,12 @@ public sealed class AdbClient : IAdbClient
         return RunAsync(_commands.Install(serial, apkPath, flags), cancellationToken);
     }
 
+    public Task<AdbProcessResult> InstallMultipleAsync(string serial, IReadOnlyList<string> apkPaths, IReadOnlyList<string> flags, CancellationToken cancellationToken = default)
+    {
+        Guard.NotBlank(serial, nameof(serial));
+        return RunAsync(_commands.InstallMultiple(serial, apkPaths, flags), cancellationToken);
+    }
+
     public Task<AdbProcessResult> UninstallAsync(string serial, string packageId, CancellationToken cancellationToken = default)
     {
         Guard.NotBlank(serial, nameof(serial));
@@ -105,6 +111,27 @@ public sealed class AdbClient : IAdbClient
         Guard.NotBlank(serial, nameof(serial));
         var result = await RunAsync(_commands.WifiAddresses(serial), cancellationToken);
         return _parser.ParseWifiAddress(result.CombinedOutput);
+    }
+
+    public async Task<string?> ResolveLauncherAsync(string serial, string packageId, CancellationToken cancellationToken = default)
+    {
+        Guard.NotBlank(serial, nameof(serial));
+        Guard.NotBlank(packageId, nameof(packageId));
+        var result = await RunAsync(_commands.ResolveLauncher(serial, packageId), cancellationToken);
+        return _parser.ParseLauncher(result.CombinedOutput, packageId);
+    }
+
+    public Task<AdbProcessResult> LaunchAsync(string serial, string packageId, string? activity, CancellationToken cancellationToken = default)
+    {
+        Guard.NotBlank(serial, nameof(serial));
+        Guard.NotBlank(packageId, nameof(packageId));
+        var component = AdbOutputParser.ToComponent(packageId, activity);
+        if (string.IsNullOrWhiteSpace(component))
+        {
+            return Task.FromResult(new AdbProcessResult(1, "", "No app screen to open.", TimeSpan.Zero, []));
+        }
+
+        return RunAsync(_commands.Launch(serial, component), cancellationToken);
     }
 
     private async Task<AdbProcessResult> RunAsync(AdbCommand command, CancellationToken cancellationToken)

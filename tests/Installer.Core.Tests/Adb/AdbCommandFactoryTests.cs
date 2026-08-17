@@ -55,4 +55,21 @@ public sealed class AdbCommandFactoryTests
         Assert.Equal(
             ["-s", "S1", "shell", "ip", "-o", "-4", "addr", "show", "scope", "global"],
             _factory.WifiAddresses("S1").Arguments);
+
+    [Fact]
+    public void InstallMultiple_places_flags_before_paths() =>
+        Assert.Equal(
+            ["-s", "S1", "install-multiple", "-r", "-d", "base.apk", "config.apk"],
+            _factory.InstallMultiple("S1", ["base.apk", "config.apk"], ["-r", "-d"]).Arguments);
+
+    [Fact]
+    public void Resolve_and_launch_use_package_component()
+    {
+        Assert.Equal(
+            ["-s", "S1", "shell", "cmd", "package", "resolve-activity", "--brief", "com.demo"],
+            _factory.ResolveLauncher("S1", "com.demo").Arguments);
+        Assert.Equal(
+            ["-s", "S1", "shell", "am", "start", "-n", "com.demo/.MainActivity"],
+            _factory.Launch("S1", "com.demo/.MainActivity").Arguments);
+    }
 }

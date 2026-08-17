@@ -17,6 +17,9 @@
         KeyboardNavigation.TabNavigation="Cycle"
         AutomationProperties.Name="APK Installer">
     <Window.Resources>
+        <DataTemplate DataType="{x:Type wizard:WelcomePageViewModel}">
+            <pages:WelcomePage/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type wizard:ConnectDevicePageViewModel}">
             <pages:ConnectDevicePage/>
         </DataTemplate>
@@ -24,37 +27,19 @@
             <pages:ReadyToInstallPage/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type wizard:DeviceDetectedPageViewModel}">
-            <Border Style="{StaticResource Card}" Margin="0,0,0,16" Background="{DynamicResource SurfaceRaisedBrush}" Padding="16">
-                <TextBlock Text="{Binding DeviceSummary}" FontSize="15" FontWeight="SemiBold"/>
-            </Border>
+            <pages:DeviceDetectedPage/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type wizard:DeveloperModePageViewModel}">
+            <pages:DeveloperModePage/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type wizard:InstallingPageViewModel}">
             <TextBlock Style="{StaticResource Label}" Text="{Binding StatusLabel}"                        Margin="0,0,0,8"/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type wizard:InstallProblemPageViewModel}">
-            <ItemsControl ItemsSource="{Binding Actions}" Margin="0,0,0,8"
-                          AutomationProperties.Name="Suggested next steps">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border Style="{StaticResource Card}" Margin="0,0,0,8" Padding="16">
-                            <StackPanel>
-                                <TextBlock Text="{Binding Title}" FontWeight="SemiBold"/>
-                                <TextBlock Text="{Binding Description}" Style="{StaticResource Body}" Margin="0,4,0,0"/>
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <pages:InstallProblemPage/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type wizard:CompletePageViewModel}">
-            <ItemsControl ItemsSource="{Binding Notes}" Margin="0,0,0,8"
-                          AutomationProperties.Name="How to open the app">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding}" Style="{StaticResource Body}" Margin="0,0,0,6"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <pages:CompletePage/>
         </DataTemplate>
     </Window.Resources>
     <Grid>

@@ -10,8 +10,14 @@ public sealed record WizardState(
     bool IsBusy = false,
     string? StatusMessage = null,
     int ConnectAttempts = 0,
-    bool DeveloperModeLikelyRequired = false)
+    bool DeveloperModeLikelyRequired = false,
+    IReadOnlyList<DeviceInfo>? ReadyDevices = null,
+    DeviceHealth? Health = null)
 {
+    public IReadOnlyList<DeviceInfo> Ready => ReadyDevices ?? [];
+
+    public bool NeedsDevicePicker => Ready.Count(d => d.State == DeviceConnectionState.ConnectedReady) >= 2;
+
     public WizardState WithStep(WizardStep step, WizardCopy copy) =>
         this with { CurrentStep = step, Copy = copy, IsBusy = false };
 }

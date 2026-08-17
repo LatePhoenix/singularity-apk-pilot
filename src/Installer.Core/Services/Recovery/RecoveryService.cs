@@ -40,10 +40,10 @@ public sealed class RecoveryService : IRecoveryService
                 actions.Add(Action("uninstall", "Remove the old app first", "Uninstall the existing app, then install this build.", RecoveryActionKind.UninstallThenInstall, true));
                 break;
             case InstallError.PackageAlreadyExists:
-                actions.Add(Action("reinstall", "Replace the installed app", "Keep app data when possible and install again.", RecoveryActionKind.RetryInstall, true));
+                actions.Add(Action("reinstall", "Replace this app", "Keep app data when possible and install again.", RecoveryActionKind.ReplaceExistingApp, true));
                 break;
             case InstallError.SignatureMismatch:
-                actions.Add(Action("uninstall", "Remove the old app first", "The copy already on the device cannot be updated in place.", RecoveryActionKind.UninstallThenInstall, true));
+                actions.Add(Action("uninstall", "Remove this app and install", "The copy already on the device cannot be updated in place.", RecoveryActionKind.UninstallThenInstall, true));
                 break;
             case InstallError.InsufficientStorage:
                 actions.Add(Action("retry", "Try again", "Free some space on the device, then retry.", RecoveryActionKind.RetryInstall, false));
@@ -54,6 +54,9 @@ public sealed class RecoveryService : IRecoveryService
             case InstallError.WirelessConnectFailed:
                 actions.Add(Action("retrywifi", "Try Wi-Fi again", "Keep the device awake on the same network and retry.", RecoveryActionKind.RetryDetection, true));
                 actions.Add(Action("cable", "Use a USB cable", "Plug in a USB cable that can transfer files, then continue.", RecoveryActionKind.ShowCableHelp, false));
+                break;
+            case InstallError.MissingSplit:
+                actions.Add(Action("splits", "Add the rest of the app", "This file is only part of the app. Add the other files or an .apks package.", RecoveryActionKind.RetryInstall, false));
                 break;
             default:
                 actions.Add(Action("restart", "Restart connection helper", "Restart the helper and try the install again.", RecoveryActionKind.RestartAdbServer, true));

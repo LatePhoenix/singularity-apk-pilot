@@ -22,9 +22,10 @@ public sealed class WizardFlowService : IWizardFlowService
         return new WizardState(WizardStep.Welcome, manifest, null, null, [], copy);
     }
 
-    public WizardState Advance(WizardState state, WizardTrigger trigger, DeviceInfo? device = null, InstallResult? installResult = null)
+    public WizardState Advance(WizardState state, WizardTrigger trigger, DeviceInfo? device = null, InstallResult? installResult = null, IReadOnlyList<DeviceInfo>? readyDevices = null, DeviceHealth? health = null)
     {
         var activeDevice = device ?? state.Device;
+        var ready = readyDevices ?? state.ReadyDevices;
         var connectAttempts = state.ConnectAttempts;
         if (trigger is WizardTrigger.Continue or WizardTrigger.ConfirmAuthorization or WizardTrigger.ConfirmDeveloperMode or WizardTrigger.DeviceRefresh
             && state.CurrentStep == WizardStep.ConnectDevice
@@ -38,7 +39,7 @@ public sealed class WizardFlowService : IWizardFlowService
                               || (activeDevice?.Kind == DeviceKind.MetaQuest && activeDevice.State == DeviceConnectionState.Offline);
 
         var nextStep = _engine.Decide(
-            state with { ConnectAttempts = connectAttempts, DeveloperModeLikelyRequired = developerLikely, Device = activeDevice },
+            state with { ConnectAttempts = connectAttempts, DeveloperModeLikelyRequired = developerLikely, Device = activeDevice, ReadyDevices = ready },
             trigger,
             activeDevice,
             installResult);
@@ -57,7 +58,7 @@ public sealed class WizardFlowService : IWizardFlowService
             }
         }
 
-        var copy = _copy.GetCopy(nextStep, state.Manifest, activeDevice, result?.Error);
+        var copy = _copy.GetCopy(nextStep, state.Manifest, activeDevice, result?.Error, health ?? state.Health);
         var busy = nextStep == WizardStep.Installing;
         var status = nextStep switch
         {
@@ -76,6 +77,8 @@ public sealed class WizardFlowService : IWizardFlowService
             busy,
             status,
             connectAttempts,
-            developerLikely);
+            developerLikely,
+            ready,
+            health ?? state.Health);
     }
 }

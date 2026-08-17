@@ -88,6 +88,46 @@ public sealed class AdbOutputParser
     public bool IsPairSuccess(string output) =>
         (output ?? "").Contains("successfully paired", StringComparison.OrdinalIgnoreCase);
 
+    public string? ParseLauncher(string output, string packageId)
+    {
+        if (string.IsNullOrWhiteSpace(output))
+        {
+            return null;
+        }
+
+        foreach (var raw in output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
+        {
+            var line = raw.Trim();
+            if (line.Contains("No activity", StringComparison.OrdinalIgnoreCase) || !line.Contains('/'))
+            {
+                continue;
+            }
+
+            var token = line.Split(' ', StringSplitOptions.RemoveEmptyEntries).Last();
+            if (token.Contains(packageId, StringComparison.OrdinalIgnoreCase) || token.StartsWith('.'))
+            {
+                return token;
+            }
+        }
+
+        return null;
+    }
+
+    public static string? ToComponent(string packageId, string? activity)
+    {
+        if (string.IsNullOrWhiteSpace(activity))
+        {
+            return null;
+        }
+
+        if (activity.Contains('/', StringComparison.Ordinal))
+        {
+            return activity;
+        }
+
+        return activity.StartsWith('.') ? packageId + "/" + activity : packageId + "/" + activity;
+    }
+
     public bool IsPackageListed(string output, string packageId)
     {
         if (string.IsNullOrWhiteSpace(output) || string.IsNullOrWhiteSpace(packageId))

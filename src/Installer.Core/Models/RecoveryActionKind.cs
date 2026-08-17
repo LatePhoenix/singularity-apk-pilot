@@ -10,5 +10,6 @@ public enum RecoveryActionKind
     ShowAuthorization = 5,
     ShowDeveloperMode = 6,
     ShowCableHelp = 7,
-    ExportDiagnostics = 8
+    ExportDiagnostics = 8,
+    ReplaceExistingApp = 9
 }

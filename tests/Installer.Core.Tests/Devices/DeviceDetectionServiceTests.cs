@@ -46,6 +46,25 @@ public sealed class DeviceDetectionServiceTests
         Assert.Equal(expected, WirelessEndpoint.IsWifiSerial(value));
     }
 
+    [Fact]
+    public void SelectPrimary_returns_null_when_empty() =>
+        Assert.Null(_sut.SelectPrimary([]));
+
+    [Fact]
+    public void SelectPrimary_returns_the_only_ready_device()
+    {
+        var quest = Device("1WMHH000000001", DeviceKind.MetaQuest, DeviceConnectionState.ConnectedReady);
+        Assert.Equal(quest.Serial, _sut.SelectPrimary([quest])!.Serial);
+    }
+
+    [Fact]
+    public void SelectPrimary_prefers_quest_when_two_ready()
+    {
+        var phone = Device("PIXEL9", DeviceKind.AndroidPhone, DeviceConnectionState.ConnectedReady);
+        var quest = Device("1WMHH000000001", DeviceKind.MetaQuest, DeviceConnectionState.ConnectedReady);
+        Assert.Equal(quest.Serial, _sut.SelectPrimary([phone, quest])!.Serial);
+    }
+
     private static DeviceInfo Device(string serial, DeviceKind kind, DeviceConnectionState state) =>
         new(serial,
             kind == DeviceKind.MetaQuest ? "Oculus" : "Google",
@@ -81,6 +100,12 @@ public sealed class DeviceDetectionServiceTests
             Task.FromResult(new AdbProcessResult(0, "", "", TimeSpan.Zero, []));
         public Task<string?> GetWifiAddressAsync(string serial, CancellationToken cancellationToken = default) =>
             Task.FromResult<string?>(null);
+        public Task<AdbProcessResult> InstallMultipleAsync(string serial, IReadOnlyList<string> apkPaths, IReadOnlyList<string> flags, CancellationToken cancellationToken = default) =>
+            Task.FromResult(new AdbProcessResult(0, "Success", "", TimeSpan.Zero, []));
+        public Task<string?> ResolveLauncherAsync(string serial, string packageId, CancellationToken cancellationToken = default) =>
+            Task.FromResult<string?>(null);
+        public Task<AdbProcessResult> LaunchAsync(string serial, string packageId, string? activity, CancellationToken cancellationToken = default) =>
+            Task.FromResult(new AdbProcessResult(0, "Starting", "", TimeSpan.Zero, []));
     }
 
     private sealed class NoopLog : IAppLogger

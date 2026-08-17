@@ -77,4 +77,14 @@ public sealed record InstallManifest(
             ApkPath = apkPaths[0]
         };
     }
+
+    public static InstallManifest ForInstallSet(InstallSet set, InstallManifest policy) =>
+        policy with
+        {
+            AppId = set.CanVerify ? set.PackageId : UserSelectedAppId,
+            DisplayName = set.DisplayName,
+            BuildVersion = set.VersionName,
+            ApkPath = set.PrimaryPath,
+            LaunchAfterInstall = set.CanVerify
+        };
 }

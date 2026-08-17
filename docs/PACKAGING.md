@@ -34,10 +34,36 @@ Requires [Inno Setup 7](https://jrsoftware.org/isinfo.php). If `ISCC.exe` is mis
 .\build\packaging\scripts\pack.ps1 -SkipInstaller
 
 # Override version (must match csproj / release tag)
-.\build\packaging\scripts\pack.ps1 -Version 0.2.0
+.\build\packaging\scripts\pack.ps1 -Version 0.3.0
 ```
 
-Code signing is not implemented (`build/packaging/scripts/sign.ps1`). Testers may see SmartScreen on first run.
+Code signing runs from `pack.ps1` → `build/packaging/scripts/sign.ps1` when credentials are present. If unset, pack still succeeds and logs **unsigned**. Testers may see SmartScreen on first run of an unsigned build.
+
+### Authenticode (optional)
+
+Purchase an OV or EV code-signing certificate from a public CA (or use Azure Trusted Signing). Do not invent a signature.
+
+**PFX (local):**
+
+```powershell
+$env:SIGNING_PFX = "C:\certs\codesign.pfx"
+$env:SIGNING_PFX_PASSWORD = "<password>"
+# optional: $env:SIGNING_TIMESTAMP_URL = "http://timestamp.digicert.com"
+.\build\packaging\scripts\pack.ps1 -Version 0.3.0
+```
+
+**Azure Trusted Signing:**
+
+```powershell
+$env:AZURE_TRUSTED_SIGNING_ACCOUNT = "<account>"
+$env:AZURE_TRUSTED_SIGNING_ENDPOINT = "https://<region>.codesigning.azure.net/"
+$env:AZURE_TRUSTED_SIGNING_CERTIFICATE_PROFILE = "<profile>"
+$env:AZURE_TRUSTED_SIGNING_DLIB = "C:\path\Azure.CodeSigning.Dlib.dll"
+# optional: $env:AZURE_TRUSTED_SIGNING_METADATA = "C:\path\metadata.json"
+.\build\packaging\scripts\pack.ps1 -Version 0.3.0
+```
+
+`signtool.exe` must be on PATH or under Windows Kits 10 `bin\**\x64`. The published `SingularityApkInstaller.exe` is signed before Inno Setup compiles, then both setup exes are signed, then checksums are written.
 
 ## Payload
 
@@ -52,16 +78,16 @@ APK files in `payloads/current` are excluded from the setup. Testers pick files 
 ## Publish a GitHub Release
 
 1. Merge the work to `main`.
-2. Tag `v<version>` (example: `v0.2.0`).
+2. Tag `v<version>` (example: `v0.3.0`).
 3. Attach the three files from `artifacts/installer/`.
 
 ```powershell
-gh release create v0.2.0 `
-  --title "APK Installer 0.2.0" `
-  --notes-file docs/releases/v0.2.0.md `
-  artifacts/installer/SingularityApkInstaller-0.2.0-win-x64-setup.exe `
+gh release create v0.3.0 `
+  --title "APK Installer 0.3.0" `
+  --notes-file docs/releases/v0.3.0.md `
+  artifacts/installer/SingularityApkInstaller-0.3.0-win-x64-setup.exe `
   artifacts/installer/SingularityApkInstaller-win-x64-setup.exe `
-  artifacts/installer/SHA256SUMS-0.2.0.txt
+  artifacts/installer/SHA256SUMS-0.3.0.txt
 ```
 
 Keep the stable filename on every release so `/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe` keeps working.
