@@ -23,6 +23,7 @@ public partial class ShellWindow : Window
             }
         };
         Loaded += (_, _) => FocusPrimaryAction();
+        Closed += (_, _) => viewModel.Shutdown();
     }
 
     protected override void OnPreviewKeyDown(KeyEventArgs e)

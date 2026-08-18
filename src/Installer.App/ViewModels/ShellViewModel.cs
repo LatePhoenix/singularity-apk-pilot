@@ -31,7 +31,6 @@ public sealed partial class ShellViewModel : ObservableObject
     private readonly IQuestUsbHelperService _usbHelper;
     private readonly ISendReportUi _sendReport;
     private readonly ITroubleshootUi _troubleshootUi;
-    private readonly ITempFileService _temp;
     private bool _helperOpen;
     private readonly Installer.Core.Services.Content.TroubleshootCopyDeck _troubleshootCopy;
     private readonly Dictionary<WizardStep, WizardPageViewModel> _pages;
@@ -59,7 +58,6 @@ public sealed partial class ShellViewModel : ObservableObject
         IQuestUsbHelperService usbHelper,
         ISendReportUi sendReport,
         ITroubleshootUi troubleshootUi,
-        ITempFileService temp,
         Installer.Core.Services.Content.TroubleshootCopyDeck troubleshootCopy,
         IAppLogger logger)
     {
@@ -81,7 +79,6 @@ public sealed partial class ShellViewModel : ObservableObject
         _usbHelper = usbHelper;
         _sendReport = sendReport;
         _troubleshootUi = troubleshootUi;
-        _temp = temp;
         _troubleshootCopy = troubleshootCopy;
         _logger = logger;
         _pages = new Dictionary<WizardStep, WizardPageViewModel>
@@ -544,7 +541,6 @@ public sealed partial class ShellViewModel : ObservableObject
         }
         finally
         {
-            _temp.DeleteTracked();
             Interlocked.Exchange(ref _installBusy, 0);
         }
     }
@@ -940,11 +936,6 @@ public sealed partial class ShellViewModel : ObservableObject
 
     private void OnDevicesChanged(object? sender, IReadOnlyList<DeviceInfo> devices)
     {
-        if (ChoosePage.IsPickingFiles)
-        {
-            return;
-        }
-
         var dispatcher = Application.Current?.Dispatcher;
         if (dispatcher is null)
         {
@@ -952,13 +943,7 @@ public sealed partial class ShellViewModel : ObservableObject
             return;
         }
 
-        dispatcher.BeginInvoke(() =>
-        {
-            if (!ChoosePage.IsPickingFiles)
-            {
-                HandleDevices(devices);
-            }
-        });
+        dispatcher.BeginInvoke(() => HandleDevices(devices));
     }
 
     private void HandleDevices(IReadOnlyList<DeviceInfo> devices)
@@ -1094,6 +1079,5 @@ public sealed partial class ShellViewModel : ObservableObject
         _installCts?.Cancel();
         _uninstallCts?.Cancel();
         _monitor.Stop();
-        _temp.DeleteTracked();
     }
 }
