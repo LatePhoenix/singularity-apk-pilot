@@ -70,7 +70,7 @@ ZIP with app/build info, manifest id, device metadata, ADB snapshot, install att
 
 Mode A for v1: one Windows package contains the WPF shell, portable ADB, and optional install-policy JSON. APK files are not packaged. Inno Setup, optional launch-after-install. Testers download **`SingularityApkInstaller-win-x64-setup.exe`** from [GitHub Releases](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest). That stable name is what the repo README download button serves.
 
-**v0.3.0** ships portable `adb` only. Testers connect a device, then choose APK / APKS / XAPK files. The published app is a single-file exe so Windows Application Control does not block unsigned satellite DLLs. Missing selected APK is a typed `MissingPayload` error, not a device/USB failure. Split packages, verify-by-package-id, optional Open on device, last-files recents, and gated Authenticode are in this release.
+**v0.4.0** adds Quest Wi-Fi setup on Connect, Switch to Wi-Fi after USB approval, and Installed apps (third-party list, one-at-a-time remove). **v0.3.0** ships portable `adb` only. Testers connect a device, then choose APK / APKS / XAPK files. The published app is a single-file exe so Windows Application Control does not block unsigned satellite DLLs. Missing selected APK is a typed `MissingPayload` error, not a device/USB failure. Split packages, verify-by-package-id, optional Open on device, last-files recents, and gated Authenticode are in this release.
 
 Artifact names and pack steps: [`PACKAGING.md`](PACKAGING.md).
 
