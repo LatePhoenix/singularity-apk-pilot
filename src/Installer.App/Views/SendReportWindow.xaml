@@ -14,26 +14,9 @@
         UseLayoutRounding="True"
         KeyboardNavigation.TabNavigation="Cycle"
         AutomationProperties.Name="Send a report">
-    <Grid>
-        <Grid.Background>
-            <DrawingBrush TileMode="Tile" Viewport="0,0,24,24" ViewportUnits="Absolute" Opacity="0.04">
-                <DrawingBrush.Drawing>
-                    <GeometryDrawing Brush="Transparent">
-                        <GeometryDrawing.Pen>
-                            <Pen Brush="White" Thickness="1"/>
-                        </GeometryDrawing.Pen>
-                        <GeometryDrawing.Geometry>
-                            <GeometryGroup>
-                                <LineGeometry StartPoint="0,0" EndPoint="0,24"/>
-                                <LineGeometry StartPoint="0,0" EndPoint="24,0"/>
-                            </GeometryGroup>
-                        </GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                </DrawingBrush.Drawing>
-            </DrawingBrush>
-        </Grid.Background>
-        <DockPanel Margin="28">
-            <DockPanel DockPanel.Dock="Bottom" Margin="0,20,0,0" LastChildFill="False">
+    <Grid Background="{StaticResource AppBackgroundGridBrush}">
+        <DockPanel Margin="24">
+            <DockPanel DockPanel.Dock="Bottom" Margin="0,24,0,0" LastChildFill="False">
                 <Button DockPanel.Dock="Right"
                         Style="{StaticResource PrimaryPill}"
                         Content="Send report"
@@ -62,24 +45,27 @@
                         TabIndex="2"
                         AutomationProperties.Name="Cancel"
                         Visibility="{Binding ShowResult, Converter={StaticResource InverseBoolToVisibility}}"/>
-                <TextBlock DockPanel.Dock="Left"
-                           VerticalAlignment="Center"
-                           Style="{StaticResource Label}"
-                           Text="Preparing the report…"
-                           Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}"/>
+                <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center" Orientation="Vertical">
+                    <TextBlock Style="{StaticResource Label}"
+                               Text="Preparing the report…"
+                               Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}"/>
+                    <ProgressBar Width="120"
+                                 Height="4"
+                                 Margin="0,8,0,0"
+                                 HorizontalAlignment="Left"
+                                 IsIndeterminate="True"
+                                 Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibility}}"
+                                 AutomationProperties.Name="Preparing report"/>
+                </StackPanel>
             </DockPanel>
             <StackPanel>
                 <TextBlock Text="REPORT" Style="{StaticResource Eyebrow}"/>
                 <TextBlock Text="Send a report"
-                           Style="{StaticResource Display}"
-                           FontSize="24"
-                           LineHeight="30"
+                           Style="{StaticResource H1}"
                            Margin="0,8,0,12"
                            Visibility="{Binding ShowResult, Converter={StaticResource InverseBoolToVisibility}}"/>
                 <TextBlock Text="{Binding ResultHeadline}"
-                           Style="{StaticResource Display}"
-                           FontSize="24"
-                           LineHeight="30"
+                           Style="{StaticResource H1}"
                            Margin="0,8,0,12"
                            Visibility="{Binding ShowResult, Converter={StaticResource BoolToVisibility}}"/>
                 <StackPanel Visibility="{Binding ShowResult, Converter={StaticResource InverseBoolToVisibility}}">
@@ -97,8 +83,7 @@
                                Style="{StaticResource Label}"
                                Margin="0,4,0,0"/>
                     <TextBlock Text="{Binding Error}"
-                               Foreground="{DynamicResource DangerRedBrush}"
-                               TextWrapping="Wrap"
+                               Style="{StaticResource ErrorBanner}"
                                Margin="0,12,0,0"
                                Visibility="{Binding Error, Converter={StaticResource StringNotEmptyToVisibility}}"/>
                 </StackPanel>
@@ -106,11 +91,10 @@
                            Style="{StaticResource Body}"
                            Visibility="{Binding ShowResult, Converter={StaticResource BoolToVisibility}}"/>
                 <TextBlock Text="{Binding Error}"
-                           Foreground="{DynamicResource DangerRedBrush}"
-                           TextWrapping="Wrap"
+                           Style="{StaticResource ErrorBanner}"
                            Margin="0,0,0,8"
                            Visibility="{Binding ShowResult, Converter={StaticResource BoolToVisibility}}"/>
-                <Border Style="{StaticResource Card}"
+                <Border Style="{StaticResource RaisedWell}"
                         Margin="0,8,0,0"
                         Visibility="{Binding ShowAttachHint, Converter={StaticResource BoolToVisibility}}">
                     <StackPanel>

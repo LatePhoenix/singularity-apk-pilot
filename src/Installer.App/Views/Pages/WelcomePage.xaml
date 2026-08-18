@@ -3,10 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <StackPanel Margin="0,16,0,0"
                 Visibility="{Binding HasUpdate, Converter={StaticResource BoolToVisibility}}">
-        <TextBlock Style="{StaticResource Label}" TextWrapping="Wrap">
-            <Run Text="{Binding UpdateMessage, Mode=OneWay}"/>
-            <Run Text=" "/>
-            <Hyperlink NavigateUri="{Binding UpdateUri}" RequestNavigate="OnUpdateNavigate">Download</Hyperlink>
-        </TextBlock>
+        <Border Style="{StaticResource AccentCard}" Padding="16">
+            <TextBlock Style="{StaticResource Label}" TextWrapping="Wrap">
+                <Run Text="{Binding UpdateMessage, Mode=OneWay}"/>
+                <Run Text=" "/>
+                <Hyperlink NavigateUri="{Binding UpdateUri}" RequestNavigate="OnUpdateNavigate">Download</Hyperlink>
+            </TextBlock>
+        </Border>
     </StackPanel>
 </UserControl>

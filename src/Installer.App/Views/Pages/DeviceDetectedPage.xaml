@@ -3,46 +3,28 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:models="clr-namespace:Installer.Core.Models;assembly=Installer.Core">
     <StackPanel Margin="0,16,0,0">
-        <Border Style="{StaticResource Card}"
+        <Border Style="{StaticResource RaisedWell}"
                 Margin="0,0,0,16"
-                Background="{DynamicResource SurfaceRaisedBrush}"
                 Padding="16"
                 Visibility="{Binding ShowPicker, Converter={StaticResource InverseBoolToVisibility}}">
-            <TextBlock Text="{Binding DeviceSummary}" FontSize="15" FontWeight="SemiBold"/>
+            <TextBlock Text="{Binding DeviceSummary}" Style="{StaticResource H2}"/>
         </Border>
         <ListBox ItemsSource="{Binding Candidates}"
                  SelectedItem="{Binding SelectedDevice}"
                  BorderThickness="0"
                  Background="Transparent"
                  Padding="0"
+                 FocusVisualStyle="{x:Null}"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  Visibility="{Binding ShowPicker, Converter={StaticResource BoolToVisibility}}"
                  AutomationProperties.Name="Connected devices">
             <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem">
-                    <Setter Property="Padding" Value="0"/>
-                    <Setter Property="Margin" Value="0,0,0,8"/>
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                    <Setter Property="Background" Value="Transparent"/>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="ListBoxItem">
-                                <Border x:Name="Card" Style="{StaticResource Card}" Padding="16" Background="{DynamicResource SurfaceRaisedBrush}">
-                                    <ContentPresenter/>
-                                </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsSelected" Value="True">
-                                        <Setter TargetName="Card" Property="BorderBrush" Value="{DynamicResource PrimaryAccentBrush}"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
+                <Style TargetType="ListBoxItem" BasedOn="{StaticResource DevicePickerItem}"/>
             </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:DeviceInfo}">
                     <StackPanel>
-                        <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding DisplayName}" Style="{StaticResource H2}"/>
                         <TextBlock Text="{Binding ConnectionLabel}" Style="{StaticResource Label}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </DataTemplate>
