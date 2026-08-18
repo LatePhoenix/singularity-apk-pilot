@@ -15,19 +15,25 @@ public sealed class DiagnosticsService : IDiagnosticsService
     private readonly IZipBundleWriter _zip;
     private readonly LogcatCollector _logcat;
     private readonly EnvironmentSnapshotService _environment;
+    private readonly IUsbEvidenceProbe _usb;
+    private readonly ISessionLog _sessionLog;
 
     public DiagnosticsService(
         IAdbClient adb,
         IClock clock,
         IZipBundleWriter zip,
         LogcatCollector logcat,
-        EnvironmentSnapshotService environment)
+        EnvironmentSnapshotService environment,
+        IUsbEvidenceProbe usb,
+        ISessionLog sessionLog)
     {
         _adb = adb;
         _clock = clock;
         _zip = zip;
         _logcat = logcat;
         _environment = environment;
+        _usb = usb;
+        _sessionLog = sessionLog;
     }
 
     public async Task<DiagnosticBundleInfo> ExportAsync(
@@ -69,20 +75,33 @@ public sealed class DiagnosticsService : IDiagnosticsService
             LastAttempt = lastResult is null ? null : ToAttempt(manifest, lastResult, stamp)
         };
 
+        var evidence = _usb.Collect();
         var files = new Dictionary<string, string>
         {
             ["metadata.json"] = JsonSerializer.Serialize(metadata, JsonDefaults.Manifest),
             ["environment.json"] = JsonSerializer.Serialize(_environment.Capture(manifest), JsonDefaults.Manifest),
             ["device.json"] = JsonSerializer.Serialize(metadata.Device, JsonDefaults.Manifest),
+            ["usb-evidence.json"] = JsonSerializer.Serialize(ToEvidence(evidence), JsonDefaults.Manifest),
             ["adb-devices.txt"] = Sanitize(adbDevicesRaw, device?.Serial),
             ["install-attempt.json"] = JsonSerializer.Serialize(metadata.LastAttempt, JsonDefaults.Manifest),
             ["adb-output.txt"] = Sanitize(lastResult?.RawOutput ?? "", device?.Serial),
-            ["logcat-filtered.txt"] = Sanitize(logcat, device?.Serial)
+            ["logcat-filtered.txt"] = Sanitize(logcat, device?.Serial),
+            ["session-log.txt"] = Sanitize(_sessionLog.ReadAll(), device?.Serial)
         };
 
         await _zip.WriteAsync(zipPath, files, cancellationToken);
         return new DiagnosticBundleInfo(zipPath, stamp, manifest.AppId, version);
     }
+
+    private static UsbEvidenceDto ToEvidence(UsbEvidence evidence) => new()
+    {
+        QuestUsbPresent = evidence.QuestUsbPresent,
+        AndroidUsbPresent = evidence.AndroidUsbPresent,
+        AdbInterfacePresent = evidence.AdbInterfacePresent,
+        AdbDriverMissing = evidence.AdbDriverMissing,
+        MtpOnly = evidence.MtpOnly,
+        CompetingAdbProcess = evidence.CompetingAdbProcess
+    };
 
     private static DeviceSnapshotDto ToSnapshot(DeviceInfo device) => new()
     {

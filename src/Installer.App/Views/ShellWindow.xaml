@@ -29,8 +29,14 @@
         <DataTemplate DataType="{x:Type wizard:DeviceDetectedPageViewModel}">
             <pages:DeviceDetectedPage/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type wizard:AuthorizationPageViewModel}">
+            <pages:AuthorizationPage/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type wizard:DeveloperModePageViewModel}">
             <pages:DeveloperModePage/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type wizard:TroubleshootPageViewModel}">
+            <pages:TroubleshootPage/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type wizard:InstallingPageViewModel}">
             <TextBlock Style="{StaticResource Label}" Text="{Binding StatusLabel}"                        Margin="0,0,0,8"/>
@@ -159,26 +165,38 @@
                 <Button x:Name="CancelButton"
                         DockPanel.Dock="Right"
                         Style="{StaticResource GhostPill}"
-                        Content="Cancel"
+                        Content="{Binding CancelLabel}"
                         Command="{Binding CancelCommand}"
                         IsCancel="{Binding ShowCancel}"
                         TabIndex="2"
                         Margin="0,0,8,0"
-                        AutomationProperties.Name="Cancel install"
+                        AutomationProperties.Name="{Binding CancelLabel}"
                         Visibility="{Binding ShowCancel, Converter={StaticResource BoolToVisibility}}"/>
                 <Button x:Name="ExportButton"
                         DockPanel.Dock="Left"
                         Style="{StaticResource SecondaryPill}"
-                        Content="Export diagnostics"
+                        Content="Send a report"
                         Command="{Binding ExportDiagnosticsCommand}"
                         TabIndex="3"
-                        AutomationProperties.Name="Export diagnostics"
+                        AutomationProperties.Name="Send a report"
+                        AutomationProperties.AutomationId="SendReport"
                         Visibility="{Binding ShowSecondaryExport, Converter={StaticResource BoolToVisibility}}"/>
-                <TextBlock Text="{Binding DiagnosticsPath}"
-                           Style="{StaticResource Mono}"
-                           VerticalAlignment="Center"
-                           Margin="16,0,0,0"
-                           Visibility="{Binding DiagnosticsPath, Converter={StaticResource StringNotEmptyToVisibility}}"/>
+                <Button x:Name="TroubleshootButton"
+                        DockPanel.Dock="Left"
+                        Style="{StaticResource GhostPill}"
+                        Content="Need help connecting?"
+                        Command="{Binding OpenTroubleshootCommand}"
+                        TabIndex="6"
+                        Margin="8,0,0,0"
+                        AutomationProperties.Name="Need help connecting"
+                        AutomationProperties.AutomationId="NeedHelpConnecting"
+                        Visibility="{Binding ShowNeedHelpConnecting, Converter={StaticResource BoolToVisibility}}"/>
+                <StackPanel VerticalAlignment="Center" Margin="16,0,8,0">
+                    <TextBlock Text="{Binding DiagnosticsStatus}"
+                               Style="{StaticResource Label}"
+                               TextWrapping="Wrap"
+                               Visibility="{Binding DiagnosticsStatus, Converter={StaticResource StringNotEmptyToVisibility}}"/>
+                </StackPanel>
             </DockPanel>
         </Grid>
     </Grid>

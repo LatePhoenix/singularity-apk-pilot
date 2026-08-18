@@ -7,13 +7,21 @@ namespace Installer.Core.Services.Content;
 public sealed class CopyDeckService : IContentService
 {
     private readonly FriendlyMessageService _messages;
+    private readonly TroubleshootCopyDeck _troubleshootCopy;
 
-    public CopyDeckService(FriendlyMessageService messages)
+    public CopyDeckService(FriendlyMessageService messages, TroubleshootCopyDeck? troubleshootCopy = null)
     {
         _messages = messages;
+        _troubleshootCopy = troubleshootCopy ?? new TroubleshootCopyDeck();
     }
 
-    public WizardCopy GetCopy(WizardStep step, InstallManifest manifest, DeviceInfo? device, InstallError? error = null, DeviceHealth? health = null)
+    public WizardCopy GetCopy(
+        WizardStep step,
+        InstallManifest manifest,
+        DeviceInfo? device,
+        InstallError? error = null,
+        DeviceHealth? health = null,
+        TroubleshootSession? troubleshoot = null)
     {
         var name = manifest.DisplayName;
         var version = manifest.BuildVersion;
@@ -22,13 +30,30 @@ public sealed class CopyDeckService : IContentService
         var userPicked = string.Equals(manifest.AppId, InstallManifest.UserSelectedAppId, StringComparison.OrdinalIgnoreCase);
         var healthHint = health?.Hint;
 
+        if (step == WizardStep.Troubleshoot)
+        {
+            return _troubleshootCopy.Page(troubleshoot ?? new TroubleshootSession(
+                TroubleshootFamily.Unknown,
+                TroubleshootNode.PickDevice,
+                UsbEvidence.None,
+                WizardStep.ConnectDevice,
+                device,
+                [],
+                TroubleshootActionKind.None,
+                "",
+                "Idle",
+                [],
+                "",
+                false));
+        }
+
         return step switch
         {
             WizardStep.Welcome => new WizardCopy(
                 "Install apps on your device",
                 "Connect a headset or phone first. A USB-C data cable is the usual first step. After the device has approved this computer, you can switch to Wi-Fi and unplug. Then choose the APK files to install.",
                 "Start",
-                "You will plug in the device, approve a permission if asked, then pick one or more APK files. Wi-Fi setup for Quest 2 and Quest 3 is on the next screen. Privacy and Terms open from the header.",
+                "You will plug in the device, approve a permission if asked, then pick one or more APK files. Wi-Fi setup for Quest 2 and Quest 3 is on the next screen. Privacy and Terms open from the header. Send a report is available if something goes wrong.",
                 "No app is bundled. APK files are chosen after the device is connected."),
             WizardStep.ConnectDevice => new WizardCopy(
                 "Connect your device",
@@ -81,7 +106,7 @@ public sealed class CopyDeckService : IContentService
             WizardStep.InstallProblem => new WizardCopy(
                 error is null ? "We could not finish installing" : _messages.TitleFor(error.Value),
                 error is null
-                    ? "Use the suggested action below. If that does not work, export a diagnostics file and send it to support."
+                    ? "Use the suggested action below. If that does not work, tap Send a report and email it to the person who asked you to test."
                     : _messages.CauseFor(error.Value),
                 "Try automatic fix",
                 "Most failures are a missing permission, a full device, or an older build that cannot be replaced until it is removed.",
@@ -92,7 +117,7 @@ public sealed class CopyDeckService : IContentService
                     ? "Put on the headset and look under Unknown Sources in Library. Headset menus move between software updates, so check the Library filter if you do not see the app."
                     : "Find the app in your app drawer and open it.",
                 "Done",
-                "If the app does not appear, put the headset on and search Library again. Then export diagnostics.",
+                "If the app does not appear, put the headset on and search Library again. Then send a report.",
                 manifest.CanVerifyPackage ? $"Package: {manifest.AppId} {version}" : "Package id is unknown for this file."),
             WizardStep.InstalledApps => new WizardCopy(
                 "Installed apps",

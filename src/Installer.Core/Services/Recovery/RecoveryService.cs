@@ -67,7 +67,7 @@ public sealed class RecoveryService : IRecoveryService
                 break;
         }
 
-        actions.Add(Action("diag", "Export diagnostics", "Save a diagnostics file to send to support.", RecoveryActionKind.ExportDiagnostics, false));
+        actions.Add(Action("diag", "Send a report", "Open your email app with a report attached.", RecoveryActionKind.ExportDiagnostics, false));
         return actions.Take(3).ToList();
     }
 

@@ -1,8 +1,9 @@
+using Installer.Core.Abstractions;
 using Installer.Infrastructure.Storage;
 
 namespace Installer.Infrastructure.Logging;
 
-public sealed class SessionLogWriter
+public sealed class SessionLogWriter : ISessionLog
 {
     private readonly object _gate = new();
     private readonly string _path;
@@ -15,6 +16,14 @@ public sealed class SessionLogWriter
 
     public string LogPath => _path;
 
+    public string ReadAll()
+    {
+        lock (_gate)
+        {
+            return File.Exists(_path) ? File.ReadAllText(_path) : "";
+        }
+    }
+
     public void Write(string level, string message)
     {
         var line = $"{DateTimeOffset.Now:O} [{level}] {message}{Environment.NewLine}";
@@ -24,3 +33,4 @@ public sealed class SessionLogWriter
         }
     }
 }
+

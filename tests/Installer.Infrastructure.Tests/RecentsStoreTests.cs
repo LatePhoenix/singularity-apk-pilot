@@ -39,6 +39,7 @@ public sealed class RecentsStoreTests
         public string DiagnosticsDirectory => Path.Combine(root, "diag");
         public string WirelessEndpointPath => Path.Combine(root, "wifi.json");
         public string RecentsPath => Path.Combine(root, "recents.json");
+        public string ReportRecipientPath => Path.Combine(root, "report-email.json");
     }
 
     private sealed class NoopLog : IAppLogger

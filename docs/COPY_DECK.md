@@ -11,7 +11,7 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 - Headline: Install apps on your device
 - Body: Connect a headset or phone first. A USB-C data cable is the usual first step. After the device has approved this computer, you can switch to Wi-Fi and unplug. Then choose the APK files to install.
 - Primary: Start
-- Help: You will plug in the device, approve a permission if asked, then pick one or more APK files. Wi-Fi setup for Quest 2 and Quest 3 is on the next screen. Privacy and Terms open from the header.
+- Help: You will plug in the device, approve a permission if asked, then pick one or more APK files. Wi-Fi setup for Quest 2 and Quest 3 is on the next screen. Privacy and Terms open from the header. **Send a report** is always available if something goes wrong.
 - Advanced: No app is bundled. APK files are chosen after the device is connected.
 - In-page (muted): A newer installer is available, with a Download link to the stable setup.exe. No auto-download.
 
@@ -21,8 +21,9 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 - Body: Plug in with a USB-C data cable, or connect over Wi-Fi using the Quest 2 / Quest 3 steps below.
 - Primary: I connected it
 - Help: Charge-only cables will not work. The cable that ships with Quest is often charge-only. Try another USB-C data cable and a USB port on the computer, not a hub. For Wi-Fi, the headset and this computer must be on the same network. Pairing codes expire quickly. After a headset reboot, plug in with USB once more unless you pair again.
-- Secondary: Export diagnostics (footer)
-- In-page health (after failed attempts): Windows sees a headset but this installer does not → data cable + Oculus ADB driver. Windows sees nothing → cable/hub.
+- Secondary: **Send a report** (footer)
+- Secondary: **Need help connecting?** opens the troubleshooting helper (Quest vs phone, one task per screen). Two failed **I connected it** attempts open the same helper.
+- In-page health (after failed attempts): Windows sees a headset but this installer does not → data cable + Oculus ADB driver. Windows sees nothing → cable/hub. Status chip when Windows sees USB but this installer does not.
 - In-page: USB card (cable, then **I connected it**). Wi-Fi card is always visible.
 - In-page: **Connect over Wi-Fi** as a raised card when a last address is saved (one tap). Same network; after a reboot, plug in once more.
 - In-page expander (open when no saved address): **How to set up Wi-Fi on Quest 2 or Quest 3** — numbered USB-once path (Horizon app Developer Mode → data cable → Quick Control → Settings → Developer → MTP Notification → Always allow → **Switch to Wi-Fi** on Choose apps).
@@ -46,7 +47,7 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 - Headline: Put on your headset now
 - Body: A permission message is waiting inside the headset. Select Always allow from this computer, then choose Allow.
 - Primary: I allowed it
-- Secondary: Export diagnostics (footer)
+- Secondary: **Send a report** (footer)
 - Help: The headset must be on your head, awake, and showing the USB debugging prompt. If you already dismissed it, unplug and plug the cable back in.
 - Advanced: Connection state `unauthorized`.
 
@@ -55,7 +56,7 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 - Headline: Unlock your phone and allow this computer
 - Body: Look for a USB debugging prompt on the phone. Check Always allow from this computer, then tap Allow.
 - Primary: I allowed it
-- Secondary: Export diagnostics (footer)
+- Secondary: **Send a report** (footer)
 - Help: Unlock the phone first. If no prompt appears, unplug, plug back in, and set USB mode to File transfer / MTP if the phone asks.
 - Advanced: Connection state `unauthorized`.
 
@@ -64,7 +65,7 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 - Headline: Turn on developer mode
 - Body: On your phone, open the Meta Horizon app. Tap the headset icon, then your headset, then Headset Settings, then Developer Mode, and turn it on.
 - Primary: I turned it on
-- Secondary: Export diagnostics (footer)
+- Secondary: **Send a report** (footer)
 - Help: You need a Meta developer account on a developer team. After turning it on, connect a USB-C data cable, put the headset on, open Quick Control → Settings → Developer, and turn on MTP Notification. When asked, choose Always allow from this computer. After the headset allows this computer, you can switch to Wi-Fi on Choose apps.
 - Advanced: Link to Meta device-setup docs.
 
@@ -96,9 +97,9 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 ## Install problem
 
 - Headline: We could not finish installing
-- Body: Use the suggested action below. If that does not work, export a diagnostics file and send it to support.
+- Body: Use the suggested action below. If that does not work, tap Send a report and email it to the person who asked you to test.
 - Primary: Try automatic fix (when an auto-fix exists) or Try again
-- Secondary: Export diagnostics
+- Secondary: **Send a report**
 - In-page: **Replace this app** / **Remove this app and install** when the package id is known (already exists, downgrade, or signature mismatch)
 - Help: Most failures are a missing permission, a full device, or an older build that cannot be replaced until it is removed.
 - Advanced: Typed error, exit code, sanitized output.
@@ -128,10 +129,10 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 - Body (Quest): Put on the headset and look under Unknown Sources in Library. Headset menus move between software updates, so check the Library filter if you do not see the app.
 - Body (phone): Find the app in your app drawer and open it.
 - Primary: Done
-- Secondary: Export diagnostics
+- Secondary: **Send a report**
 - In-page: **Open on device** when the package id resolved (does not auto-launch)
 - In-page: **Installed apps**
-- Help: If the app does not appear, unplug, put the headset on, and search Library again. Then export diagnostics.
+- Help: If the app does not appear, unplug, put the headset on, and search Library again. Then send a report.
 - Advanced: Package id and version when parsed; otherwise package id is unknown.
 
 ## Installed apps
@@ -139,9 +140,20 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 - Headline: Installed apps
 - Body: {model} has these third-party apps. Search, then remove one at a time.
 - Primary: Back
-- Secondary: Export diagnostics (footer). Cancel in the footer while a removal is in progress.
+- Secondary: **Send a report** (footer). Cancel in the footer while a removal is in progress.
 - In-page: search, refresh, list of third-party apps (name when known, package id in mono). **Remove** opens a confirm card.
 - Confirm: Remove deletes the app and its data. Store apps can come back from the store. Sideloaded apps need the APK again.
 - Help (Quest): Remove deletes the app and its data on the headset. Library → Unknown Sources may still show a tile until you refresh.
 - Help (phone): Remove deletes the app and its data on the phone.
 - Advanced: Third-party apps only. System apps are not listed.
+
+## Troubleshoot
+
+Side-flow from Connect, Authorization, Developer mode, or a connection-lost Install problem. Primary copy never says ADB. Leave helper returns to the previous screen. A ready device exits immediately.
+
+- Headline / primary depend on the current node (What are you connecting?, cable, wear headset, developer mode, MTP Notification, allow, USB helper, restart helper, phone USB mode, Wi-Fi rescue, reboot, still stuck).
+- Primary: **I plugged it in** / **I have it on** / **I turned it on** / **I allowed it** / **Check again** / **I installed it** (never the automated work).
+- In-page: family picker (Quest vs phone); numbered steps; optional **Restart connection helper**, **Get Quest USB support** (opens Meta’s driver page, or installs a bundled `android_winusb.inf` if present), **Open USB support page** (phone OEM), **Send a report**.
+- Secondary: **Send a report** (footer, every screen except Installing). Opens a window asking for the email of the person who asked them to test, then opens their email app with the report attached. Includes `session-log.txt`. They still press Send in the email app.
+- Help: account age / developer team for Quest developer mode; pairing port vs install address for Wi-Fi.
+- Advanced: ADB/driver terms allowed here only.

@@ -33,6 +33,7 @@ The installer is unsigned unless `pack.ps1` is run with a code-signing certifica
 - USB-C **data** cable (the cable in the Quest box is not suitable)
 - Oculus ADB Drivers for Quest on Windows
 - For Quest: Developer Mode in the Meta Horizon app, then **Always allow from this computer** in-headset
+- If the device is not detected, **Need help connecting?** walks Quest and phone setup, including Meta’s USB helper on Windows
 - Optional Wi-Fi: after that approval, **Switch to Wi-Fi** on Choose apps; later sessions use **Connect over Wi-Fi**. Headset and PC must be on the same network.
 
 ## Build from source

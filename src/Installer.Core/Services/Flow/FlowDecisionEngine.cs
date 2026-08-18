@@ -81,12 +81,44 @@ public sealed class FlowDecisionEngine
             return WizardStep.InstalledApps;
         }
 
+        if (trigger == WizardTrigger.OpenTroubleshoot)
+        {
+            return WizardStep.Troubleshoot;
+        }
+
+        if (trigger == WizardTrigger.CloseTroubleshoot)
+        {
+            return state.ReturnStep
+                   is WizardStep.ConnectDevice
+                   or WizardStep.Authorization
+                   or WizardStep.DeveloperMode
+                   or WizardStep.InstallProblem
+                ? state.ReturnStep.Value
+                : WizardStep.ConnectDevice;
+        }
+
+        if (state.CurrentStep == WizardStep.Troubleshoot)
+        {
+            if (active is { State: DeviceConnectionState.ConnectedReady })
+            {
+                var readyCount = (state.ReadyDevices ?? []).Count(d => d.State == DeviceConnectionState.ConnectedReady);
+                if (readyCount >= 2)
+                {
+                    return WizardStep.DeviceDetected;
+                }
+
+                return StrategyFor(active).NextAfterDetection(active, state.ConnectAttempts);
+            }
+
+            return WizardStep.Troubleshoot;
+        }
+
         if (active is null || active.State == DeviceConnectionState.NotConnected)
         {
             if ((state.ConnectAttempts >= 2 || state.DeveloperModeLikelyRequired) &&
                 state.CurrentStep is WizardStep.ConnectDevice or WizardStep.DeviceDetected or WizardStep.Authorization)
             {
-                return WizardStep.DeveloperMode;
+                return WizardStep.Troubleshoot;
             }
 
             return state.CurrentStep == WizardStep.Welcome ? WizardStep.Welcome : WizardStep.ConnectDevice;
