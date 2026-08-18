@@ -11,7 +11,7 @@ public sealed partial class WelcomePageViewModel : WizardPageViewModel
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(UpdateUri))]
-    private string updateUrl = "https://github.com/LatePhoenix/singularity-apk-installer/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe";
+    private string updateUrl = "https://github.com/LatePhoenix/singularity-apk-pilot/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe";
 
     public bool HasUpdate => !string.IsNullOrWhiteSpace(UpdateMessage);
 

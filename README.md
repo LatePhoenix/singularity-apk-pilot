@@ -1,10 +1,10 @@
-# Singularity APK Installer
+# APK Pilot
 
-[![Download the installer](https://img.shields.io/badge/Download-SingularityApkInstaller--win--x64--setup.exe-2FA8C8?style=for-the-badge)](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe)
+[![Download APK Pilot](https://img.shields.io/badge/Download-APK%20Pilot-2FA8C8?style=for-the-badge)](https://github.com/LatePhoenix/singularity-apk-pilot/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe)
 
-[![Latest release](https://img.shields.io/github/v/release/LatePhoenix/singularity-apk-installer?style=for-the-badge&label=release&color=0F1722)](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest)
+[![Latest release](https://img.shields.io/github/v/release/LatePhoenix/singularity-apk-pilot?style=for-the-badge&label=release&color=0F1722)](https://github.com/LatePhoenix/singularity-apk-pilot/releases/latest)
 
-**⬇️ [Download SingularityApkInstaller-win-x64-setup.exe](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe)** — that link always serves the latest GitHub Release asset.
+**⬇️ [Download APK Pilot](https://github.com/LatePhoenix/singularity-apk-pilot/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe)** — that link always serves the latest GitHub Release asset (`SingularityApkInstaller-win-x64-setup.exe`).
 
 Windows guided installer for non-technical testers. Plug in a Meta Quest 2/3 or Android phone, follow one highlighted action per screen, then choose APK files to install with portable `adb`. After the device has approved this computer, you can switch to Wi-Fi and unplug. **Installed apps** lists third-party apps so you can remove one at a time.
 
@@ -12,13 +12,13 @@ Windows guided installer for non-technical testers. Plug in a Meta Quest 2/3 or 
 
 ## Download
 
-1. Get **`SingularityApkInstaller-win-x64-setup.exe`** from [Releases](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest) (or the button above).
+1. Get **`SingularityApkInstaller-win-x64-setup.exe`** from [Releases](https://github.com/LatePhoenix/singularity-apk-pilot/releases/latest) (or the button above).
 2. Run the setup wizard. No separate .NET install is required (self-contained win-x64).
-3. Launch **Singularity APK Installer** from the Start menu, plug in the device, then choose the APK files to install.
+3. Launch **APK Pilot** from the Start menu, plug in the device, then choose the APK files to install.
 
 The installer is unsigned unless `pack.ps1` is run with a code-signing certificate configured. Windows SmartScreen may warn on first run of an unsigned build. Choose **More info** → **Run anyway**.
 
-**v0.4.0** adds Quest Wi-Fi setup on Connect, **Switch to Wi-Fi** after USB approval, and **Installed apps** so testers can remove a third-party app one at a time. It still ships portable `adb` only — no bundled test app. See [`docs/SUPPORT_RUNBOOK.md`](docs/SUPPORT_RUNBOOK.md).
+**v0.5.0** renames the product to **APK Pilot**. **v0.4.0** adds Quest Wi-Fi setup on Connect, **Switch to Wi-Fi** after USB approval, and **Installed apps** so testers can remove a third-party app one at a time. It still ships portable `adb` only — no bundled test app. See [`docs/SUPPORT_RUNBOOK.md`](docs/SUPPORT_RUNBOOK.md).
 
 ## Legal
 
@@ -44,7 +44,7 @@ dotnet test SingularityTesterInstaller.sln
 powershell -ExecutionPolicy Bypass -File build\packaging\scripts\pack.ps1
 ```
 
-Requires .NET SDK 8.0.424 (`global.json`) and [Inno Setup 7](https://jrsoftware.org/isinfo.php). Output: `artifacts\installer\SingularityApkInstaller-0.4.0-win-x64-setup.exe`. Details: [`docs/PACKAGING.md`](docs/PACKAGING.md).
+Requires .NET SDK 8.0.424 (`global.json`) and [Inno Setup 7](https://jrsoftware.org/isinfo.php). Output: `artifacts\installer\SingularityApkInstaller-0.5.0-win-x64-setup.exe`. Details: [`docs/PACKAGING.md`](docs/PACKAGING.md).
 
 ## Docs
 

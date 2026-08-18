@@ -5,7 +5,7 @@
         xmlns:pages="clr-namespace:Installer.App.Views.Pages"
         xmlns:controls="clr-namespace:Installer.App.Controls"
         xmlns:legal="clr-namespace:Installer.App"
-        Title="APK Installer"
+        Title="APK Pilot"
         Height="720" Width="960"
         MinHeight="600" MinWidth="800"
         WindowStartupLocation="CenterScreen"
@@ -15,7 +15,7 @@
         SnapsToDevicePixels="True"
         UseLayoutRounding="True"
         KeyboardNavigation.TabNavigation="Cycle"
-        AutomationProperties.Name="APK Installer">
+        AutomationProperties.Name="APK Pilot">
     <Window.Resources>
         <DataTemplate DataType="{x:Type wizard:WelcomePageViewModel}">
             <pages:WelcomePage/>
@@ -72,7 +72,7 @@
                 </TextBlock>
                 <StackPanel>
                     <TextBlock Text="INSTALLER" Style="{StaticResource Eyebrow}"/>
-                    <TextBlock Text="APK Installer" Style="{StaticResource H2}" Margin="0,4,0,0"/>
+                    <TextBlock Text="APK Pilot" Style="{StaticResource H2}" Margin="0,4,0,0"/>
                 </StackPanel>
             </DockPanel>
 

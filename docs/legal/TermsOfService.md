@@ -1,11 +1,11 @@
 # Terms of Service
 
-**Product:** Singularity APK Installer  
+**Product:** APK Pilot  
 **Publisher:** Singularity Solutions and Services LLC  
 **Last updated:** August 18, 2026  
 **Effective:** August 15, 2026
 
-These Terms of Service (“Terms”) govern your use of Singularity APK Installer (the “Software”), published by Singularity Solutions and Services LLC, a Wisconsin limited liability company organized January 9, 2026 (Entity ID S165572), with its principal office at 206 S River St, Waterford, WI 53185, United States of America.
+These Terms of Service (“Terms”) govern your use of APK Pilot (the “Software”), published by Singularity Solutions and Services LLC, a Wisconsin limited liability company organized January 9, 2026 (Entity ID S165572), with its principal office at 206 S River St, Waterford, WI 53185, United States of America.
 
 The publisher’s company Terms of Service are hosted at  
 https://singularity.mhbross725.workers.dev/terms
@@ -43,7 +43,7 @@ These Terms are governed by the laws of the State of Wisconsin, USA, without reg
 ## 8. Contact
 
 For general questions about these Terms, open an issue at  
-https://github.com/LatePhoenix/singularity-apk-installer/issues
+https://github.com/LatePhoenix/singularity-apk-pilot/issues
 
 For formal or legal notices:
 

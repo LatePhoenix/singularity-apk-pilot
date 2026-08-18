@@ -1,11 +1,11 @@
 # Privacy Policy
 
-**Product:** Singularity APK Installer  
+**Product:** APK Pilot  
 **Publisher:** Singularity Solutions and Services LLC  
 **Last updated:** August 18, 2026  
 **Effective:** August 15, 2026
 
-This Privacy Policy describes how Singularity APK Installer (the “Software”), published by Singularity Solutions and Services LLC (a Wisconsin LLC, Entity ID S165572, principal office 206 S River St, Waterford, WI 53185, United States of America), handles information on your computer and a connected headset or phone.
+This Privacy Policy describes how APK Pilot (the “Software”), published by Singularity Solutions and Services LLC (a Wisconsin LLC, Entity ID S165572, principal office 206 S River St, Waterford, WI 53185, United States of America), handles information on your computer and a connected headset or phone.
 
 The publisher’s company Privacy Policy is hosted at  
 https://singularity.mhbross725.workers.dev/privacy
@@ -53,7 +53,7 @@ We may update this Privacy Policy when the product changes. The “Last updated�
 ## 8. Contact
 
 For product privacy questions, open an issue at  
-https://github.com/LatePhoenix/singularity-apk-installer/issues
+https://github.com/LatePhoenix/singularity-apk-pilot/issues
 
 For formal or legal notices:
 

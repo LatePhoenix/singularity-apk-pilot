@@ -1,6 +1,6 @@
 # Support runbook
 
-Testers should run **`SingularityApkInstaller-win-x64-setup.exe`** from the [latest GitHub Release](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe). Direct them to the repo README download button, not a random Dropbox/email copy.
+Testers should run **`SingularityApkInstaller-win-x64-setup.exe`** from the [latest GitHub Release](https://github.com/LatePhoenix/singularity-apk-pilot/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe). Direct them to the repo README download button, not a random Dropbox/email copy.
 
 Legal: [Privacy Policy](https://singularity.mhbross725.workers.dev/privacy) · [Terms of Service](https://singularity.mhbross725.workers.dev/terms) · [legal home](https://singularity.mhbross725.workers.dev/).
 
@@ -8,10 +8,10 @@ Use this when a tester says the installer “didn’t work.” Ask them to tap *
 
 ## Getting the Windows installer
 
-1. Open [Releases](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest) or the green **Download** badge on the repo home page.
+1. Open [Releases](https://github.com/LatePhoenix/singularity-apk-pilot/releases/latest) or the green **Download** badge on the repo home page.
 2. Run `SingularityApkInstaller-win-x64-setup.exe`. No separate .NET runtime install is required.
 3. If SmartScreen appears (unsigned build), **More info** → **Run anyway**.
-4. Confirm they launched **Singularity APK Installer** from the Start menu after setup. If the window never appears, they are on v0.1.1 or earlier and Windows Application Control may be blocking satellite DLLs. Install **v0.4.0** (single-file).
+4. Confirm they launched **APK Pilot** from the Start menu after setup. If the window never appears, they are on v0.1.1 or earlier and Windows Application Control may be blocking satellite DLLs. Install **v0.4.0** or later (single-file).
 
 **v0.1.0:** no test `.apk` in the GitHub installer; install failed as `failed to stat`. **v0.1.1** bundled Halo to unblock testers. **v0.2.0** does not ship any app APK: connect a device first, then choose APK files. **v0.3.0** adds split packages, verify/open, recents, multi-device picker, Connect-screen diagnostics, and optional Authenticode. **v0.4.0** adds Quest Wi-Fi setup, Switch to Wi-Fi, and Installed apps (third-party uninstall). Publish is a single-file exe so Windows Application Control does not block unsigned DLLs.
 
