@@ -11,9 +11,9 @@ Use this when a tester says the installer “didn’t work.” Ask for the diagn
 1. Open [Releases](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest) or the green **Download** badge on the repo home page.
 2. Run `SingularityApkInstaller-win-x64-setup.exe`. No separate .NET runtime install is required.
 3. If SmartScreen appears (unsigned build), **More info** → **Run anyway**.
-4. Confirm they launched **Singularity APK Installer** from the Start menu after setup. If the window never appears, they are on v0.1.1 or earlier and Windows Application Control may be blocking satellite DLLs. Install **v0.3.0** (single-file).
+4. Confirm they launched **Singularity APK Installer** from the Start menu after setup. If the window never appears, they are on v0.1.1 or earlier and Windows Application Control may be blocking satellite DLLs. Install **v0.4.0** (single-file).
 
-**v0.1.0:** no test `.apk` in the GitHub installer; install failed as `failed to stat`. **v0.1.1** bundled Halo to unblock testers. **v0.2.0** does not ship any app APK: connect a device first, then choose APK files. **v0.3.0** adds split packages, verify/open, recents, multi-device picker, Connect-screen diagnostics, and optional Authenticode. Publish is a single-file exe so Windows Application Control does not block unsigned DLLs.
+**v0.1.0:** no test `.apk` in the GitHub installer; install failed as `failed to stat`. **v0.1.1** bundled Halo to unblock testers. **v0.2.0** does not ship any app APK: connect a device first, then choose APK files. **v0.3.0** adds split packages, verify/open, recents, multi-device picker, Connect-screen diagnostics, and optional Authenticode. **v0.4.0** adds Quest Wi-Fi setup, Switch to Wi-Fi, and Installed apps (third-party uninstall). Publish is a single-file exe so Windows Application Control does not block unsigned DLLs.
 
 ## Bundle contents
 
@@ -89,7 +89,7 @@ Serials are hashed. Do not ask testers to paste raw serial numbers in email.
 
 **Tester sees:** Setup finishes, Start menu shortcut does nothing, or a .NET Runtime Event Log `FileLoadException` / `0x800711C7` (Application Control blocked `Installer.Infrastructure.dll`).
 
-**Operator response:** That is v0.1.1’s multi-DLL publish. Give them **v0.3.0** (single-file). Do not treat this as a missing APK or cable issue.
+**Operator response:** That is v0.1.1’s multi-DLL publish. Give them **v0.4.0** (single-file). Do not treat this as a missing APK or cable issue.
 
 ### Selected APK missing
 
