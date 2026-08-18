@@ -9,21 +9,25 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 ## Welcome
 
 - Headline: Install apps on your device
-- Body: Connect a headset or phone first. After it is ready, you choose the APK files to install. A USB cable is the usual way. Wi-Fi is optional after the device has approved this computer.
+- Body: Connect a headset or phone first. A USB-C data cable is the usual first step. After the device has approved this computer, you can switch to Wi-Fi and unplug. Then choose the APK files to install.
 - Primary: Start
-- Help: You will plug in the device, approve a permission if asked, then pick one or more APK files. Privacy and Terms open from the header.
+- Help: You will plug in the device, approve a permission if asked, then pick one or more APK files. Wi-Fi setup for Quest 2 and Quest 3 is on the next screen. Privacy and Terms open from the header.
 - Advanced: No app is bundled. APK files are chosen after the device is connected.
 - In-page (muted): A newer installer is available, with a Download link to the stable setup.exe. No auto-download.
 
 ## Connect device
 
 - Headline: Connect your device
-- Body: Plug the headset or phone into this computer with a USB cable that can transfer files, then wait a moment.
+- Body: Plug in with a USB-C data cable, or connect over Wi-Fi using the Quest 2 / Quest 3 steps below.
 - Primary: I connected it
-- Help: Charge-only cables will not work. The cable that ships with Quest is often charge-only. Try another USB-C data cable and a USB port on the computer, not a hub. To use Wi-Fi, the device must be on the same network as this computer. Pairing codes are optional and go in the form below.
+- Help: Charge-only cables will not work. The cable that ships with Quest is often charge-only. Try another USB-C data cable and a USB port on the computer, not a hub. For Wi-Fi, the headset and this computer must be on the same network. Pairing codes expire quickly. After a headset reboot, plug in with USB once more unless you pair again.
 - Secondary: Export diagnostics (footer)
 - In-page health (after failed attempts): Windows sees a headset but this installer does not → data cable + Oculus ADB driver. Windows sees nothing → cable/hub.
-- In-page (not the footer primary): **Connect over Wi-Fi** when a last address is saved. Compact form: address, optional pairing port and six-digit code, then Connect.
+- In-page: USB card (cable, then **I connected it**). Wi-Fi card is always visible.
+- In-page: **Connect over Wi-Fi** as a raised card when a last address is saved (one tap). Same network; after a reboot, plug in once more.
+- In-page expander (open when no saved address): **How to set up Wi-Fi on Quest 2 or Quest 3** — numbered USB-once path (Horizon app Developer Mode → data cable → Quick Control → Settings → Developer → MTP Notification → Always allow → **Switch to Wi-Fi** on Choose apps).
+- In-page expander: **I already have a pairing code from the headset** — same Wi-Fi, Settings → System → Developer → wireless debugging, install address vs pairing port, then the form.
+- In-page form: install address (IP, port 5555 if omitted), optional pairing port and six-digit code, then **Connect over Wi-Fi**. Pairing numbers are not the install port.
 - Advanced: Last detection status and raw device list.
 
 ## Device detected
@@ -61,19 +65,21 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 - Body: On your phone, open the Meta Horizon app. Tap the headset icon, then your headset, then Headset Settings, then Developer Mode, and turn it on.
 - Primary: I turned it on
 - Secondary: Export diagnostics (footer)
-- Help: You need a Meta developer account on a developer team. After turning it on, connect a USB-C data cable, put the headset on, open Quick Control → Settings → Developer, and turn on MTP Notification. When asked, choose Always allow from this computer.
+- Help: You need a Meta developer account on a developer team. After turning it on, connect a USB-C data cable, put the headset on, open Quick Control → Settings → Developer, and turn on MTP Notification. When asked, choose Always allow from this computer. After the headset allows this computer, you can switch to Wi-Fi on Choose apps.
 - Advanced: Link to Meta device-setup docs.
 
 ## Choose apps to install
 
 - Headline: Choose apps to install
-- Body: {model} is ready. Add one or more APK files, then install.
+- Body (USB): {model} is ready. Add APK files, or switch to Wi-Fi and unplug.
+- Body (Wi-Fi): {model} is ready over Wi-Fi. Add one or more APK files, then install.
 - Primary: Install now (disabled until at least one APK is added)
 - Secondary in page: Add app files (multi-select `*.apk;*.apks;*.xapk`; drag-and-drop onto the page)
 - Secondary in page: Use last files (when previous paths still exist)
-- Secondary in page: Use Wi-Fi (only when the device is USB and ready)
+- Secondary in page: **Switch to Wi-Fi** card (only when the device is USB and ready). After this you can unplug.
+- In-page: **Connected over Wi-Fi** card when the session is already wireless.
 - Warning: This looks like only part of an app. Add the other files or an .apks package.
-- Help: Existing copies of the same app may be replaced. Your photos and other apps are not touched.
+- Help: Existing copies of the same app may be replaced. Your photos and other apps are not touched. Switch to Wi-Fi only after the device has approved this computer.
 - Advanced: Policy name, package id, and split set.
 
 ## Installing

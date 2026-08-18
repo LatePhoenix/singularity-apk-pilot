@@ -33,7 +33,7 @@ Sideloading requires developer mode and USB debugging approval. Current Meta set
 3. Use a USB-C **data** cable (the cable in the Quest box is not suitable).
 4. In-headset: Quick Control → Settings → Developer → MTP Notification on.
 5. Approve USB debugging and choose **Always allow from this computer**.
-6. Optional: on Choose apps, tap **Use Wi-Fi**, then unplug. Later sessions can tap **Connect over Wi-Fi** or enter an address / pairing code on Connect device.
+6. Optional: on Choose apps, tap **Switch to Wi-Fi**, then unplug. Later sessions can tap **Connect over Wi-Fi** or enter an address / pairing code on Connect device. Quest 2 / 3 walkthrough is on that screen.
 7. Choose APK, APKS, or XAPK files, install (including split sets), then tell the tester the app may appear under Unknown Sources. Headset UI placement can change across Horizon OS updates. **Open on device** is optional after install.
 
 ## Phone flow
@@ -78,7 +78,7 @@ Product copies: [`legal/PrivacyPolicy.md`](legal/PrivacyPolicy.md), [`legal/Term
 ## Manual acceptance paths
 
 - Quest: unauthorized → authorized → install.
-- Quest: authorized USB → Use Wi-Fi → unplug → install.
+- Quest: authorized USB → Switch to Wi-Fi → unplug → install.
 - Phone: unauthorized → authorized → install.
 - Quest: two ready devices → picker → continue with the selected headset.
 - Quest: install a split set / `.apks`, then Open on device.

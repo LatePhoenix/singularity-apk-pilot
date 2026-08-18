@@ -6,15 +6,36 @@
              Drop="OnDrop"
              DragOver="OnDragOver">
     <StackPanel Margin="0,16,0,0">
-        <Button Content="Use Wi-Fi"
-                Style="{StaticResource SecondaryPill}"
-                Command="{Binding UseWifiCommand}"
-                IsEnabled="{Binding CanUseWifi}"
-                HorizontalAlignment="Left"
+        <Border Style="{StaticResource AccentCard}"
                 Margin="0,0,0,16"
-                Visibility="{Binding ShowUseWifi, Converter={StaticResource BoolToVisibility}}"
-                AutomationProperties.Name="Use Wi-Fi"
-                AutomationProperties.AutomationId="UseWifi"/>
+                Visibility="{Binding ShowUseWifi, Converter={StaticResource BoolToVisibility}}">
+            <StackPanel>
+                <TextBlock Text="WI-FI" Style="{StaticResource Eyebrow}"/>
+                <TextBlock Text="Switch to Wi-Fi" FontWeight="SemiBold" FontSize="15" Margin="0,6,0,4"/>
+                <TextBlock Text="After this you can unplug. Keep the headset or phone awake on the same Wi-Fi as this computer."
+                           Style="{StaticResource Label}"
+                           TextWrapping="Wrap"
+                           Margin="0,0,0,12"/>
+                <Button Content="Switch to Wi-Fi"
+                        Style="{StaticResource SecondaryPill}"
+                        Command="{Binding UseWifiCommand}"
+                        IsEnabled="{Binding CanUseWifi}"
+                        HorizontalAlignment="Left"
+                        AutomationProperties.Name="Switch to Wi-Fi"
+                        AutomationProperties.AutomationId="UseWifi"/>
+            </StackPanel>
+        </Border>
+        <Border Style="{StaticResource Card}"
+                Margin="0,0,0,16"
+                Visibility="{Binding ShowWifiConnected, Converter={StaticResource BoolToVisibility}}">
+            <StackPanel>
+                <TextBlock Text="WI-FI" Style="{StaticResource Eyebrow}"/>
+                <TextBlock Text="Connected over Wi-Fi" FontWeight="SemiBold" FontSize="15" Margin="0,6,0,4"/>
+                <TextBlock Text="You can leave the cable unplugged. Keep the device awake on this network."
+                           Style="{StaticResource Label}"
+                           TextWrapping="Wrap"/>
+            </StackPanel>
+        </Border>
         <Button Content="Use last files"
                 Style="{StaticResource SecondaryPill}"
                 Command="{Binding UseLastFilesCommand}"

@@ -11,5 +11,6 @@ public enum DeviceIllustrationKind
     Package = 6,
     Installing = 7,
     Problem = 8,
-    Complete = 9
+    Complete = 9,
+    ConnectOptions = 10
 }

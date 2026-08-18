@@ -102,6 +102,18 @@
                 <Ellipse Canvas.Left="96" Canvas.Top="28" Width="88" Height="88" Stroke="{DynamicResource AccentGreenBrush}" StrokeThickness="1.5" Fill="Transparent"/>
                 <Path Data="M 120,74 L 136,90 L 168,54" Stroke="{DynamicResource AccentGreenBrush}" StrokeThickness="2.5" Fill="Transparent" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"/>
             </Canvas>
+
+            <Canvas x:Name="ConnectOptionsCanvas" Visibility="Collapsed">
+                <Rectangle Canvas.Left="16" Canvas.Top="44" Width="56" Height="60" RadiusX="6" RadiusY="6" Style="{StaticResource Stroke}"/>
+                <Rectangle Canvas.Left="28" Canvas.Top="56" Width="32" Height="20" RadiusX="2" RadiusY="2" Style="{StaticResource Hairline}"/>
+                <Rectangle Canvas.Left="72" Canvas.Top="68" Width="18" Height="12" RadiusX="2" RadiusY="2" Style="{StaticResource Stroke}"/>
+                <Path Data="M 90,74 C 118,74 118,108 156,108 C 176,108 186,86 192,80" Style="{StaticResource Stroke}"/>
+                <Path Data="M 108,52 A 22,22 0 0 1 146,52" Style="{StaticResource Hairline}"/>
+                <Path Data="M 98,42 A 34,34 0 0 1 156,42" Stroke="{DynamicResource BrandCyanBrush}" StrokeThickness="1.5" Fill="Transparent" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                <Path Data="M 90,32 A 46,46 0 0 1 164,32" Style="{StaticResource Hairline}"/>
+                <Path Data="M 196,86 C 196,62 220,48 248,48 C 268,48 268,72 268,86 L 260,106 C 248,118 228,124 212,124 C 198,124 186,116 180,106 Z" Style="{StaticResource Stroke}"/>
+                <Ellipse Canvas.Left="216" Canvas.Top="78" Width="20" Height="16" Style="{StaticResource Hairline}"/>
+            </Canvas>
         </Grid>
     </Viewbox>
 </UserControl>

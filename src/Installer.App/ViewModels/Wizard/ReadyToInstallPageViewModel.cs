@@ -49,6 +49,9 @@ public sealed partial class ReadyToInstallPageViewModel : WizardPageViewModel
     private bool isWifiBusy;
 
     [ObservableProperty]
+    private bool showWifiConnected;
+
+    [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowUseLastFiles))]
     private bool hasRecents;
 
@@ -83,7 +86,9 @@ public sealed partial class ReadyToInstallPageViewModel : WizardPageViewModel
 
     protected override void OnApplied(WizardState state)
     {
-        ShowUseWifi = state.Device is { State: DeviceConnectionState.ConnectedReady, IsWireless: false };
+        var ready = state.Device is { State: DeviceConnectionState.ConnectedReady };
+        ShowUseWifi = ready && state.Device is { IsWireless: false };
+        ShowWifiConnected = ready && state.Device is { IsWireless: true };
     }
 
     [RelayCommand]

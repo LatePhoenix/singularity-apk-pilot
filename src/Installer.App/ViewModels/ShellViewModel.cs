@@ -449,7 +449,7 @@ public sealed partial class ShellViewModel : ObservableObject
         var endpoint = _wireless.LastEndpoint;
         if (endpoint is null)
         {
-            PayloadWarning = "No saved Wi-Fi address yet. Plug in with a USB cable first, or enter an address below.";
+            PayloadWarning = "No saved Wi-Fi address yet. Plug in with a USB cable first, or enter an address in the Wi-Fi form.";
             return;
         }
 
@@ -472,7 +472,7 @@ public sealed partial class ShellViewModel : ObservableObject
     {
         if (State.Device is null || State.Device.IsWireless)
         {
-            PayloadWarning = "Connect the device with a USB cable first, then use Wi-Fi.";
+            PayloadWarning = "Connect the device with a USB cable first, then switch to Wi-Fi.";
             return Task.CompletedTask;
         }
 
