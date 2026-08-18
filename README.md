@@ -6,7 +6,7 @@
 
 **⬇️ [Download SingularityApkInstaller-win-x64-setup.exe](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe)** — that link always serves the latest GitHub Release asset.
 
-Windows guided installer for non-technical testers. Plug in a Meta Quest 2/3 or Android phone, follow one highlighted action per screen, then choose APK files to install with portable `adb`.
+Windows guided installer for non-technical testers. Plug in a Meta Quest 2/3 or Android phone, follow one highlighted action per screen, then choose APK files to install with portable `adb`. After the device has approved this computer, you can switch to Wi-Fi and unplug.
 
 > Part of the [Singularity](https://github.com/LatePhoenix/singularity-hub) app family.
 
@@ -33,6 +33,7 @@ The installer is unsigned unless `pack.ps1` is run with a code-signing certifica
 - USB-C **data** cable (the cable in the Quest box is not suitable)
 - Oculus ADB Drivers for Quest on Windows
 - For Quest: Developer Mode in the Meta Horizon app, then **Always allow from this computer** in-headset
+- Optional Wi-Fi: after that approval, **Switch to Wi-Fi** on Choose apps; later sessions use **Connect over Wi-Fi**. Headset and PC must be on the same network.
 
 ## Build from source
 

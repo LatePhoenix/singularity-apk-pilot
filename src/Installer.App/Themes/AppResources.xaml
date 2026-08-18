@@ -101,6 +101,11 @@
         <Setter Property="Padding" Value="16"/>
     </Style>
 
+    <Style x:Key="AccentCard" TargetType="Border" BasedOn="{StaticResource Card}">
+        <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryAccentBrush}"/>
+    </Style>
+
     <Style x:Key="SecondaryPill" TargetType="Button">
         <Setter Property="Background" Value="{DynamicResource ButtonBackgroundBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>

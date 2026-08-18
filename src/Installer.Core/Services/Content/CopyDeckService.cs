@@ -26,15 +26,15 @@ public sealed class CopyDeckService : IContentService
         {
             WizardStep.Welcome => new WizardCopy(
                 "Install apps on your device",
-                "Connect a headset or phone first. After it is ready, you choose the APK files to install. A USB cable is the usual way. Wi-Fi is optional after the device has approved this computer.",
+                "Connect a headset or phone first. A USB-C data cable is the usual first step. After the device has approved this computer, you can switch to Wi-Fi and unplug. Then choose the APK files to install.",
                 "Start",
-                "You will plug in the device, approve a permission if asked, then pick one or more APK files. Privacy and Terms open from the header.",
+                "You will plug in the device, approve a permission if asked, then pick one or more APK files. Wi-Fi setup for Quest 2 and Quest 3 is on the next screen. Privacy and Terms open from the header.",
                 "No app is bundled. APK files are chosen after the device is connected."),
             WizardStep.ConnectDevice => new WizardCopy(
                 "Connect your device",
-                "Plug the headset or phone into this computer with a USB cable that can transfer files, then wait a moment.",
+                "Plug in with a USB-C data cable, or connect over Wi-Fi using the Quest 2 / Quest 3 steps below.",
                 "I connected it",
-                AppendHealth("Charge-only cables will not work. The cable that ships with Quest is often charge-only. Try another USB-C data cable and a USB port on the computer, not a hub. To use Wi-Fi, the device must be on the same network as this computer. Pairing codes are optional and go in the form below.", healthHint),
+                AppendHealth("Charge-only cables will not work. The cable that ships with Quest is often charge-only. Try another USB-C data cable and a USB port on the computer, not a hub. For Wi-Fi, the headset and this computer must be on the same network. Pairing codes expire quickly. After a headset reboot, plug in with USB once more unless you pair again.", healthHint),
                 "Waiting for a connected device."),
             WizardStep.DeviceDetected => new WizardCopy(
                 $"{model} detected",
@@ -60,13 +60,15 @@ public sealed class CopyDeckService : IContentService
                 "Turn on developer mode",
                 "On your phone, open the Meta Horizon app. Tap the headset icon, then your headset, then Headset Settings, then Developer Mode, and turn it on.",
                 "I turned it on",
-                AppendHealth("You need a Meta developer account on a developer team. After turning it on, connect a USB-C data cable, put the headset on, open Quick Control → Settings → Developer, and turn on MTP Notification. When asked, choose Always allow from this computer.", healthHint),
+                AppendHealth("You need a Meta developer account on a developer team. After turning it on, connect a USB-C data cable, put the headset on, open Quick Control → Settings → Developer, and turn on MTP Notification. When asked, choose Always allow from this computer. After the headset allows this computer, you can switch to Wi-Fi on Choose apps.", healthHint),
                 "Meta Horizon app path: Headset Settings → Developer Mode"),
             WizardStep.ReadyToInstall => new WizardCopy(
                 "Choose apps to install",
-                $"{model} is ready. Add one or more APK files, then install.",
+                device?.IsWireless == true
+                    ? $"{model} is ready over Wi-Fi. Add one or more APK files, then install."
+                    : $"{model} is ready. Add APK files, or switch to Wi-Fi and unplug.",
                 "Install now",
-                "Existing copies of the same app may be replaced. Your photos and other apps are not touched. If a file looks like only part of an app, add the other files or an .apks package.",
+                "Existing copies of the same app may be replaced. Your photos and other apps are not touched. If a file looks like only part of an app, add the other files or an .apks package. Switch to Wi-Fi only after the device has approved this computer.",
                 $"Install mode: {manifest.InstallPolicy}"),
             WizardStep.Installing => new WizardCopy(
                 userPicked && (string.IsNullOrWhiteSpace(name) || name == "apps") ? "Installing" : $"Installing {name}",

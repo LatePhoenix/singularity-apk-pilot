@@ -18,6 +18,18 @@ public sealed class WizardFlowServiceTests
         Assert.Equal("Install apps on your device", state.Copy.Headline);
         Assert.DoesNotContain("Halo", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("choose", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Wi-Fi", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void Connect_copy_offers_usb_and_wifi()
+    {
+        var state = _flow.CreateInitialState(InstallManifest.Session);
+        state = _flow.Advance(state, WizardTrigger.Start);
+        Assert.Equal(WizardStep.ConnectDevice, state.CurrentStep);
+        Assert.Contains("USB", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Wi-Fi", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Quest 2", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -44,6 +56,7 @@ public sealed class WizardFlowServiceTests
         state = _flow.Advance(state, WizardTrigger.Continue, state.Device);
         Assert.Equal(WizardStep.ReadyToInstall, state.CurrentStep);
         Assert.Contains("Choose apps", state.Copy.Headline, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Wi-Fi", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -104,6 +117,25 @@ public sealed class WizardFlowServiceTests
         Assert.Equal(WizardStep.Installing, state.CurrentStep);
         Assert.Contains("Wi-Fi", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("cable", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void Ready_to_install_wifi_copy_says_ready_over_wifi()
+    {
+        var device = new DeviceInfo(
+            "192.168.1.42:5555",
+            "Oculus",
+            "Quest 3",
+            "14",
+            DeviceKind.MetaQuest,
+            DeviceConnectionState.ConnectedReady,
+            true,
+            true,
+            new Dictionary<string, string>());
+        var state = Detected(device);
+        state = _flow.Advance(state, WizardTrigger.Continue, device);
+        Assert.Equal(WizardStep.ReadyToInstall, state.CurrentStep);
+        Assert.Contains("over Wi-Fi", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

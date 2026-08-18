@@ -56,8 +56,10 @@ public abstract partial class WizardPageViewModel : ObservableObject
         var quest = state.Device?.IsQuest == true || state.Device?.Kind == DeviceKind.MetaQuest;
         return state.CurrentStep switch
         {
-            WizardStep.Welcome or WizardStep.ConnectDevice =>
+            WizardStep.Welcome =>
                 (DeviceIllustrationKind.Cable, "Computer connected to a headset or phone with a USB-C cable.", "", "Idle"),
+            WizardStep.ConnectDevice =>
+                (DeviceIllustrationKind.ConnectOptions, "Connect with a USB-C cable, or over Wi-Fi after the headset has approved this computer.", "", "Idle"),
             WizardStep.DeviceDetected when quest =>
                 (DeviceIllustrationKind.Headset, $"{state.Device?.DisplayName} headset detected.", "Headset connected", "Live"),
             WizardStep.DeviceDetected =>

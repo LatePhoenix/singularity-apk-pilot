@@ -63,6 +63,7 @@ public partial class DeviceIllustration : UserControl
         InstallingCanvas.Visibility = VisibleIf(DeviceIllustrationKind.Installing);
         ProblemCanvas.Visibility = VisibleIf(DeviceIllustrationKind.Problem);
         CompleteCanvas.Visibility = VisibleIf(DeviceIllustrationKind.Complete);
+        ConnectOptionsCanvas.Visibility = VisibleIf(DeviceIllustrationKind.ConnectOptions);
         UpdateAutomation();
     }
 

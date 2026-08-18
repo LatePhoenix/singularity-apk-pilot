@@ -26,7 +26,7 @@ ViewModels call service interfaces only. `App/Bootstrap` is the only place that 
 
 - **Adb:** `IAdbClient`, `AdbCommandFactory`, output parsers. Command strings are built here; process launch is not. Wireless commands: `tcpip`, `connect`, `disconnect`, `pair`, and Wi-Fi address via `ip`. Install commands include `install-multiple`, `cmd package resolve-activity`, and `am start`.
 - **Packages:** `IApkInspector` reads package id / version / split name from APK zip manifests (binary AXML or XML). `.apks` / `.xapk` are zip-of-apks. `IInstallSetFactory` groups files into install sets.
-- **Wireless:** `IWirelessAdbService` enables USB-first Wi-Fi, reconnects a saved endpoint, and pairs then connects. Last address is stored in AppData, never pairing codes.
+- **Wireless:** `IWirelessAdbService` enables USB-first Wi-Fi, reconnects a saved endpoint, and pairs then connects. Last address is stored in AppData, never pairing codes. Connect device shows the Quest 2/3 walkthrough and a Wi-Fi form; Choose apps offers **Switch to Wi-Fi** after USB approval.
 - **Devices:** parse `adb devices -l`, classify Quest vs phone, prefer a Wi-Fi record when USB and Wi-Fi both appear, poll for WPF binding. `IDeviceHealthService` plus an Infrastructure USB registry probe distinguish empty `adb` from Windows seeing a headset.
 - **Install:** plan flags from `InstallPolicy` + manifest + `InstallSet`, execute `install` or `install-multiple`, verify package, optional launch.
 - **Flow:** deterministic wizard state machine with Quest and Android strategies. Device refresh does not leave Device detected while two or more ready devices are unresolved.
