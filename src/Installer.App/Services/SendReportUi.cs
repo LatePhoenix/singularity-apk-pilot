@@ -46,8 +46,10 @@ public sealed class SendReportUi : ISendReportUi
             lastResult,
             initial);
         var window = new SendReportWindow(viewModel);
-        var owner = Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w is ShellWindow && w.IsVisible)
-            ?? Application.Current?.MainWindow;
+        var owner = Application.Current?.Windows.OfType<Window>()
+                         .LastOrDefault(w => w.IsVisible && w is TroubleshootWindow)
+                     ?? Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w is ShellWindow && w.IsVisible)
+                     ?? Application.Current?.MainWindow;
         if (owner is not null && !ReferenceEquals(owner, window))
         {
             window.Owner = owner;

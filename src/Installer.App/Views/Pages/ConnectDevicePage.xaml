@@ -1,7 +1,7 @@
 ﻿<UserControl x:Class="Installer.App.Views.Pages.ConnectDevicePage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StackPanel Margin="0,8,0,0">
+    <StackPanel>
         <TextBlock Text="{Binding HealthHint}"
                    Style="{StaticResource WarningBanner}"
                    Visibility="{Binding HealthHint, Converter={StaticResource StringNotEmptyToVisibility}}"/>
@@ -14,15 +14,11 @@
 
         <Border Style="{StaticResource AccentCard}"
                 Margin="0,0,0,12"
+                Padding="12"
                 Visibility="{Binding HasRememberedEndpoint, Converter={StaticResource BoolToVisibility}}">
             <StackPanel>
                 <TextBlock Text="SAVED WI-FI" Style="{StaticResource Eyebrow}"/>
-                <TextBlock Text="Connect over Wi-Fi" Style="{StaticResource H2}" Margin="0,6,0,4"/>
-                <TextBlock Text="{Binding RememberedLabel}" Style="{StaticResource Mono}" Margin="0,0,0,8"/>
-                <TextBlock Text="Same network as this computer. After a headset reboot, plug in once more."
-                           Style="{StaticResource Label}"
-                           TextWrapping="Wrap"
-                           Margin="0,0,0,12"/>
+                <TextBlock Text="{Binding RememberedLabel}" Style="{StaticResource Mono}" Margin="0,4,0,8"/>
                 <Button Content="Connect over Wi-Fi"
                         Style="{StaticResource SecondaryPill}"
                         Command="{Binding ConnectRememberedCommand}"
@@ -33,26 +29,16 @@
             </StackPanel>
         </Border>
 
-        <Border Style="{StaticResource RaisedWell}" Padding="16" Margin="0,0,0,12">
-            <StackPanel>
-                <TextBlock Text="USB" Style="{StaticResource Eyebrow}"/>
-                <TextBlock Text="Plug a USB-C data cable into the headset or phone, then tap I connected it below."
-                           Style="{StaticResource Body}"
-                           Margin="0,6,0,0"/>
-            </StackPanel>
-        </Border>
-
-        <Border Style="{StaticResource RaisedWell}" Padding="16">
+        <Border Style="{StaticResource RaisedWell}" Padding="12">
             <StackPanel>
                 <TextBlock Text="WI-FI" Style="{StaticResource Eyebrow}"/>
-                <TextBlock Text="Connect over Wi-Fi" Style="{StaticResource H2}" Margin="0,6,0,4"/>
+                <TextBlock Text="Connect over Wi-Fi" Style="{StaticResource H2}" Margin="0,4,0,4"/>
                 <TextBlock Text="Quest 2 and Quest 3: set up with a cable once, then unplug. Phones can use the same address form."
                            Style="{StaticResource Label}"
                            TextWrapping="Wrap"
-                           Margin="0,0,0,12"/>
+                           Margin="0,0,0,8"/>
 
                 <Expander Header="How to set up Wi-Fi on Quest 2 or Quest 3"
-                          IsExpanded="{Binding ShowWifiGuideExpanded, Mode=OneWay}"
                           Margin="0,0,0,8"
                           AutomationProperties.Name="How to set up Wi-Fi on Quest 2 or Quest 3">
                     <StackPanel Margin="0,12,0,0">
@@ -69,7 +55,7 @@
                 </Expander>
 
                 <Expander Header="I already have a pairing code from the headset"
-                          Margin="0,0,0,16"
+                          Margin="0,0,0,12"
                           AutomationProperties.Name="I already have a pairing code from the headset">
                     <StackPanel Margin="0,12,0,0">
                         <ItemsControl ItemsSource="{Binding PairingSteps}"

@@ -18,15 +18,15 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 ## Connect device
 
 - Headline: Connect your device
-- Body: Plug in with a USB-C data cable, or connect over Wi-Fi using the Quest 2 / Quest 3 steps below.
+- Body: Plug in with a USB-C data cable, then tap I connected it. Or connect over Wi-Fi using the Quest 2 / Quest 3 steps below.
 - Primary: I connected it
 - Help: Charge-only cables will not work. The cable that ships with Quest is often charge-only. Try another USB-C data cable and a USB port on the computer, not a hub. For Wi-Fi, the headset and this computer must be on the same network. Pairing codes expire quickly. After a headset reboot, plug in with USB once more unless you pair again.
 - Secondary: **Send a report** (footer)
-- Secondary: **Need help connecting?** opens the troubleshooting helper (Quest vs phone, one task per screen). Two failed **I connected it** attempts open the same helper.
+- Secondary: **Need help connecting?** opens a compact connection helper window (Quest vs phone, one task per screen). Two failed **I connected it** attempts open the same helper. The helper closes when a device is ready, or when Leave helper is used.
 - In-page health (after failed attempts): Windows sees a headset but this installer does not → data cable + Oculus ADB driver. Windows sees nothing → cable/hub. Status chip when Windows sees USB but this installer does not.
-- In-page: USB card (cable, then **I connected it**). Wi-Fi card is always visible.
+- In-page: Wi-Fi card is always visible. Wi-Fi guide and pairing expanders stay collapsed until opened.
 - In-page: **Connect over Wi-Fi** as a raised card when a last address is saved (one tap). Same network; after a reboot, plug in once more.
-- In-page expander (open when no saved address): **How to set up Wi-Fi on Quest 2 or Quest 3** — numbered USB-once path (Horizon app Developer Mode → data cable → Quick Control → Settings → Developer → MTP Notification → Always allow → **Switch to Wi-Fi** on Choose apps).
+- In-page expander: **How to set up Wi-Fi on Quest 2 or Quest 3** — numbered USB-once path (Horizon app Developer Mode → data cable → Quick Control → Settings → Developer → MTP Notification → Always allow → **Switch to Wi-Fi** on Choose apps).
 - In-page expander: **I already have a pairing code from the headset** — same Wi-Fi, Settings → System → Developer → wireless debugging, install address vs pairing port, then the form.
 - In-page form: install address (IP, port 5555 if omitted), optional pairing port and six-digit code, then **Connect over Wi-Fi**. Pairing numbers are not the install port.
 - Advanced: Last detection status and raw device list.
@@ -98,7 +98,7 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 
 - Headline: We could not finish installing
 - Body: Use the suggested action below. If that does not work, tap Send a report and email it to the person who asked you to test.
-- Primary: Try automatic fix (when an auto-fix exists) or Try again
+- Primary: Try again (non-destructive). Signature mismatch still requires **Remove this app and install**.
 - Secondary: **Send a report**
 - In-page: **Replace this app** / **Remove this app and install** when the package id is known (already exists, downgrade, or signature mismatch)
 - Help: Most failures are a missing permission, a full device, or an older build that cannot be replaced until it is removed.
@@ -149,11 +149,12 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 
 ## Troubleshoot
 
-Side-flow from Connect, Authorization, Developer mode, or a connection-lost Install problem. Primary copy never says ADB. Leave helper returns to the previous screen. A ready device exits immediately.
+Owned modal helper window from Connect, Authorization, Developer mode, or a connection-lost Install problem. The main installer waits. Primary copy never says ADB. Leave helper or closing the window returns to the previous screen. A ready device closes the helper immediately.
 
 - Headline / primary depend on the current node (What are you connecting?, cable, wear headset, developer mode, MTP Notification, allow, USB helper, restart helper, phone USB mode, Wi-Fi rescue, reboot, still stuck).
-- Primary: **I plugged it in** / **I have it on** / **I turned it on** / **I allowed it** / **Check again** / **I installed it** (never the automated work).
-- In-page: family picker (Quest vs phone); numbered steps; optional **Restart connection helper**, **Get Quest USB support** (opens Meta’s driver page, or installs a bundled `android_winusb.inf` if present), **Open USB support page** (phone OEM), **Send a report**.
-- Secondary: **Send a report** (footer, every screen except Installing). Opens a window asking for the email of the person who asked them to test, then opens their email app with the report attached. Includes `session-log.txt`. They still press Send in the email app.
+- Primary: **I plugged it in** / **I have it on** / **I turned it on** / **I allowed it** / **Check again** for confirm-only nodes.
+- Primary on helper-action nodes: **Restart connection helper** (restarts the helper this installer uses, then rescan; stay on this node if it fails), **Install Quest USB support** / **Get Quest USB support**, **Open USB support page**. After USB helper opens or installs, **I installed it** confirms.
+- In-page: family picker (Quest vs phone); numbered steps; **I installed it** after USB helper actions.
+- Secondary: **Send a report** (helper footer). Opens a window asking for the email of the person who asked them to test, then opens their email app with the report attached. Includes `session-log.txt`. They still press Send in the email app.
 - Help: account age / developer team for Quest developer mode; pairing port vs install address for Wi-Fi.
 - Advanced: ADB/driver terms allowed here only.

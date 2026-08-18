@@ -81,7 +81,8 @@ public sealed class DiagnosticsServiceTests
     {
         public Task StartServerAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
         public Task KillServerAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
-        public Task RestartServerAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+        public Task<AdbProcessResult> RestartServerAsync(CancellationToken cancellationToken = default) =>
+            Task.FromResult(new AdbProcessResult(0, "", "", TimeSpan.Zero, ["start-server"]));
         public Task<IReadOnlyList<AdbDeviceRecord>> ListDevicesAsync(CancellationToken cancellationToken = default) =>
             Task.FromResult<IReadOnlyList<AdbDeviceRecord>>([]);
         public Task<string> GetPropertyAsync(string serial, string key, CancellationToken cancellationToken = default) => Task.FromResult("");

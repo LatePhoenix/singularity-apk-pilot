@@ -29,15 +29,17 @@ public abstract partial class WizardPageViewModel : ObservableObject
 
     public string Headline => Copy.Headline;
     public string Body => Copy.Body;
-    public string PrimaryAction => Copy.PrimaryAction;
+    public virtual string PrimaryAction => Copy.PrimaryAction;
     public string Help => Copy.Help;
     public bool ShowStatus => !string.IsNullOrWhiteSpace(StatusText);
+    public bool ShowIllustration { get; private set; }
 
     public void Apply(WizardState state)
     {
         Copy = state.Copy;
         AdvancedDetails = state.Copy.Advanced;
         IsBusy = state.IsBusy;
+        ShowIllustration = IllustrationVisible(state.CurrentStep);
         (Illustration, IllustrationDescription, StatusText, StatusTone) = ResolveChrome(state);
         OnApplied(state);
         OnPropertyChanged(nameof(Headline));
@@ -45,11 +47,18 @@ public abstract partial class WizardPageViewModel : ObservableObject
         OnPropertyChanged(nameof(PrimaryAction));
         OnPropertyChanged(nameof(Help));
         OnPropertyChanged(nameof(ShowStatus));
+        OnPropertyChanged(nameof(ShowIllustration));
     }
 
     protected virtual void OnApplied(WizardState state)
     {
     }
+
+    private static bool IllustrationVisible(WizardStep step) =>
+        step is not WizardStep.ConnectDevice
+            and not WizardStep.ReadyToInstall
+            and not WizardStep.InstalledApps
+            and not WizardStep.Troubleshoot;
 
     private static (DeviceIllustrationKind kind, string description, string status, string tone) ResolveChrome(WizardState state)
     {

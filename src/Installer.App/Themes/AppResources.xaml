@@ -63,8 +63,8 @@
         <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
     </Style>
     <Style x:Key="Display" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="28"/>
-        <Setter Property="LineHeight" Value="34"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="LineHeight" Value="26"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
         <Setter Property="TextWrapping" Value="Wrap"/>
@@ -90,7 +90,7 @@
         <Setter Property="FontWeight" Value="Regular"/>
         <Setter Property="Foreground" Value="{DynamicResource BodyTextBrush}"/>
         <Setter Property="TextWrapping" Value="Wrap"/>
-        <Setter Property="Margin" Value="0,0,0,16"/>
+        <Setter Property="Margin" Value="0,0,0,12"/>
     </Style>
     <Style x:Key="Label" TargetType="TextBlock">
         <Setter Property="FontSize" Value="12"/>
@@ -153,8 +153,8 @@
         <Setter Property="Padding" Value="16"/>
     </Style>
     <Style x:Key="IllustrationWell" TargetType="Border" BasedOn="{StaticResource SunkenWell}">
-        <Setter Property="Padding" Value="12"/>
-        <Setter Property="Margin" Value="0,0,0,16"/>
+        <Setter Property="Padding" Value="8"/>
+        <Setter Property="Margin" Value="0,0,0,12"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
     </Style>
     <Style x:Key="SkeletonRow" TargetType="Border">

@@ -6,7 +6,7 @@ public interface IAdbClient
 {
     Task StartServerAsync(CancellationToken cancellationToken = default);
     Task KillServerAsync(CancellationToken cancellationToken = default);
-    Task RestartServerAsync(CancellationToken cancellationToken = default);
+    Task<AdbProcessResult> RestartServerAsync(CancellationToken cancellationToken = default);
     Task<IReadOnlyList<AdbDeviceRecord>> ListDevicesAsync(CancellationToken cancellationToken = default);
     Task<string> GetPropertyAsync(string serial, string key, CancellationToken cancellationToken = default);
     Task<AdbProcessResult> InstallAsync(string serial, string apkPath, IReadOnlyList<string> flags, CancellationToken cancellationToken = default);
