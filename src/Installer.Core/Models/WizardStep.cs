@@ -11,5 +11,6 @@ public enum WizardStep
     Installing = 6,
     InstallProblem = 7,
     Complete = 8,
-    InstalledApps = 9
+    InstalledApps = 9,
+    Troubleshoot = 10
 }

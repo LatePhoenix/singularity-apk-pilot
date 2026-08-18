@@ -13,7 +13,8 @@ public sealed record WizardState(
     bool DeveloperModeLikelyRequired = false,
     IReadOnlyList<DeviceInfo>? ReadyDevices = null,
     DeviceHealth? Health = null,
-    WizardStep? ReturnStep = null)
+    WizardStep? ReturnStep = null,
+    TroubleshootSession? Troubleshoot = null)
 {
     public IReadOnlyList<DeviceInfo> Ready => ReadyDevices ?? [];
 

@@ -1,5 +1,6 @@
 using Installer.Core.Models;
 using Installer.Core.Services.Content;
+using Installer.Core.Services.Devices;
 using Installer.Core.Services.Flow;
 using Installer.Core.Services.Recovery;
 using Installer.Core.Services.Support;
@@ -190,6 +191,62 @@ public sealed class WizardFlowServiceTests
         Assert.Equal(WizardStep.ConnectDevice, state.CurrentStep);
     }
 
+    [Fact]
+    public void Two_failed_connects_open_troubleshoot()
+    {
+        var state = _flow.CreateInitialState(InstallManifest.Session);
+        state = _flow.Advance(state, WizardTrigger.Start);
+        state = _flow.Advance(state, WizardTrigger.Continue, null, readyDevices: [], health: new DeviceHealth(false, false, UsbEvidence.None));
+        Assert.Equal(WizardStep.ConnectDevice, state.CurrentStep);
+        state = _flow.Advance(state, WizardTrigger.Continue, null, readyDevices: [], health: new DeviceHealth(false, false, UsbEvidence.None));
+        Assert.Equal(WizardStep.Troubleshoot, state.CurrentStep);
+        Assert.Equal(WizardStep.ConnectDevice, state.ReturnStep);
+        Assert.NotNull(state.Troubleshoot);
+        Assert.Equal(TroubleshootNode.PickDevice, state.Troubleshoot.CurrentNode);
+        Assert.Equal("What are you connecting?", state.Copy.Headline);
+    }
+
+    [Fact]
+    public void Open_and_close_troubleshoot_restores_connect()
+    {
+        var state = _flow.CreateInitialState(InstallManifest.Session);
+        state = _flow.Advance(state, WizardTrigger.Start);
+        state = _flow.Advance(state, WizardTrigger.OpenTroubleshoot, null, readyDevices: [], health: new DeviceHealth(false, false, UsbEvidence.None));
+        Assert.Equal(WizardStep.Troubleshoot, state.CurrentStep);
+        Assert.Equal(WizardStep.ConnectDevice, state.ReturnStep);
+        state = _flow.Advance(state, WizardTrigger.CloseTroubleshoot);
+        Assert.Equal(WizardStep.ConnectDevice, state.CurrentStep);
+        Assert.Null(state.ReturnStep);
+        Assert.Null(state.Troubleshoot);
+    }
+
+    [Fact]
+    public void Ready_device_exits_troubleshoot()
+    {
+        var state = _flow.CreateInitialState(InstallManifest.Session);
+        state = _flow.Advance(state, WizardTrigger.Start);
+        state = _flow.Advance(state, WizardTrigger.OpenTroubleshoot, null, readyDevices: [], health: new DeviceHealth(false, false, UsbEvidence.None));
+        var quest = Quest(DeviceConnectionState.ConnectedReady);
+        state = _flow.Advance(state, WizardTrigger.DeviceRefresh, quest, readyDevices: [quest]);
+        Assert.Equal(WizardStep.ReadyToInstall, state.CurrentStep);
+        Assert.Null(state.Troubleshoot);
+    }
+
+    [Fact]
+    public void Install_problem_can_open_troubleshoot()
+    {
+        var quest = Quest(DeviceConnectionState.ConnectedReady);
+        var state = _flow.CreateInitialState(InstallManifest.Placeholder);
+        state = _flow.Advance(state, WizardTrigger.Install, quest);
+        var failed = InstallResult.Failed(InstallError.NoDevicesFound, "no devices/emulators found", []);
+        state = _flow.Advance(state, WizardTrigger.InstallFinished, quest, failed);
+        Assert.Equal(WizardStep.InstallProblem, state.CurrentStep);
+        state = _flow.Advance(state, WizardTrigger.OpenTroubleshoot, quest, readyDevices: []);
+        Assert.Equal(WizardStep.Troubleshoot, state.CurrentStep);
+        Assert.Equal(WizardStep.InstallProblem, state.ReturnStep);
+        Assert.Equal(TroubleshootFamily.MetaQuest, state.Troubleshoot?.Family);
+    }
+
     private WizardState Detected(DeviceInfo device)
     {
         var state = _flow.CreateInitialState(InstallManifest.Placeholder);
@@ -207,7 +264,8 @@ public sealed class WizardFlowServiceTests
     {
         var copy = new CopyDeckService(new FriendlyMessageService());
         var recovery = new RecoveryService(new AutoFixExecutor(new NoopAdb(), new NoopInstall(), new RetryPolicyFactory(), new NoopLog()));
-        return new WizardFlowService(new FlowDecisionEngine(new QuestFlowStrategy(), new AndroidPhoneFlowStrategy()), copy, recovery);
+        var troubleshoot = new TroubleshootingService(new TroubleshootCopyDeck());
+        return new WizardFlowService(new FlowDecisionEngine(new QuestFlowStrategy(), new AndroidPhoneFlowStrategy()), copy, recovery, troubleshoot);
     }
 
     private sealed class NoopAdb : IAdbClient

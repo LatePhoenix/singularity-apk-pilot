@@ -4,7 +4,7 @@ Testers should run **`SingularityApkInstaller-win-x64-setup.exe`** from the [lat
 
 Legal: [Privacy Policy](https://singularity.mhbross725.workers.dev/privacy) · [Terms of Service](https://singularity.mhbross725.workers.dev/terms) · [legal home](https://singularity.mhbross725.workers.dev/).
 
-Use this when a tester says the installer “didn’t work.” Ask for the diagnostics ZIP first. Do not ask them to run ADB.
+Use this when a tester says the installer “didn’t work.” Ask them to tap **Send a report**, enter your email, and send the message from their mail app. Do not ask them to run ADB.
 
 ## Getting the Windows installer
 
@@ -20,6 +20,8 @@ Use this when a tester says the installer “didn’t work.” Ask for the diagn
 - `metadata.json` — installer version, manifest app id / version, timestamp
 - `environment.json` — OS, 64-bit, ADB path used
 - `device.json` — kind, model, manufacturer, Android version, hashed serial, connection state
+- `usb-evidence.json` — whether Windows saw Quest USB, an ADB interface, a missing driver, MTP-only, or another `adb.exe` (no serials)
+- `session-log.txt` — this session’s installer log (serials hashed)
 - `adb-devices.txt` — sanitized `adb devices -l`
 - `install-attempt.json` — policy, flags, exit code, timestamps
 - `adb-output.txt` — sanitized stdout/stderr
@@ -38,10 +40,11 @@ Serials are hashed. Do not ask testers to paste raw serial numbers in email.
 **Operator response:**
 
 1. Confirm they used a USB-C **data** cable into a motherboard port.
-2. Quest: walk Meta Horizon app → headset → Headset Settings → Developer Mode on. Then in-headset Developer → MTP Notification on.
-3. Phone: File transfer / MTP, then retry.
-4. Windows: if the device never appears, install Oculus ADB Drivers for Quest, or the phone OEM USB driver.
-5. If still empty, collect diagnostics from the Connect screen (**Export diagnostics**). If Windows sees a Quest and the installer does not, use a data cable and the Oculus ADB driver. If Windows sees nothing, try another cable or port and avoid a hub.
+2. Have them tap **Need help connecting?** and pick Quest or phone. The helper walks one task at a time (headset on, Horizon developer mode, MTP Notification, Allow; phones get file transfer and USB debugging). If Windows sees the headset and the installer does not, the USB helper step opens Meta’s Oculus ADB Drivers page (or installs a bundled INF if you shipped one).
+3. Quest: walk Meta Horizon app → headset → Headset Settings → Developer Mode on. Then in-headset Developer → MTP Notification on.
+4. Phone: File transfer / MTP, then retry.
+5. Windows: if the device never appears, install Oculus ADB Drivers for Quest, or the phone OEM USB driver.
+6. If still empty, have them tap **Send a report**, enter your email, and send the message from their email app.
 
 ### Unauthorized
 

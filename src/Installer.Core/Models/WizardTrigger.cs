@@ -14,5 +14,7 @@ public enum WizardTrigger
     Retry = 9,
     Done = 10,
     OpenInstalledApps = 11,
-    CloseInstalledApps = 12
+    CloseInstalledApps = 12,
+    OpenTroubleshoot = 13,
+    CloseTroubleshoot = 14
 }

@@ -19,7 +19,7 @@ Optional JSON at `payloads/current/app-manifest.json` for install policy and pos
 | `preferredDeviceFamilies` | string[] | no | Hints only: `meta-quest-2`, `meta-quest-3`, `pixel`, `samsung`. |
 | `postInstallNotes` | object | no | `quest` / `android` string arrays shown on Complete. |
 | `support.contactLabel` | string | no | Button/label text. |
-| `support.contactEmail` | string | no | Used in diagnostics metadata, not auto-mailed. |
+| `support.contactEmail` | string | no | Prefills **Send a report**. Placeholder `example.com` addresses are ignored. |
 
 ## `installPolicy`
 

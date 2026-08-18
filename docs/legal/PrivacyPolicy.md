@@ -20,18 +20,19 @@ Depending on how you use the Software, it may process:
 
 - USB or Wi-Fi device connection state from portable Android Debug Bridge (`adb`)
 - Last Wi-Fi address used to reconnect a device (stored locally; pairing codes are not saved)
+- Last report recipient email, stored locally after you send a report
 - Device manufacturer, model, and Android version used to tell Quest from phone
 - A hashed form of the device serial in exported diagnostics (the raw serial is not written into the ZIP)
 - File names of APKs you choose to install
 - Command results from install, uninstall, and verification
 - Third-party app names and package ids, read locally when you open Installed apps (not uploaded)
-- Package-filtered logcat, only when you export diagnostics and the device is authorized
+- Package-filtered logcat and the session log, only when you send a report and (for logcat) the device is authorized
 
 This processing happens on your machine so the wizard can install the APK files you select and, if you ask, remove an app you select. The Software does not scan the device filesystem for unrelated files, accounts, or contacts. Diagnostics export does not include a full list of apps on the device.
 
 ## 3. Diagnostics export
 
-**Export diagnostics** is user-initiated. It writes a ZIP you can send to support. Do not share that ZIP if it contains information you do not want others to see. Serial numbers in the bundle are hashed.
+**Send a report** is user-initiated. It asks for an email address (the person who asked you to test), writes a ZIP on this computer, and opens your email app with that file attached. You still press Send in the email app. The address is stored locally so the next report can reuse it. The Software does not upload the ZIP or send the email itself. The ZIP includes this session’s log, connection state, and (if the device allowed this computer) a filtered device log. Serial numbers in the bundle are hashed. Do not share that ZIP if it contains information you do not want others to see.
 
 ## 4. Bundled tools
 

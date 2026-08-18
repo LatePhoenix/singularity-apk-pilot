@@ -37,6 +37,6 @@ public sealed class FriendlyMessageService
         InstallError.WirelessConnectFailed => "The headset or phone is not reachable over Wi-Fi. Use a USB cable, or confirm it is on the same network.",
         InstallError.MissingSplit => "Add the other app files or an .apks / .xapk package, then install again.",
         InstallError.UninstallFailed => "The app is still on the device. Keep the device awake and try again.",
-        _ => "See advanced details or export diagnostics."
+        _ => "See advanced details or send a report."
     };
 }

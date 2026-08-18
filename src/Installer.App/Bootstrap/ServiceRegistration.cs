@@ -1,3 +1,4 @@
+using Installer.App.Services;
 using Installer.App.ViewModels;
 using Installer.App.Views;
 using Installer.Core.Abstractions;
@@ -13,6 +14,7 @@ using Installer.Core.Services.Support;
 using Installer.Infrastructure;
 using Installer.Infrastructure.Devices;
 using Installer.Infrastructure.Logging;
+using Installer.Infrastructure.Mail;
 using Installer.Infrastructure.Packaging;
 using Installer.Infrastructure.Process;
 using Installer.Infrastructure.Storage;
@@ -29,6 +31,7 @@ public static class ServiceRegistration
 
         services.AddSingleton<IClock, SystemClock>();
         services.AddSingleton<SessionLogWriter>();
+        services.AddSingleton<ISessionLog>(sp => sp.GetRequiredService<SessionLogWriter>());
         services.AddSingleton<IAppLogger, FileLogger>();
         services.AddSingleton<IPortableAdbLocator, PortableAdbLocator>();
         services.AddSingleton<IPayloadLocator, PayloadLocator>();
@@ -43,10 +46,17 @@ public static class ServiceRegistration
         services.AddSingleton<IApkInspector, ApkInspector>();
         services.AddSingleton<IInstallSetFactory, InstallSetFactory>();
         services.AddSingleton<IRecentsStore, RecentsStore>();
-        services.AddSingleton<IUsbPresenceProbe, UsbPresenceProbe>();
+        services.AddSingleton<UsbEvidenceProbe>();
+        services.AddSingleton<IUsbEvidenceProbe>(sp => sp.GetRequiredService<UsbEvidenceProbe>());
+        services.AddSingleton<IUsbPresenceProbe>(sp => sp.GetRequiredService<UsbEvidenceProbe>());
+        services.AddSingleton<IQuestUsbHelperService, QuestUsbHelperService>();
+        services.AddSingleton<TroubleshootCopyDeck>();
+        services.AddSingleton<ITroubleshootingService, TroubleshootingService>();
         services.AddSingleton<IDeviceHealthService, DeviceHealthService>();
         services.AddSingleton<IUpdateCheckService, GitHubUpdateCheckService>();
         services.AddSingleton<IWirelessEndpointStore, WirelessEndpointStore>();
+        services.AddSingleton<IReportRecipientStore, ReportRecipientStore>();
+        services.AddSingleton<IMailComposeService, MailComposeService>();
         services.AddSingleton<IWirelessAdbService, WirelessAdbService>();
         services.AddSingleton<DeviceClassificationService>();
         services.AddSingleton<DevicePropertyService>();
@@ -72,6 +82,7 @@ public static class ServiceRegistration
         services.AddSingleton<LogcatCollector>();
         services.AddSingleton<EnvironmentSnapshotService>();
         services.AddSingleton<IDiagnosticsService, DiagnosticsService>();
+        services.AddSingleton<ISendReportUi, SendReportUi>();
         services.AddSingleton<ContentPackResolver>();
         services.AddSingleton<BuildStampReader>();
         services.AddSingleton<ShellViewModel>();
