@@ -6,8 +6,8 @@ namespace Installer.Infrastructure.Updates;
 
 public sealed class GitHubUpdateCheckService : IUpdateCheckService
 {
-    private const string LatestUrl = "https://api.github.com/repos/LatePhoenix/singularity-apk-installer/releases/latest";
-    private const string DownloadUrl = "https://github.com/LatePhoenix/singularity-apk-installer/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe";
+    private const string LatestUrl = "https://api.github.com/repos/LatePhoenix/singularity-apk-pilot/releases/latest";
+    private const string DownloadUrl = "https://github.com/LatePhoenix/singularity-apk-pilot/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe";
 
     public string LatestSetupUrl => DownloadUrl;
 

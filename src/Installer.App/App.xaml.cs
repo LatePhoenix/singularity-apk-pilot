@@ -45,11 +45,11 @@ public partial class App : Application
                       || ex.Message.Contains("Application Control", StringComparison.OrdinalIgnoreCase)
                       || ex.Message.Contains("0x800711C7", StringComparison.OrdinalIgnoreCase);
         var text = blocked
-            ? "Windows blocked a file this app needs. Install the latest APK Installer build, or allow this app in Smart App Control / Application Control."
+            ? "Windows blocked a file this app needs. Install the latest APK Pilot build, or allow this app in Smart App Control / Application Control."
             : ex.Message;
         MessageBox.Show(
             $"{text}\n\n{ex.GetType().FullName}",
-            "APK Installer",
+            "APK Pilot",
             MessageBoxButton.OK,
             MessageBoxImage.Error);
     }

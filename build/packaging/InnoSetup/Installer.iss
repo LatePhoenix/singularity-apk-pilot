@@ -1,12 +1,12 @@
-; Singularity APK Installer — Inno Setup 7 script
+; APK Pilot — Inno Setup 7 script
 ; Signing is handled by pack.ps1 → sign.ps1 when SIGNING_PFX or Azure Trusted Signing env is set.
 
-#define MyAppName "Singularity APK Installer"
+#define MyAppName "APK Pilot"
 #define MyAppPublisher "Singularity Solutions and Services"
 #define MyAppExeName "SingularityApkInstaller.exe"
 
 #ifndef MyAppVersion
-  #define MyAppVersion "0.4.0"
+  #define MyAppVersion "0.5.0"
 #endif
 
 #ifndef PublishDir
@@ -32,9 +32,9 @@ OutputDir={#OutputDir}
 OutputBaseFilename=SingularityApkInstaller-{#MyAppVersion}-win-x64-setup
 VersionInfoVersion={#MyAppVersion}
 VersionInfoProductName={#MyAppName}
-AppPublisherURL=https://github.com/LatePhoenix/singularity-apk-installer
-AppSupportURL=https://github.com/LatePhoenix/singularity-apk-installer/issues
-AppUpdatesURL=https://github.com/LatePhoenix/singularity-apk-installer/releases/latest
+AppPublisherURL=https://github.com/LatePhoenix/singularity-apk-pilot
+AppSupportURL=https://github.com/LatePhoenix/singularity-apk-pilot/issues
+AppUpdatesURL=https://github.com/LatePhoenix/singularity-apk-pilot/releases/latest
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern

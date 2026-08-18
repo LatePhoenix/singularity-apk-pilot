@@ -103,8 +103,8 @@ public sealed partial class SendReportViewModel : ObservableObject
 
             var draft = new MailDraft(
                 to,
-                "Singularity APK Installer report",
-                "I'm sending a report from Singularity APK Installer. The ZIP file should be attached.",
+                "APK Pilot report",
+                "I'm sending a report from APK Pilot. The ZIP file should be attached.",
                 info.ZipPath);
             var result = _mail.Compose(draft, OwnerHandle);
             switch (result)
