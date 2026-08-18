@@ -11,6 +11,7 @@ using Installer.Core.Services.Install;
 using Installer.Core.Services.Packages;
 using Installer.Core.Services.Recovery;
 using Installer.Core.Services.Support;
+using Installer.Core.Utilities;
 using Installer.Infrastructure;
 using Installer.Infrastructure.Devices;
 using Installer.Infrastructure.Logging;
@@ -30,6 +31,7 @@ public static class ServiceRegistration
         var services = new ServiceCollection();
 
         services.AddSingleton<IClock, SystemClock>();
+        services.AddSingleton(_ => new LogRedactor(HmacKeyStore.GetOrCreate()));
         services.AddSingleton<SessionLogWriter>();
         services.AddSingleton<ISessionLog>(sp => sp.GetRequiredService<SessionLogWriter>());
         services.AddSingleton<IAppLogger, FileLogger>();
@@ -83,6 +85,7 @@ public static class ServiceRegistration
         services.AddSingleton<EnvironmentSnapshotService>();
         services.AddSingleton<IDiagnosticsService, DiagnosticsService>();
         services.AddSingleton<ISendReportUi, SendReportUi>();
+        services.AddSingleton<ITroubleshootUi, TroubleshootUi>();
         services.AddSingleton<ContentPackResolver>();
         services.AddSingleton<BuildStampReader>();
         services.AddSingleton<ShellViewModel>();

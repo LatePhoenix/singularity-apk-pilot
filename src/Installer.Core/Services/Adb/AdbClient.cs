@@ -10,13 +10,20 @@ public sealed class AdbClient : IAdbClient
     private readonly AdbCommandFactory _commands;
     private readonly AdbOutputParser _parser;
     private readonly IAppLogger _logger;
+    private readonly LogRedactor _redactor;
 
-    public AdbClient(IAdbProcessRunner runner, AdbCommandFactory commands, AdbOutputParser parser, IAppLogger logger)
+    public AdbClient(
+        IAdbProcessRunner runner,
+        AdbCommandFactory commands,
+        AdbOutputParser parser,
+        IAppLogger logger,
+        LogRedactor? redactor = null)
     {
         _runner = runner;
         _commands = commands;
         _parser = parser;
         _logger = logger;
+        _redactor = redactor ?? LogRedactor.ForTests();
     }
 
     public Task StartServerAsync(CancellationToken cancellationToken = default) =>
@@ -25,10 +32,15 @@ public sealed class AdbClient : IAdbClient
     public Task KillServerAsync(CancellationToken cancellationToken = default) =>
         RunAsync(_commands.KillServer(), cancellationToken);
 
-    public async Task RestartServerAsync(CancellationToken cancellationToken = default)
+    public async Task<AdbProcessResult> RestartServerAsync(CancellationToken cancellationToken = default)
     {
-        await KillServerAsync(cancellationToken);
-        await StartServerAsync(cancellationToken);
+        var kill = await RunAsync(_commands.KillServer(), cancellationToken);
+        if (!kill.Succeeded)
+        {
+            return kill;
+        }
+
+        return await RunAsync(_commands.StartServer(), cancellationToken);
     }
 
     public async Task<IReadOnlyList<AdbDeviceRecord>> ListDevicesAsync(CancellationToken cancellationToken = default)
@@ -156,7 +168,7 @@ public sealed class AdbClient : IAdbClient
 
     private async Task<AdbProcessResult> RunAsync(AdbCommand command, CancellationToken cancellationToken)
     {
-        _logger.Info($"adb {command.ArgumentString}");
+        _logger.Info($"adb {_redactor.RedactCommand(command)}");
         var result = await _runner.RunAsync(command, cancellationToken);
         if (!result.Succeeded)
         {

@@ -64,6 +64,9 @@ public sealed class TroubleshootingServiceTests
         session = _service.Confirm(session, []);
         Assert.Equal(TroubleshootNode.RestartHelper, session.CurrentNode);
         Assert.Equal(TroubleshootActionKind.RestartAdbServer, session.RecommendedAction);
+        Assert.Equal("Restart connection helper", session.InPageActionLabel);
+        var copy = new TroubleshootCopyDeck().Page(session);
+        Assert.Equal("Restart connection helper", copy.PrimaryAction);
     }
 
     [Fact]

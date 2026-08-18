@@ -57,7 +57,7 @@ public sealed class CopyDeckService : IContentService
                 "No app is bundled. APK files are chosen after the device is connected."),
             WizardStep.ConnectDevice => new WizardCopy(
                 "Connect your device",
-                "Plug in with a USB-C data cable, or connect over Wi-Fi using the Quest 2 / Quest 3 steps below.",
+                "Plug in with a USB-C data cable, then tap I connected it. Or connect over Wi-Fi using the Quest 2 / Quest 3 steps below.",
                 "I connected it",
                 AppendHealth("Charge-only cables will not work. The cable that ships with Quest is often charge-only. Try another USB-C data cable and a USB port on the computer, not a hub. For Wi-Fi, the headset and this computer must be on the same network. Pairing codes expire quickly. After a headset reboot, plug in with USB once more unless you pair again.", healthHint),
                 "Waiting for a connected device."),
@@ -108,7 +108,7 @@ public sealed class CopyDeckService : IContentService
                 error is null
                     ? "Use the suggested action below. If that does not work, tap Send a report and email it to the person who asked you to test."
                     : _messages.CauseFor(error.Value),
-                "Try automatic fix",
+                "Try again",
                 "Most failures are a missing permission, a full device, or an older build that cannot be replaced until it is removed.",
                 error?.ToString() ?? "UnknownInstallFailure"),
             WizardStep.Complete => new WizardCopy(

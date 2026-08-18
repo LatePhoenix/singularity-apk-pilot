@@ -17,7 +17,7 @@
             <Setter Property="StrokeThickness" Value="1"/>
         </Style>
     </UserControl.Resources>
-    <Viewbox Stretch="Uniform" MaxHeight="148" MaxWidth="280" HorizontalAlignment="Left">
+    <Viewbox Stretch="Uniform" MaxHeight="88" MaxWidth="168" HorizontalAlignment="Left">
         <Grid Width="280" Height="148">
             <Canvas x:Name="CableCanvas" Visibility="Collapsed">
                 <Line X1="24" Y1="74" X2="256" Y2="74" Style="{StaticResource Hairline}"/>

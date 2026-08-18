@@ -6,9 +6,9 @@
              Drop="OnDrop"
              DragOver="OnDragOver"
              DragLeave="OnDragLeave">
-    <StackPanel Margin="0,16,0,0">
+    <StackPanel Margin="0,8,0,0">
         <Border Style="{StaticResource AccentCard}"
-                Margin="0,0,0,16"
+                Margin="0,0,0,12"
                 Visibility="{Binding ShowUseWifi, Converter={StaticResource BoolToVisibility}}">
             <StackPanel>
                 <TextBlock Text="WI-FI" Style="{StaticResource Eyebrow}"/>
@@ -27,7 +27,7 @@
             </StackPanel>
         </Border>
         <Border Style="{StaticResource RaisedWell}"
-                Margin="0,0,0,16"
+                Margin="0,0,0,12"
                 Visibility="{Binding ShowWifiConnected, Converter={StaticResource BoolToVisibility}}">
             <StackPanel>
                 <TextBlock Text="WI-FI" Style="{StaticResource Eyebrow}"/>
@@ -37,7 +37,7 @@
                            TextWrapping="Wrap"/>
             </StackPanel>
         </Border>
-        <Border Style="{StaticResource RaisedWell}" Margin="0,0,0,16">
+        <Border Style="{StaticResource RaisedWell}" Margin="0,0,0,12">
             <StackPanel>
                 <TextBlock Text="DEVICE" Style="{StaticResource Eyebrow}"/>
                 <TextBlock Text="Installed apps" Style="{StaticResource H2}" Margin="0,6,0,4"/>

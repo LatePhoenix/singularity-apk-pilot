@@ -7,6 +7,9 @@ namespace Installer.App.ViewModels.Wizard;
 public sealed partial class TroubleshootPageViewModel : WizardPageViewModel
 {
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(PrimaryAction))]
+    [NotifyPropertyChangedFor(nameof(PrimaryRunsAction))]
+    [NotifyPropertyChangedFor(nameof(ShowConfirmInstalled))]
     private bool showFamilyPicker;
 
     [ObservableProperty]
@@ -16,9 +19,9 @@ public sealed partial class TroubleshootPageViewModel : WizardPageViewModel
     private bool canGoBack;
 
     [ObservableProperty]
-    private bool showInPageAction;
-
-    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(PrimaryAction))]
+    [NotifyPropertyChangedFor(nameof(PrimaryRunsAction))]
+    [NotifyPropertyChangedFor(nameof(ShowConfirmInstalled))]
     private string inPageActionLabel = "";
 
     [ObservableProperty]
@@ -33,6 +36,21 @@ public sealed partial class TroubleshootPageViewModel : WizardPageViewModel
 
     public TroubleshootFamily Family { get; private set; }
 
+    public bool PrimaryRunsAction =>
+        ActionKind is TroubleshootActionKind.RestartAdbServer
+            or TroubleshootActionKind.InstallUsbHelper
+            or TroubleshootActionKind.OpenDriverDownload
+            or TroubleshootActionKind.OpenPhoneUsbSupport
+        && !string.IsNullOrWhiteSpace(InPageActionLabel);
+
+    public bool ShowConfirmInstalled =>
+        ActionKind is TroubleshootActionKind.InstallUsbHelper
+            or TroubleshootActionKind.OpenDriverDownload
+            or TroubleshootActionKind.OpenPhoneUsbSupport;
+
+    public override string PrimaryAction =>
+        PrimaryRunsAction ? InPageActionLabel : Copy.PrimaryAction;
+
     public event Action<TroubleshootFamily>? FamilySelected;
 
     public event Action? BackRequested;
@@ -40,6 +58,8 @@ public sealed partial class TroubleshootPageViewModel : WizardPageViewModel
     public event Action<TroubleshootActionKind>? ActionRequested;
 
     public event Action<TroubleshootFamily>? SwitchToQuestRequested;
+
+    public event Action? ConfirmInstalledRequested;
 
     protected override void OnApplied(WizardState state)
     {
@@ -50,11 +70,13 @@ public sealed partial class TroubleshootPageViewModel : WizardPageViewModel
         Family = session?.Family ?? TroubleshootFamily.Unknown;
         ActionKind = session?.RecommendedAction ?? TroubleshootActionKind.None;
         InPageActionLabel = session?.InPageActionLabel ?? "";
-        ShowInPageAction = ActionKind != TroubleshootActionKind.None && !string.IsNullOrWhiteSpace(InPageActionLabel);
         Steps = (session?.GuideSteps ?? [])
             .Select((text, index) => new GuideStep((index + 1).ToString(), text))
             .ToList();
         OnPropertyChanged(nameof(Steps));
+        OnPropertyChanged(nameof(PrimaryRunsAction));
+        OnPropertyChanged(nameof(ShowConfirmInstalled));
+        OnPropertyChanged(nameof(PrimaryAction));
         if (!ActionBusy)
         {
             ActionStatus = "";
@@ -64,7 +86,9 @@ public sealed partial class TroubleshootPageViewModel : WizardPageViewModel
     public void SetActionLabel(string label)
     {
         InPageActionLabel = label;
-        ShowInPageAction = ActionKind != TroubleshootActionKind.None && !string.IsNullOrWhiteSpace(label);
+        OnPropertyChanged(nameof(PrimaryRunsAction));
+        OnPropertyChanged(nameof(ShowConfirmInstalled));
+        OnPropertyChanged(nameof(PrimaryAction));
     }
 
     [RelayCommand]
@@ -88,9 +112,12 @@ public sealed partial class TroubleshootPageViewModel : WizardPageViewModel
     [RelayCommand]
     private void RunAction()
     {
-        if (ActionKind != TroubleshootActionKind.None && !ActionBusy)
+        if (PrimaryRunsAction && !ActionBusy)
         {
             ActionRequested?.Invoke(ActionKind);
         }
     }
+
+    [RelayCommand]
+    private void ConfirmInstalled() => ConfirmInstalledRequested?.Invoke();
 }

@@ -61,9 +61,9 @@ public sealed class TroubleshootCopyDeck
                 "Restart the connection helper",
                 session.Evidence.CompetingAdbProcess
                     ? "Another Android tool may be using the connection. Close SideQuest, Meta Quest Developer Hub, or Android Studio if they are open, then restart the helper."
-                    : "Restart the helper this installer uses, then check again. Keep the device plugged in and awake.",
-                "Check again",
-                "If another Android tool is open, close it first. Then tap the button on this page.",
+                    : "Restart the helper this installer uses, then we will look for the device again. Keep the device plugged in and awake.",
+                "Restart connection helper",
+                "If another Android tool is open, close it first. Then tap Restart connection helper.",
                 "adb kill-server / start-server."),
             (_, TroubleshootNode.PhoneUnlock) => new WizardCopy(
                 "Unlock your phone",
@@ -166,7 +166,7 @@ public sealed class TroubleshootCopyDeck
             ],
             TroubleshootNode.UsbHelper =>
             [
-                "Use the button on this page to install or open Meta’s USB helper.",
+                "Tap Install Quest USB support or Get Quest USB support.",
                 "If Windows asks for permission, choose Yes.",
                 "Keep the headset plugged in, then tap I installed it."
             ],
@@ -174,14 +174,13 @@ public sealed class TroubleshootCopyDeck
                 ?
                 [
                     "Close SideQuest, Meta Quest Developer Hub, and Android Studio if they are open.",
-                    "Tap Restart connection helper.",
-                    "Keep the device plugged in, then tap Check again."
+                    "Keep the device plugged in and awake.",
+                    "Tap Restart connection helper."
                 ]
                 :
                 [
                     "Keep the device plugged in and awake.",
-                    "Tap Restart connection helper.",
-                    "Then tap Check again."
+                    "Tap Restart connection helper."
                 ],
             TroubleshootNode.PhoneUnlock =>
             [
@@ -199,7 +198,7 @@ public sealed class TroubleshootCopyDeck
             ],
             TroubleshootNode.PhoneOemDriver =>
             [
-                "Tap the button on this page to open the phone maker’s USB support page.",
+                "Tap Open USB support page.",
                 "Install the helper they provide.",
                 "Plug the phone back in, then tap I installed it."
             ],

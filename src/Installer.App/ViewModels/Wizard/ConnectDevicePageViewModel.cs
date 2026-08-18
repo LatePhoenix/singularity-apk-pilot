@@ -22,7 +22,6 @@ public sealed partial class ConnectDevicePageViewModel : WizardPageViewModel
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanConnectRemembered))]
-    [NotifyPropertyChangedFor(nameof(ShowWifiGuideExpanded))]
     private bool hasRememberedEndpoint;
 
     [ObservableProperty]
@@ -43,8 +42,6 @@ public sealed partial class ConnectDevicePageViewModel : WizardPageViewModel
     public bool CanConnectRemembered => HasRememberedEndpoint && !IsWifiBusy;
 
     public bool CanConnectAdvanced => !IsWifiBusy && !string.IsNullOrWhiteSpace(Address);
-
-    public bool ShowWifiGuideExpanded => !HasRememberedEndpoint;
 
     public string ConnectingLabel => IsWifiBusy ? "Connecting over Wi-Fi…" : "";
 
@@ -102,6 +99,12 @@ public sealed partial class ConnectDevicePageViewModel : WizardPageViewModel
         var code = string.IsNullOrWhiteSpace(PairingCode) ? null : PairingCode.Trim();
         if (!string.IsNullOrWhiteSpace(code))
         {
+            if (code.Length != 6 || !code.All(char.IsDigit))
+            {
+                WifiStatus = "Pairing needs the six-digit code from the device.";
+                return;
+            }
+
             if (!int.TryParse(PairingPort.Trim(), out var port) || port is <= 0 or > 65535)
             {
                 WifiStatus = "Pairing needs a pairing port from the device, plus the six-digit code.";

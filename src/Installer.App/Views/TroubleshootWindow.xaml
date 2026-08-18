@@ -1,0 +1,107 @@
+<Window x:Class="Installer.App.Views.TroubleshootWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:pages="clr-namespace:Installer.App.Views.Pages"
+        Title="Connection helper"
+        Width="500"
+        MinHeight="320"
+        MaxHeight="560"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Background="{StaticResource AppBackgroundBrush}"
+        FontFamily="{StaticResource UiFontFamily}"
+        SnapsToDevicePixels="True"
+        UseLayoutRounding="True"
+        KeyboardNavigation.TabNavigation="Cycle"
+        AutomationProperties.Name="Connection helper">
+    <Grid Background="{StaticResource AppBackgroundGridBrush}">
+        <DockPanel Margin="20">
+            <DockPanel DockPanel.Dock="Bottom" Margin="0,16,0,0" LastChildFill="False">
+                <Button x:Name="PrimaryButton"
+                        DockPanel.Dock="Right"
+                        Style="{StaticResource PrimaryPill}"
+                        Content="{Binding HelperPrimaryAction}"
+                        Command="{Binding PrimaryCommand}"
+                        IsEnabled="{Binding CanPrimary}"
+                        IsDefault="True"
+                        TabIndex="1"
+                        Visibility="{Binding ShowHelperPrimary, Converter={StaticResource BoolToVisibility}}"
+                        AutomationProperties.Name="{Binding HelperPrimaryAction}"
+                        AutomationProperties.AutomationId="HelperPrimaryAction"/>
+                <Button DockPanel.Dock="Right"
+                        Style="{StaticResource GhostPill}"
+                        Content="Leave helper"
+                        Command="{Binding CancelCommand}"
+                        IsCancel="True"
+                        TabIndex="2"
+                        Margin="0,0,8,0"
+                        AutomationProperties.Name="Leave helper"
+                        AutomationProperties.AutomationId="LeaveHelper"/>
+                <WrapPanel VerticalAlignment="Center">
+                    <Button Style="{StaticResource SecondaryPill}"
+                            Content="Send a report"
+                            Command="{Binding ExportDiagnosticsCommand}"
+                            TabIndex="3"
+                            Margin="0,0,8,0"
+                            AutomationProperties.Name="Send a report"
+                            AutomationProperties.AutomationId="HelperSendReport"/>
+                    <Button Style="{StaticResource GhostPill}"
+                            Content="Previous step"
+                            Command="{Binding TroubleshootPage.BackCommand}"
+                            TabIndex="4"
+                            Visibility="{Binding TroubleshootPage.CanGoBack, Converter={StaticResource BoolToVisibility}}"
+                            AutomationProperties.Name="Previous step"
+                            AutomationProperties.AutomationId="TroubleshootBack"/>
+                </WrapPanel>
+            </DockPanel>
+
+            <TextBlock DockPanel.Dock="Bottom"
+                       Text="{Binding DiagnosticsStatus}"
+                       Style="{StaticResource Label}"
+                       TextWrapping="Wrap"
+                       Margin="0,8,0,0"
+                       Visibility="{Binding DiagnosticsStatus, Converter={StaticResource StringNotEmptyToVisibility}}"/>
+
+            <StackPanel DockPanel.Dock="Top">
+                <TextBlock Text="HELPER" Style="{StaticResource Eyebrow}"/>
+                <TextBlock Text="{Binding TroubleshootPage.Headline}"
+                           Style="{StaticResource H1}"
+                           Margin="0,6,0,8"/>
+                <TextBlock Text="{Binding TroubleshootPage.Body}"
+                           Style="{StaticResource Body}"
+                           Margin="0,0,0,12"/>
+                <StackPanel Orientation="Horizontal"
+                            Margin="0,0,0,12"
+                            Visibility="{Binding TroubleshootPage.ShowStatus, Converter={StaticResource BoolToVisibility}}">
+                    <Ellipse>
+                        <Ellipse.Style>
+                            <Style TargetType="Ellipse" BasedOn="{StaticResource StatusDot}">
+                                <Setter Property="Fill" Value="{DynamicResource MutedTextBrush}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding TroubleshootPage.StatusTone}" Value="Live">
+                                        <Setter Property="Fill" Value="{DynamicResource AccentGreenBrush}"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding TroubleshootPage.StatusTone}" Value="Warning">
+                                        <Setter Property="Fill" Value="{DynamicResource WarningTextBrush}"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding TroubleshootPage.StatusTone}" Value="Error">
+                                        <Setter Property="Fill" Value="{DynamicResource DangerRedBrush}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Ellipse.Style>
+                    </Ellipse>
+                    <TextBlock Text="{Binding TroubleshootPage.StatusText}" Style="{StaticResource StatusChipLabel}"/>
+                </StackPanel>
+            </StackPanel>
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto"
+                          CanContentScroll="False"
+                          MaxHeight="280">
+                <pages:TroubleshootPage DataContext="{Binding TroubleshootPage}"/>
+            </ScrollViewer>
+        </DockPanel>
+    </Grid>
+</Window>

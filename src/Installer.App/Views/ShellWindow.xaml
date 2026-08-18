@@ -52,14 +52,14 @@
         </DataTemplate>
     </Window.Resources>
     <Grid Background="{StaticResource AppBackgroundGridBrush}">
-        <Grid Margin="32">
+        <Grid Margin="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <DockPanel Margin="0,0,0,24">
+            <DockPanel Margin="0,0,0,12">
                 <TextBlock DockPanel.Dock="Right"
                            VerticalAlignment="Center"
                            Style="{StaticResource Label}"
@@ -72,7 +72,15 @@
                 </TextBlock>
                 <StackPanel>
                     <TextBlock Text="INSTALLER" Style="{StaticResource Eyebrow}"/>
-                    <TextBlock Text="APK Pilot" Style="{StaticResource H2}" Margin="0,4,0,0"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                        <TextBlock Text="APK Pilot" Style="{StaticResource H2}" VerticalAlignment="Center"/>
+                        <Image Source="pack://application:,,,/Assets/app-icon.png"
+                               Width="24" Height="24"
+                               Margin="8,0,0,0"
+                               VerticalAlignment="Center"
+                               RenderOptions.BitmapScalingMode="HighQuality"
+                               AutomationProperties.Name="APK Pilot"/>
+                    </StackPanel>
                 </StackPanel>
             </DockPanel>
 
@@ -99,7 +107,8 @@
                             <TextBlock Text="{Binding PayloadWarning}"
                                        Style="{StaticResource WarningBanner}"
                                        Visibility="{Binding PayloadWarning, Converter={StaticResource StringNotEmptyToVisibility}}"/>
-                            <Border Style="{StaticResource IllustrationWell}">
+                            <Border Style="{StaticResource IllustrationWell}"
+                                    Visibility="{Binding CurrentPage.ShowIllustration, Converter={StaticResource BoolToVisibility}}">
                                 <controls:DeviceIllustration Kind="{Binding CurrentPage.Illustration}"
                                                              Description="{Binding CurrentPage.IllustrationDescription}"/>
                             </Border>
@@ -134,7 +143,7 @@
                 </DockPanel>
             </Border>
 
-            <Grid Grid.Row="2" Margin="0,24,0,0">
+            <Grid Grid.Row="2" Margin="0,16,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>

@@ -30,11 +30,15 @@ public sealed partial class ShellViewModel : ObservableObject
     private readonly ITroubleshootingService _troubleshoot;
     private readonly IQuestUsbHelperService _usbHelper;
     private readonly ISendReportUi _sendReport;
+    private readonly ITroubleshootUi _troubleshootUi;
+    private readonly ITempFileService _temp;
+    private bool _helperOpen;
     private readonly Installer.Core.Services.Content.TroubleshootCopyDeck _troubleshootCopy;
     private readonly Dictionary<WizardStep, WizardPageViewModel> _pages;
     private CancellationTokenSource? _installCts;
     private CancellationTokenSource? _uninstallCts;
     private InstallRequest? _lastRequest;
+    private int _installBusy;
 
     public ShellViewModel(
         IWizardFlowService flow,
@@ -54,6 +58,8 @@ public sealed partial class ShellViewModel : ObservableObject
         ITroubleshootingService troubleshoot,
         IQuestUsbHelperService usbHelper,
         ISendReportUi sendReport,
+        ITroubleshootUi troubleshootUi,
+        ITempFileService temp,
         Installer.Core.Services.Content.TroubleshootCopyDeck troubleshootCopy,
         IAppLogger logger)
     {
@@ -74,6 +80,8 @@ public sealed partial class ShellViewModel : ObservableObject
         _troubleshoot = troubleshoot;
         _usbHelper = usbHelper;
         _sendReport = sendReport;
+        _troubleshootUi = troubleshootUi;
+        _temp = temp;
         _troubleshootCopy = troubleshootCopy;
         _logger = logger;
         _pages = new Dictionary<WizardStep, WizardPageViewModel>
@@ -104,10 +112,23 @@ public sealed partial class ShellViewModel : ObservableObject
         AppsPage.UninstallRequested += packageId => _ = UninstallAppAsync(packageId);
         AppsPage.CancelUninstallRequested += CancelUninstall;
         AppsPage.EnrichVisibleRequested += () => _ = EnrichVisibleAppsAsync();
-        HelpPage.FamilySelected += family => ApplyTroubleshootFamily(family);
-        HelpPage.SwitchToQuestRequested += family => ApplyTroubleshootFamily(family);
-        HelpPage.BackRequested += () => GoTroubleshootBack();
+        HelpPage.FamilySelected += family => _ = ApplyTroubleshootFamilyAsync(family);
+        HelpPage.SwitchToQuestRequested += family => _ = ApplyTroubleshootFamilyAsync(family);
+        HelpPage.BackRequested += () => _ = GoTroubleshootBackAsync();
         HelpPage.ActionRequested += kind => _ = RunTroubleshootActionAsync(kind);
+        HelpPage.ConfirmInstalledRequested += () => _ = ContinueFromTroubleshootAsync();
+        HelpPage.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName is nameof(TroubleshootPageViewModel.ActionBusy)
+                or nameof(TroubleshootPageViewModel.ShowFamilyPicker)
+                or nameof(TroubleshootPageViewModel.PrimaryAction)
+                or nameof(TroubleshootPageViewModel.CanGoBack))
+            {
+                OnPropertyChanged(nameof(CanPrimary));
+                OnPropertyChanged(nameof(ShowPrimary));
+                OnPropertyChanged(nameof(HelperPrimaryAction));
+            }
+        };
 
         var loaded = _manifests.Load();
         Manifest = loaded.IsSuccess && loaded.Value is not null ? loaded.Value : InstallManifest.Session;
@@ -142,6 +163,8 @@ public sealed partial class ShellViewModel : ObservableObject
     private TroubleshootPageViewModel HelpPage =>
         (TroubleshootPageViewModel)_pages[WizardStep.Troubleshoot];
 
+    public TroubleshootPageViewModel TroubleshootPage => HelpPage;
+
     public InstallManifest Manifest { get; }
 
     [ObservableProperty]
@@ -157,7 +180,9 @@ public sealed partial class ShellViewModel : ObservableObject
     private string diagnosticsStatus = "";
 
     public bool ShowSecondaryExport =>
-        State.CurrentStep != WizardStep.Installing && !AppsPage.IsBusy;
+        State.CurrentStep != WizardStep.Installing
+        && State.CurrentStep != WizardStep.Troubleshoot
+        && !AppsPage.IsBusy;
 
     public bool ShowNeedHelpConnecting =>
         State.CurrentStep is WizardStep.ConnectDevice
@@ -167,19 +192,22 @@ public sealed partial class ShellViewModel : ObservableObject
 
     public bool ShowPrimary =>
         State.CurrentStep != WizardStep.Installing
-        && !AppsPage.IsBusy
-        && !(State.CurrentStep == WizardStep.Troubleshoot && HelpPage.ShowFamilyPicker);
+        && State.CurrentStep != WizardStep.Troubleshoot
+        && !AppsPage.IsBusy;
+
+    public bool ShowHelperPrimary => !HelpPage.ShowFamilyPicker;
 
     public bool ShowCancel =>
         State.CurrentStep == WizardStep.Installing
-        || AppsPage.IsBusy
-        || State.CurrentStep == WizardStep.Troubleshoot;
+        || AppsPage.IsBusy;
 
     public string CancelLabel => State.CurrentStep == WizardStep.Troubleshoot ? "Leave helper" : "Cancel";
 
+    public string HelperPrimaryAction => HelpPage.PrimaryAction;
+
     public bool CanPrimary =>
         State.CurrentStep == WizardStep.Troubleshoot
-            ? !HelpPage.ShowFamilyPicker
+            ? !HelpPage.ShowFamilyPicker && !HelpPage.ActionBusy
             : State.CurrentStep != WizardStep.ReadyToInstall || ChoosePage.HasFiles;
 
     [RelayCommand]
@@ -218,7 +246,14 @@ public sealed partial class ShellViewModel : ObservableObject
                 Advance(WizardTrigger.CloseInstalledApps, State.Device, readyDevices: State.Ready);
                 break;
             case WizardStep.Troubleshoot:
-                await ContinueFromTroubleshootAsync();
+                if (HelpPage.PrimaryRunsAction)
+                {
+                    await RunTroubleshootActionAsync(HelpPage.ActionKind);
+                }
+                else
+                {
+                    await ContinueFromTroubleshootAsync();
+                }
                 break;
         }
     }
@@ -229,7 +264,6 @@ public sealed partial class ShellViewModel : ObservableObject
         if (State.CurrentStep == WizardStep.Installing)
         {
             _installCts?.Cancel();
-            Advance(WizardTrigger.Cancel, State.Device, readyDevices: State.Ready);
             return;
         }
 
@@ -310,32 +344,46 @@ public sealed partial class ShellViewModel : ObservableObject
         Advance(WizardTrigger.Continue, primary, readyDevices: detected, health: health);
     }
 
-    private async void ApplyTroubleshootFamily(TroubleshootFamily family)
+    private async Task ApplyTroubleshootFamilyAsync(TroubleshootFamily family)
     {
         if (State.Troubleshoot is null)
         {
             return;
         }
 
-        var detected = await _devices.DetectAsync();
-        var primary = _devices.SelectPrimary(detected);
-        var health = _health.Snapshot(detected);
-        var session = _troubleshoot.SelectFamily(State.Troubleshoot, family, detected);
-        Advance(WizardTrigger.DeviceRefresh, primary, readyDevices: detected, health: health, troubleshoot: session);
+        try
+        {
+            var detected = await _devices.DetectAsync();
+            var primary = _devices.SelectPrimary(detected);
+            var health = _health.Snapshot(detected);
+            var session = _troubleshoot.SelectFamily(State.Troubleshoot, family, detected);
+            Advance(WizardTrigger.DeviceRefresh, primary, readyDevices: detected, health: health, troubleshoot: session);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Troubleshoot family switch failed.", ex);
+        }
     }
 
-    private async void GoTroubleshootBack()
+    private async Task GoTroubleshootBackAsync()
     {
         if (State.Troubleshoot is null)
         {
             return;
         }
 
-        var detected = await _devices.DetectAsync();
-        var primary = _devices.SelectPrimary(detected);
-        var health = _health.Snapshot(detected);
-        var session = _troubleshoot.Back(State.Troubleshoot, detected);
-        Advance(WizardTrigger.DeviceRefresh, primary, readyDevices: detected, health: health, troubleshoot: session);
+        try
+        {
+            var detected = await _devices.DetectAsync();
+            var primary = _devices.SelectPrimary(detected);
+            var health = _health.Snapshot(detected);
+            var session = _troubleshoot.Back(State.Troubleshoot, detected);
+            Advance(WizardTrigger.DeviceRefresh, primary, readyDevices: detected, health: health, troubleshoot: session);
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Troubleshoot back failed.", ex);
+        }
     }
 
     private async Task RunTroubleshootActionAsync(TroubleshootActionKind kind)
@@ -347,7 +395,14 @@ public sealed partial class ShellViewModel : ObservableObject
             switch (kind)
             {
                 case TroubleshootActionKind.RestartAdbServer:
-                    await _adb.RestartServerAsync();
+                    var restart = await _adb.RestartServerAsync();
+                    if (!restart.Succeeded)
+                    {
+                        HelpPage.ActionStatus =
+                            "The connection helper did not restart. Close other Android tools and try again.";
+                        return;
+                    }
+
                     HelpPage.ActionStatus = "Connection helper restarted.";
                     break;
                 case TroubleshootActionKind.InstallUsbHelper:
@@ -426,6 +481,11 @@ public sealed partial class ShellViewModel : ObservableObject
             return;
         }
 
+        if (Interlocked.CompareExchange(ref _installBusy, 1, 0) != 0)
+        {
+            return;
+        }
+
         PayloadWarning = "";
         var first = sets[0];
         State = State with
@@ -435,6 +495,7 @@ public sealed partial class ShellViewModel : ObservableObject
                 : Manifest with { DisplayName = $"{sets.Count} apps", ApkPath = first.PrimaryPath }
         };
         Advance(WizardTrigger.Install, State.Device, readyDevices: State.Ready);
+        _installCts?.Dispose();
         _installCts = new CancellationTokenSource();
         try
         {
@@ -478,8 +539,13 @@ public sealed partial class ShellViewModel : ObservableObject
         catch (Exception ex)
         {
             _logger.Error("Install threw.", ex);
-            var failed = InstallResult.Failed(InstallError.UnknownInstallFailure, ex.Message, _recovery.Suggest(InstallError.UnknownInstallFailure, Manifest));
+            var failed = InstallResult.Failed(InstallError.UnknownInstallFailure, "The install did not complete.", _recovery.Suggest(InstallError.UnknownInstallFailure, Manifest));
             Advance(WizardTrigger.InstallFinished, State.Device, failed, State.Ready);
+        }
+        finally
+        {
+            _temp.DeleteTracked();
+            Interlocked.Exchange(ref _installBusy, 0);
         }
     }
 
@@ -658,6 +724,7 @@ public sealed partial class ShellViewModel : ObservableObject
         }
 
         _uninstallCts?.Cancel();
+        _uninstallCts?.Dispose();
         _uninstallCts = new CancellationTokenSource();
         AppsPage.BeginUninstall(packageId);
         NotifyChrome();
@@ -873,6 +940,11 @@ public sealed partial class ShellViewModel : ObservableObject
 
     private void OnDevicesChanged(object? sender, IReadOnlyList<DeviceInfo> devices)
     {
+        if (ChoosePage.IsPickingFiles)
+        {
+            return;
+        }
+
         var dispatcher = Application.Current?.Dispatcher;
         if (dispatcher is null)
         {
@@ -880,7 +952,13 @@ public sealed partial class ShellViewModel : ObservableObject
             return;
         }
 
-        dispatcher.Invoke(() => HandleDevices(devices));
+        dispatcher.BeginInvoke(() =>
+        {
+            if (!ChoosePage.IsPickingFiles)
+            {
+                HandleDevices(devices);
+            }
+        });
     }
 
     private void HandleDevices(IReadOnlyList<DeviceInfo> devices)
@@ -949,24 +1027,73 @@ public sealed partial class ShellViewModel : ObservableObject
         DeviceHealth? health = null,
         TroubleshootSession? troubleshoot = null)
     {
+        var enteringHelper = State.CurrentStep != WizardStep.Troubleshoot;
         State = _flow.Advance(State, trigger, device, result, readyDevices, health, troubleshoot);
         ApplyState();
+        PresentHelper(enteringHelper);
     }
 
     private void ApplyState()
     {
-        CurrentPage = _pages[State.CurrentStep];
-        CurrentPage.Apply(State);
-        if (State.CurrentStep == WizardStep.Troubleshoot && State.Troubleshoot is not null)
+        if (State.CurrentStep == WizardStep.Troubleshoot)
         {
-            HelpPage.SetActionLabel(_troubleshootCopy.ActionLabel(State.Troubleshoot, _usbHelper.HasBundledInf));
+            HelpPage.Apply(State);
+            if (State.Troubleshoot is not null)
+            {
+                HelpPage.SetActionLabel(_troubleshootCopy.ActionLabel(State.Troubleshoot, _usbHelper.HasBundledInf));
+            }
+        }
+        else
+        {
+            CurrentPage = _pages[State.CurrentStep];
+            CurrentPage.Apply(State);
         }
 
         OnPropertyChanged(nameof(ShowSecondaryExport));
         OnPropertyChanged(nameof(ShowNeedHelpConnecting));
         OnPropertyChanged(nameof(ShowPrimary));
+        OnPropertyChanged(nameof(ShowHelperPrimary));
         OnPropertyChanged(nameof(ShowCancel));
         OnPropertyChanged(nameof(CancelLabel));
         OnPropertyChanged(nameof(CanPrimary));
+        OnPropertyChanged(nameof(HelperPrimaryAction));
+    }
+
+    private void PresentHelper(bool entering)
+    {
+        if (State.CurrentStep == WizardStep.Troubleshoot)
+        {
+            if (entering && !_helperOpen)
+            {
+                _helperOpen = true;
+                try
+                {
+                    _troubleshootUi.ShowDialog(this);
+                }
+                finally
+                {
+                    _helperOpen = false;
+                    if (State.CurrentStep == WizardStep.Troubleshoot)
+                    {
+                        Advance(WizardTrigger.CloseTroubleshoot, State.Device, readyDevices: State.Ready, health: State.Health);
+                    }
+                }
+            }
+
+            return;
+        }
+
+        if (_helperOpen)
+        {
+            _troubleshootUi.Close();
+        }
+    }
+
+    public void Shutdown()
+    {
+        _installCts?.Cancel();
+        _uninstallCts?.Cancel();
+        _monitor.Stop();
+        _temp.DeleteTracked();
     }
 }
