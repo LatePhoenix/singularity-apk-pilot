@@ -39,7 +39,7 @@
             <pages:TroubleshootPage/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type wizard:InstallingPageViewModel}">
-            <TextBlock Style="{StaticResource Label}" Text="{Binding StatusLabel}"                        Margin="0,0,0,8"/>
+            <pages:InstallingPage/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type wizard:InstallProblemPageViewModel}">
             <pages:InstallProblemPage/>
@@ -51,31 +51,15 @@
             <pages:InstalledAppsPage/>
         </DataTemplate>
     </Window.Resources>
-    <Grid>
-        <Grid.Background>
-            <DrawingBrush TileMode="Tile" Viewport="0,0,24,24" ViewportUnits="Absolute" Opacity="0.04">
-                <DrawingBrush.Drawing>
-                    <GeometryDrawing Brush="Transparent">
-                        <GeometryDrawing.Pen>
-                            <Pen Brush="White" Thickness="1"/>
-                        </GeometryDrawing.Pen>
-                        <GeometryDrawing.Geometry>
-                            <GeometryGroup>
-                                <LineGeometry StartPoint="0,0" EndPoint="0,24"/>
-                                <LineGeometry StartPoint="0,0" EndPoint="24,0"/>
-                            </GeometryGroup>
-                        </GeometryDrawing.Geometry>
-                    </GeometryDrawing>
-                </DrawingBrush.Drawing>
-            </DrawingBrush>
-        </Grid.Background>
+    <Grid Background="{StaticResource AppBackgroundGridBrush}">
         <Grid Margin="32">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <DockPanel>
+
+            <DockPanel Margin="0,0,0,24">
                 <TextBlock DockPanel.Dock="Right"
                            VerticalAlignment="Center"
                            Style="{StaticResource Label}"
@@ -88,10 +72,11 @@
                 </TextBlock>
                 <StackPanel>
                     <TextBlock Text="INSTALLER" Style="{StaticResource Eyebrow}"/>
-                    <TextBlock Text="APK Installer" FontSize="15" FontWeight="SemiBold" Margin="0,4,0,0"/>
+                    <TextBlock Text="APK Installer" Style="{StaticResource H2}" Margin="0,4,0,0"/>
                 </StackPanel>
             </DockPanel>
-            <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,24,0,24">
+
+            <Border Grid.Row="1" Style="{StaticResource Card}">
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Bottom">
                         <Expander x:Name="HelpExpander"
@@ -112,18 +97,17 @@
                     <ScrollViewer VerticalScrollBarVisibility="Auto" CanContentScroll="False" Padding="0,0,8,0">
                         <StackPanel>
                             <TextBlock Text="{Binding PayloadWarning}"
-                                       Foreground="{DynamicResource WarningTextBrush}"
-                                       TextWrapping="Wrap"
-                                       Margin="0,0,0,12"
+                                       Style="{StaticResource WarningBanner}"
                                        Visibility="{Binding PayloadWarning, Converter={StaticResource StringNotEmptyToVisibility}}"/>
-                            <controls:DeviceIllustration Kind="{Binding CurrentPage.Illustration}"
-                                                         Description="{Binding CurrentPage.IllustrationDescription}"
-                                                         Margin="0,0,0,16"/>
+                            <Border Style="{StaticResource IllustrationWell}">
+                                <controls:DeviceIllustration Kind="{Binding CurrentPage.Illustration}"
+                                                             Description="{Binding CurrentPage.IllustrationDescription}"/>
+                            </Border>
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,12"
                                         Visibility="{Binding CurrentPage.ShowStatus, Converter={StaticResource BoolToVisibility}}">
-                                <Ellipse Width="8" Height="8" Margin="0,0,8,0" VerticalAlignment="Center">
+                                <Ellipse>
                                     <Ellipse.Style>
-                                        <Style TargetType="Ellipse">
+                                        <Style TargetType="Ellipse" BasedOn="{StaticResource StatusDot}">
                                             <Setter Property="Fill" Value="{DynamicResource MutedTextBrush}"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding CurrentPage.StatusTone}" Value="Live">
@@ -139,8 +123,7 @@
                                         </Style>
                                     </Ellipse.Style>
                                 </Ellipse>
-                                <TextBlock Text="{Binding CurrentPage.StatusText}" Style="{StaticResource Label}"
-                                           VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding CurrentPage.StatusText}" Style="{StaticResource StatusChipLabel}"/>
                             </StackPanel>
                             <TextBlock Text="{Binding CurrentPage.Headline}"
                                        Style="{StaticResource Display}"/>
@@ -150,54 +133,61 @@
                     </ScrollViewer>
                 </DockPanel>
             </Border>
-            <DockPanel Grid.Row="2">
-                <Button x:Name="PrimaryButton"
-                        DockPanel.Dock="Right"
-                        Style="{StaticResource PrimaryPill}"
-                        Content="{Binding CurrentPage.PrimaryAction}"
-                        Command="{Binding PrimaryCommand}"
-                        IsEnabled="{Binding CanPrimary}"
-                        IsDefault="{Binding ShowPrimary}"
-                        TabIndex="1"
-                        AutomationProperties.Name="{Binding CurrentPage.PrimaryAction}"
-                        AutomationProperties.AutomationId="PrimaryAction"
-                        Visibility="{Binding ShowPrimary, Converter={StaticResource BoolToVisibility}}"/>
-                <Button x:Name="CancelButton"
-                        DockPanel.Dock="Right"
-                        Style="{StaticResource GhostPill}"
-                        Content="{Binding CancelLabel}"
-                        Command="{Binding CancelCommand}"
-                        IsCancel="{Binding ShowCancel}"
-                        TabIndex="2"
-                        Margin="0,0,8,0"
-                        AutomationProperties.Name="{Binding CancelLabel}"
-                        Visibility="{Binding ShowCancel, Converter={StaticResource BoolToVisibility}}"/>
-                <Button x:Name="ExportButton"
-                        DockPanel.Dock="Left"
-                        Style="{StaticResource SecondaryPill}"
-                        Content="Send a report"
-                        Command="{Binding ExportDiagnosticsCommand}"
-                        TabIndex="3"
-                        AutomationProperties.Name="Send a report"
-                        AutomationProperties.AutomationId="SendReport"
-                        Visibility="{Binding ShowSecondaryExport, Converter={StaticResource BoolToVisibility}}"/>
-                <Button x:Name="TroubleshootButton"
-                        DockPanel.Dock="Left"
-                        Style="{StaticResource GhostPill}"
-                        Content="Need help connecting?"
-                        Command="{Binding OpenTroubleshootCommand}"
-                        TabIndex="6"
-                        Margin="8,0,0,0"
-                        AutomationProperties.Name="Need help connecting"
-                        AutomationProperties.AutomationId="NeedHelpConnecting"
-                        Visibility="{Binding ShowNeedHelpConnecting, Converter={StaticResource BoolToVisibility}}"/>
-                <StackPanel VerticalAlignment="Center" Margin="16,0,8,0">
-                    <TextBlock Text="{Binding DiagnosticsStatus}"
-                               Style="{StaticResource Label}"
-                               TextWrapping="Wrap"
-                               Visibility="{Binding DiagnosticsStatus, Converter={StaticResource StringNotEmptyToVisibility}}"/>
-                </StackPanel>
-            </DockPanel>
+
+            <Grid Grid.Row="2" Margin="0,24,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <WrapPanel VerticalAlignment="Center">
+                    <Button x:Name="ExportButton"
+                            Style="{StaticResource SecondaryPill}"
+                            Content="Send a report"
+                            Command="{Binding ExportDiagnosticsCommand}"
+                            TabIndex="3"
+                            Margin="0,0,8,0"
+                            AutomationProperties.Name="Send a report"
+                            AutomationProperties.AutomationId="SendReport"
+                            Visibility="{Binding ShowSecondaryExport, Converter={StaticResource BoolToVisibility}}"/>
+                    <Button x:Name="TroubleshootButton"
+                            Style="{StaticResource GhostPill}"
+                            Content="Need help connecting?"
+                            Command="{Binding OpenTroubleshootCommand}"
+                            TabIndex="6"
+                            AutomationProperties.Name="Need help connecting"
+                            AutomationProperties.AutomationId="NeedHelpConnecting"
+                            Visibility="{Binding ShowNeedHelpConnecting, Converter={StaticResource BoolToVisibility}}"/>
+                </WrapPanel>
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Center"
+                           Margin="16,0,16,0"
+                           Text="{Binding DiagnosticsStatus}"
+                           Style="{StaticResource Label}"
+                           TextWrapping="Wrap"
+                           Visibility="{Binding DiagnosticsStatus, Converter={StaticResource StringNotEmptyToVisibility}}"/>
+                <WrapPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button x:Name="CancelButton"
+                            Style="{StaticResource GhostPill}"
+                            Content="{Binding CancelLabel}"
+                            Command="{Binding CancelCommand}"
+                            IsCancel="{Binding ShowCancel}"
+                            TabIndex="2"
+                            Margin="0,0,8,0"
+                            AutomationProperties.Name="{Binding CancelLabel}"
+                            Visibility="{Binding ShowCancel, Converter={StaticResource BoolToVisibility}}"/>
+                    <Button x:Name="PrimaryButton"
+                            Style="{StaticResource PrimaryPill}"
+                            Content="{Binding CurrentPage.PrimaryAction}"
+                            Command="{Binding PrimaryCommand}"
+                            IsEnabled="{Binding CanPrimary}"
+                            IsDefault="{Binding ShowPrimary}"
+                            TabIndex="1"
+                            AutomationProperties.Name="{Binding CurrentPage.PrimaryAction}"
+                            AutomationProperties.AutomationId="PrimaryAction"
+                            Visibility="{Binding ShowPrimary, Converter={StaticResource BoolToVisibility}}"/>
+                </WrapPanel>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

@@ -1,47 +1,15 @@
 ﻿<UserControl x:Class="Installer.App.Views.Pages.ConnectDevicePage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:wizard="clr-namespace:Installer.App.ViewModels.Wizard">
-    <UserControl.Resources>
-        <DataTemplate DataType="{x:Type wizard:GuideStep}">
-            <Grid Margin="0,0,0,10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="28"/>
-                    <ColumnDefinition Width="12"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Border Width="24" Height="24" CornerRadius="12"
-                        BorderBrush="{DynamicResource PrimaryAccentBrush}"
-                        BorderThickness="1"
-                        HorizontalAlignment="Left" VerticalAlignment="Top">
-                    <TextBlock Text="{Binding Number}"
-                               FontSize="11" FontWeight="SemiBold"
-                               Foreground="{DynamicResource BrandCyanBrush}"
-                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                </Border>
-                <TextBlock Grid.Column="2"
-                           Text="{Binding Text}"
-                           TextWrapping="Wrap"
-                           Style="{StaticResource Body}"
-                           Margin="0"/>
-            </Grid>
-        </DataTemplate>
-    </UserControl.Resources>
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <StackPanel Margin="0,8,0,0">
         <TextBlock Text="{Binding HealthHint}"
-                   Foreground="{DynamicResource WarningTextBrush}"
-                   TextWrapping="Wrap"
-                   Margin="0,0,0,12"
+                   Style="{StaticResource WarningBanner}"
                    Visibility="{Binding HealthHint, Converter={StaticResource StringNotEmptyToVisibility}}"/>
         <TextBlock Text="{Binding WifiStatus}"
-                   Foreground="{DynamicResource WarningTextBrush}"
-                   TextWrapping="Wrap"
-                   Margin="0,0,0,12"
+                   Style="{StaticResource WarningBanner}"
                    Visibility="{Binding WifiStatus, Converter={StaticResource StringNotEmptyToVisibility}}"/>
         <TextBlock Text="{Binding ConnectingLabel}"
-                   Style="{StaticResource Label}"
-                   Foreground="{DynamicResource BrandCyanBrush}"
-                   Margin="0,0,0,12"
+                   Style="{StaticResource BusyLabel}"
                    Visibility="{Binding ConnectingLabel, Converter={StaticResource StringNotEmptyToVisibility}}"/>
 
         <Border Style="{StaticResource AccentCard}"
@@ -49,7 +17,7 @@
                 Visibility="{Binding HasRememberedEndpoint, Converter={StaticResource BoolToVisibility}}">
             <StackPanel>
                 <TextBlock Text="SAVED WI-FI" Style="{StaticResource Eyebrow}"/>
-                <TextBlock Text="Connect over Wi-Fi" FontWeight="SemiBold" FontSize="15" Margin="0,6,0,4"/>
+                <TextBlock Text="Connect over Wi-Fi" Style="{StaticResource H2}" Margin="0,6,0,4"/>
                 <TextBlock Text="{Binding RememberedLabel}" Style="{StaticResource Mono}" Margin="0,0,0,8"/>
                 <TextBlock Text="Same network as this computer. After a headset reboot, plug in once more."
                            Style="{StaticResource Label}"
@@ -65,7 +33,7 @@
             </StackPanel>
         </Border>
 
-        <Border Style="{StaticResource Card}" Padding="16" Margin="0,0,0,12">
+        <Border Style="{StaticResource RaisedWell}" Padding="16" Margin="0,0,0,12">
             <StackPanel>
                 <TextBlock Text="USB" Style="{StaticResource Eyebrow}"/>
                 <TextBlock Text="Plug a USB-C data cable into the headset or phone, then tap I connected it below."
@@ -74,12 +42,10 @@
             </StackPanel>
         </Border>
 
-        <Border Style="{StaticResource Card}"
-                Background="{DynamicResource SurfaceRaisedBrush}"
-                Padding="16">
+        <Border Style="{StaticResource RaisedWell}" Padding="16">
             <StackPanel>
                 <TextBlock Text="WI-FI" Style="{StaticResource Eyebrow}"/>
-                <TextBlock Text="Connect over Wi-Fi" FontWeight="SemiBold" FontSize="15" Margin="0,6,0,4"/>
+                <TextBlock Text="Connect over Wi-Fi" Style="{StaticResource H2}" Margin="0,6,0,4"/>
                 <TextBlock Text="Quest 2 and Quest 3: set up with a cable once, then unplug. Phones can use the same address form."
                            Style="{StaticResource Label}"
                            TextWrapping="Wrap"
@@ -91,7 +57,7 @@
                           AutomationProperties.Name="How to set up Wi-Fi on Quest 2 or Quest 3">
                     <StackPanel Margin="0,12,0,0">
                         <TextBlock Text="Recommended: USB once, then switch"
-                                   FontWeight="SemiBold"
+                                   Style="{StaticResource H2}"
                                    Margin="0,0,0,8"/>
                         <ItemsControl ItemsSource="{Binding QuestWifiSteps}"
                                       AutomationProperties.Name="Quest Wi-Fi setup steps"/>

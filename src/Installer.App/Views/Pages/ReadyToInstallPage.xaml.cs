@@ -17,10 +17,18 @@ public partial class ReadyToInstallPage : UserControl
     {
         e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None;
         e.Handled = true;
+        SetDropHighlight(e.Effects == DragDropEffects.Copy);
+    }
+
+    private void OnDragLeave(object sender, DragEventArgs e)
+    {
+        SetDropHighlight(false);
+        e.Handled = true;
     }
 
     private void OnDrop(object sender, DragEventArgs e)
     {
+        SetDropHighlight(false);
         if (DataContext is not ReadyToInstallPageViewModel page
             || e.Data.GetData(DataFormats.FileDrop) is not string[] files)
         {
@@ -35,5 +43,24 @@ public partial class ReadyToInstallPage : UserControl
                    || ext.Equals(".xapk", StringComparison.OrdinalIgnoreCase);
         }));
         e.Handled = true;
+    }
+
+    private void SetDropHighlight(bool active)
+    {
+        if (DropZoneBorder is null)
+        {
+            return;
+        }
+
+        if (active)
+        {
+            DropZoneBorder.SetResourceReference(Border.BorderBrushProperty, "BrandCyanBrush");
+            DropZoneBorder.BorderThickness = new Thickness(2);
+        }
+        else
+        {
+            DropZoneBorder.SetResourceReference(Border.BorderBrushProperty, "BorderBrushStrong");
+            DropZoneBorder.BorderThickness = new Thickness(1);
+        }
     }
 }

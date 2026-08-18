@@ -6,29 +6,30 @@
                       AutomationProperties.Name="Suggested next steps">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border Style="{StaticResource Card}" Margin="0,0,0,8" Padding="16">
+                    <Border Style="{StaticResource RaisedWell}" Margin="0,0,0,8" Padding="16">
                         <StackPanel>
-                            <TextBlock Text="{Binding Title}" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding Title}" Style="{StaticResource H2}"/>
                             <TextBlock Text="{Binding Description}" Style="{StaticResource Body}" Margin="0,4,0,0"/>
                         </StackPanel>
                     </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+        <WrapPanel Margin="0,4,0,0">
             <Button Content="Replace this app"
                     Style="{StaticResource SecondaryPill}"
                     Command="{Binding ReplaceThisAppCommand}"
-                    Margin="0,0,8,0"
+                    Margin="0,0,8,8"
                     Visibility="{Binding ShowReplace, Converter={StaticResource BoolToVisibility}}"
                     AutomationProperties.Name="Replace this app"
                     AutomationProperties.AutomationId="ReplaceThisApp"/>
             <Button Content="Remove this app and install"
                     Style="{StaticResource SecondaryPill}"
                     Command="{Binding RemoveThisAppCommand}"
+                    Margin="0,0,0,8"
                     Visibility="{Binding ShowRemove, Converter={StaticResource BoolToVisibility}}"
                     AutomationProperties.Name="Remove this app and install"
                     AutomationProperties.AutomationId="RemoveThisApp"/>
-        </StackPanel>
+        </WrapPanel>
     </StackPanel>
 </UserControl>

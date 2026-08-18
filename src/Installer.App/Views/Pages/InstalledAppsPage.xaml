@@ -4,14 +4,10 @@
              xmlns:wizard="clr-namespace:Installer.App.ViewModels.Wizard">
     <StackPanel Margin="0,8,0,0">
         <TextBlock Text="{Binding StatusMessage}"
-                   Style="{StaticResource Label}"
-                   Foreground="{DynamicResource BrandCyanBrush}"
-                   Margin="0,0,0,12"
+                   Style="{StaticResource BusyLabel}"
                    Visibility="{Binding StatusMessage, Converter={StaticResource StringNotEmptyToVisibility}}"/>
         <TextBlock Text="{Binding ErrorMessage}"
-                   Foreground="{DynamicResource WarningTextBrush}"
-                   TextWrapping="Wrap"
-                   Margin="0,0,0,12"
+                   Style="{StaticResource WarningBanner}"
                    Visibility="{Binding ErrorMessage, Converter={StaticResource StringNotEmptyToVisibility}}"/>
 
         <Border Style="{StaticResource AccentCard}"
@@ -19,25 +15,26 @@
                 Visibility="{Binding ShowConfirm, Converter={StaticResource BoolToVisibility}}">
             <StackPanel>
                 <TextBlock Text="REMOVE APP" Style="{StaticResource Eyebrow}"/>
-                <TextBlock Text="{Binding ConfirmTitle}" FontWeight="SemiBold" FontSize="15" Margin="0,6,0,4" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding ConfirmTitle}" Style="{StaticResource H2}" Margin="0,6,0,4" TextWrapping="Wrap"/>
                 <TextBlock Text="{Binding ConfirmBody}"
                            Style="{StaticResource Label}"
                            TextWrapping="Wrap"
                            Margin="0,0,0,12"/>
-                <StackPanel Orientation="Horizontal">
+                <WrapPanel>
                     <Button Content="Remove"
-                            Style="{StaticResource SecondaryPill}"
+                            Style="{StaticResource DangerPill}"
                             Command="{Binding ConfirmRemoveCommand}"
                             IsEnabled="{Binding CanRemove}"
-                            Margin="0,0,8,0"
+                            Margin="0,0,8,8"
                             AutomationProperties.Name="Confirm remove app"
                             AutomationProperties.AutomationId="ConfirmRemoveApp"/>
                     <Button Content="Cancel"
                             Style="{StaticResource GhostPill}"
                             Command="{Binding CancelConfirmCommand}"
                             IsEnabled="{Binding CanRemove}"
+                            Margin="0,0,0,8"
                             AutomationProperties.Name="Cancel remove"/>
-                </StackPanel>
+                </WrapPanel>
             </StackPanel>
         </Border>
 
@@ -49,11 +46,9 @@
         <DockPanel Margin="0,12,0,12">
             <Button DockPanel.Dock="Right"
                     Content="Refresh"
-                    Style="{StaticResource GhostPill}"
+                    Style="{StaticResource CompactPill}"
                     Command="{Binding RefreshCommand}"
                     IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolToEnabled}}"
-                    Height="32"
-                    MinWidth="72"
                     AutomationProperties.Name="Refresh installed apps"
                     AutomationProperties.AutomationId="RefreshInstalledApps"/>
             <TextBlock Text="{Binding EmptyHint}"
@@ -62,25 +57,28 @@
                        TextWrapping="Wrap"
                        Visibility="{Binding EmptyHint, Converter={StaticResource StringNotEmptyToVisibility}}"/>
         </DockPanel>
+        <StackPanel Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibility}}">
+            <Border Style="{StaticResource SkeletonRow}"/>
+            <Border Style="{StaticResource SkeletonRow}"/>
+            <Border Style="{StaticResource SkeletonRow}"/>
+        </StackPanel>
         <ItemsControl ItemsSource="{Binding VisibleApps}"
                       Visibility="{Binding ShowList, Converter={StaticResource BoolToVisibility}}"
                       AutomationProperties.Name="Installed apps">
             <ItemsControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type wizard:InstalledAppRow}">
-                    <Border Style="{StaticResource Card}" Margin="0,0,0,8" Padding="12,10">
+                    <Border Style="{StaticResource RowCard}">
                         <DockPanel LastChildFill="True">
                             <Button DockPanel.Dock="Right"
-                                    Style="{StaticResource GhostPill}"
+                                    Style="{StaticResource CompactPill}"
                                     Content="Remove"
-                                    Height="32"
-                                    MinWidth="72"
                                     Margin="12,0,0,0"
                                     Command="{Binding DataContext.AskRemoveCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     CommandParameter="{Binding}"
                                     AutomationProperties.Name="Remove installed app"/>
                             <StackPanel VerticalAlignment="Center">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="{Binding DisplayName}" Style="{StaticResource H2}" TextTrimming="CharacterEllipsis"/>
                                     <TextBlock Text="  · recently used"
                                                Style="{StaticResource Label}"
                                                Foreground="{DynamicResource BrandCyanBrush}"
@@ -92,8 +90,7 @@
                                            Margin="0,2,0,0"
                                            TextTrimming="CharacterEllipsis"/>
                                 <TextBlock Text="Removing…"
-                                           Style="{StaticResource Label}"
-                                           Foreground="{DynamicResource BrandCyanBrush}"
+                                           Style="{StaticResource BusyLabel}"
                                            Margin="0,4,0,0"
                                            Visibility="{Binding IsRemoving, Converter={StaticResource BoolToVisibility}}"/>
                             </StackPanel>
