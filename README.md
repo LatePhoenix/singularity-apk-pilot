@@ -18,7 +18,7 @@ Windows guided installer for non-technical testers. Plug in a Meta Quest 2/3 or 
 
 The installer is unsigned unless `pack.ps1` is run with a code-signing certificate configured. Windows SmartScreen may warn on first run of an unsigned build. Choose **More info** → **Run anyway**.
 
-**v0.5.0** renames the product to **APK Pilot**. **v0.4.0** adds Quest Wi-Fi setup on Connect, **Switch to Wi-Fi** after USB approval, and **Installed apps** so testers can remove a third-party app one at a time. It still ships portable `adb` only — no bundled test app. See [`docs/SUPPORT_RUNBOOK.md`](docs/SUPPORT_RUNBOOK.md).
+**v0.5.1** opens **Need help connecting?** in a compact helper window, makes **Restart connection helper** actually restart the helper, and tightens the wizard so footer actions stay on screen. **v0.5.0** renames the product to **APK Pilot**. **v0.4.0** adds Quest Wi-Fi setup on Connect, **Switch to Wi-Fi** after USB approval, and **Installed apps** so testers can remove a third-party app one at a time. It still ships portable `adb` only — no bundled test app. See [`docs/SUPPORT_RUNBOOK.md`](docs/SUPPORT_RUNBOOK.md).
 
 ## Legal
 
@@ -44,7 +44,7 @@ dotnet test SingularityTesterInstaller.sln
 powershell -ExecutionPolicy Bypass -File build\packaging\scripts\pack.ps1
 ```
 
-Requires .NET SDK 8.0.424 (`global.json`) and [Inno Setup 7](https://jrsoftware.org/isinfo.php). Output: `artifacts\installer\SingularityApkInstaller-0.5.0-win-x64-setup.exe`. Details: [`docs/PACKAGING.md`](docs/PACKAGING.md).
+Requires .NET SDK 8.0.424 (`global.json`) and [Inno Setup 7](https://jrsoftware.org/isinfo.php). Output: `artifacts\installer\SingularityApkInstaller-0.5.1-win-x64-setup.exe`. Details: [`docs/PACKAGING.md`](docs/PACKAGING.md).
 
 ## Docs
 

@@ -19,7 +19,7 @@
       <UseWPF>true</UseWPF>
       <AssemblyName>SingularityApkInstaller</AssemblyName>
       <RootNamespace>Installer.App</RootNamespace>
-      <Version>0.5.0</Version>
+      <Version>0.5.1</Version>
       <Product>APK Pilot</Product>
       <Company>Singularity Solutions and Services LLC</Company>
       <ApplicationIcon>Assets\app-icon.ico</ApplicationIcon>

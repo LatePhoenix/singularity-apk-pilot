@@ -13,7 +13,7 @@ Use this when a tester says the installer “didn’t work.” Ask them to tap *
 3. If SmartScreen appears (unsigned build), **More info** → **Run anyway**.
 4. Confirm they launched **APK Pilot** from the Start menu after setup. If the window never appears, they are on v0.1.1 or earlier and Windows Application Control may be blocking satellite DLLs. Install **v0.4.0** or later (single-file).
 
-**v0.1.0:** no test `.apk` in the GitHub installer; install failed as `failed to stat`. **v0.1.1** bundled Halo to unblock testers. **v0.2.0** does not ship any app APK: connect a device first, then choose APK files. **v0.3.0** adds split packages, verify/open, recents, multi-device picker, Connect-screen diagnostics, and optional Authenticode. **v0.4.0** adds Quest Wi-Fi setup, Switch to Wi-Fi, and Installed apps (third-party uninstall). Publish is a single-file exe so Windows Application Control does not block unsigned DLLs.
+**v0.1.0:** no test `.apk` in the GitHub installer; install failed as `failed to stat`. **v0.1.1** bundled Halo to unblock testers. **v0.2.0** does not ship any app APK: connect a device first, then choose APK files. **v0.3.0** adds split packages, verify/open, recents, multi-device picker, Connect-screen diagnostics, and optional Authenticode. **v0.4.0** adds Quest Wi-Fi setup, Switch to Wi-Fi, and Installed apps (third-party uninstall). **v0.5.1** opens Need help connecting in a compact helper window and restarts the connection helper from the primary button. Publish is a single-file exe so Windows Application Control does not block unsigned DLLs.
 
 ## Bundle contents
 
