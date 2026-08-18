@@ -35,6 +35,8 @@ public sealed class AdbCommandFactoryTests
     {
         Assert.Equal(["-s", "S1", "uninstall", "com.app"], _factory.Uninstall("S1", "com.app").Arguments);
         Assert.Equal(["-s", "S1", "shell", "pm", "list", "packages", "com.app"], _factory.ListPackages("S1", "com.app").Arguments);
+        Assert.Equal(["-s", "S1", "shell", "pm", "list", "packages", "-3"], _factory.ListThirdPartyPackages("S1").Arguments);
+        Assert.Equal(["-s", "S1", "shell", "dumpsys", "package", "com.app"], _factory.DumpPackage("S1", "com.app").Arguments);
     }
 
     [Fact]

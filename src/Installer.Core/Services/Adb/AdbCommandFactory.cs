@@ -67,6 +67,12 @@ public sealed class AdbCommandFactory
         return new AdbCommand(args, "Verify app");
     }
 
+    public AdbCommand ListThirdPartyPackages(string serial) =>
+        new(["-s", serial, "shell", "pm", "list", "packages", "-3"], "List installed apps");
+
+    public AdbCommand DumpPackage(string serial, string packageId) =>
+        new(["-s", serial, "shell", "dumpsys", "package", packageId], "Read app name");
+
     public AdbCommand Logcat(string serial, string? packageId = null)
     {
         var args = new List<string> { "-s", serial, "logcat", "-d", "-t", "200" };

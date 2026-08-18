@@ -24,9 +24,13 @@ public sealed partial class ShellViewModel : ObservableObject
     private readonly IDeviceHealthService _health;
     private readonly IUpdateCheckService _updates;
     private readonly IAdbClient _adb;
+    private readonly IInstalledAppService _installedApps;
+    private readonly IApkInspector _inspector;
+    private readonly IRecentsStore _recents;
     private readonly IAppLogger _logger;
     private readonly Dictionary<WizardStep, WizardPageViewModel> _pages;
     private CancellationTokenSource? _installCts;
+    private CancellationTokenSource? _uninstallCts;
     private InstallRequest? _lastRequest;
 
     public ShellViewModel(
@@ -45,6 +49,7 @@ public sealed partial class ShellViewModel : ObservableObject
         IDeviceHealthService health,
         IUpdateCheckService updates,
         IAdbClient adb,
+        IInstalledAppService installedApps,
         IAppLogger logger)
     {
         _flow = flow;
@@ -60,6 +65,9 @@ public sealed partial class ShellViewModel : ObservableObject
         _health = health;
         _updates = updates;
         _adb = adb;
+        _installedApps = installedApps;
+        _inspector = inspector;
+        _recents = recents;
         _logger = logger;
         _pages = new Dictionary<WizardStep, WizardPageViewModel>
         {
@@ -71,16 +79,23 @@ public sealed partial class ShellViewModel : ObservableObject
             [WizardStep.ReadyToInstall] = new ReadyToInstallPageViewModel(inspector, recents, installSets),
             [WizardStep.Installing] = new InstallingPageViewModel(),
             [WizardStep.InstallProblem] = new InstallProblemPageViewModel(),
-            [WizardStep.Complete] = new CompletePageViewModel()
+            [WizardStep.Complete] = new CompletePageViewModel(),
+            [WizardStep.InstalledApps] = new InstalledAppsPageViewModel()
         };
 
         ChoosePage.FilesChanged += () => OnPropertyChanged(nameof(CanPrimary));
         ChoosePage.UseWifiRequested += () => _ = UseWifiFromUsbAsync();
+        ChoosePage.OpenInstalledAppsRequested += OpenInstalledApps;
         ConnectPage.ConnectRememberedRequested += () => _ = ConnectRememberedWifiAsync();
         ConnectPage.ConnectAdvancedRequested += request => _ = ConnectAdvancedWifiAsync(request);
         ConnectPage.BindEndpoint(_wireless.LastEndpoint);
         CompletePage.OpenRequested += () => _ = OpenOnDeviceAsync();
+        CompletePage.OpenInstalledAppsRequested += OpenInstalledApps;
         ProblemPage.PolicyRetryRequested += policy => _ = RetryWithPolicyAsync(policy);
+        AppsPage.RefreshRequested += () => _ = LoadInstalledAppsAsync();
+        AppsPage.UninstallRequested += packageId => _ = UninstallAppAsync(packageId);
+        AppsPage.CancelUninstallRequested += CancelUninstall;
+        AppsPage.EnrichVisibleRequested += () => _ = EnrichVisibleAppsAsync();
 
         var loaded = _manifests.Load();
         Manifest = loaded.IsSuccess && loaded.Value is not null ? loaded.Value : InstallManifest.Session;
@@ -106,6 +121,9 @@ public sealed partial class ShellViewModel : ObservableObject
     private InstallProblemPageViewModel ProblemPage =>
         (InstallProblemPageViewModel)_pages[WizardStep.InstallProblem];
 
+    private InstalledAppsPageViewModel AppsPage =>
+        (InstalledAppsPageViewModel)_pages[WizardStep.InstalledApps];
+
     private WelcomePageViewModel WelcomePage =>
         (WelcomePageViewModel)_pages[WizardStep.Welcome];
 
@@ -128,11 +146,12 @@ public sealed partial class ShellViewModel : ObservableObject
             or WizardStep.Authorization
             or WizardStep.DeveloperMode
             or WizardStep.InstallProblem
-            or WizardStep.Complete;
+            or WizardStep.Complete
+            or WizardStep.InstalledApps;
 
-    public bool ShowPrimary => State.CurrentStep != WizardStep.Installing;
+    public bool ShowPrimary => State.CurrentStep != WizardStep.Installing && !AppsPage.IsBusy;
 
-    public bool ShowCancel => State.CurrentStep == WizardStep.Installing;
+    public bool ShowCancel => State.CurrentStep == WizardStep.Installing || AppsPage.IsBusy;
 
     public bool CanPrimary => State.CurrentStep != WizardStep.ReadyToInstall || ChoosePage.HasFiles;
 
@@ -167,14 +186,27 @@ public sealed partial class ShellViewModel : ObservableObject
                 ChoosePage.ClearFiles();
                 Advance(WizardTrigger.Done);
                 break;
+            case WizardStep.InstalledApps:
+                CancelUninstall();
+                Advance(WizardTrigger.CloseInstalledApps, State.Device, readyDevices: State.Ready);
+                break;
         }
     }
 
     [RelayCommand]
     private void Cancel()
     {
-        _installCts?.Cancel();
-        Advance(WizardTrigger.Cancel, State.Device, readyDevices: State.Ready);
+        if (State.CurrentStep == WizardStep.Installing)
+        {
+            _installCts?.Cancel();
+            Advance(WizardTrigger.Cancel, State.Device, readyDevices: State.Ready);
+            return;
+        }
+
+        if (State.CurrentStep == WizardStep.InstalledApps)
+        {
+            CancelUninstall();
+        }
     }
 
     [RelayCommand]
@@ -424,6 +456,177 @@ public sealed partial class ShellViewModel : ObservableObject
         }
     }
 
+    private void OpenInstalledApps()
+    {
+        if (State.Device is not { State: DeviceConnectionState.ConnectedReady })
+        {
+            PayloadWarning = "Connect a device first, then open Installed apps.";
+            return;
+        }
+
+        PayloadWarning = "";
+        AppsPage.IsLoading = true;
+        Advance(WizardTrigger.OpenInstalledApps, State.Device, readyDevices: State.Ready);
+        _ = LoadInstalledAppsAsync();
+    }
+
+    private async Task LoadInstalledAppsAsync()
+    {
+        if (State.Device is null)
+        {
+            AppsPage.IsLoading = false;
+            AppsPage.ErrorMessage = "No device is connected.";
+            return;
+        }
+
+        try
+        {
+            AppsPage.IsLoading = true;
+            var listed = await _installedApps.ListAsync(State.Device.Serial, RecentPackageIds());
+            if (!listed.IsSuccess || listed.Value is null)
+            {
+                AppsPage.IsLoading = false;
+                AppsPage.ErrorMessage = listed.Error ?? "Could not read installed apps.";
+                AppsPage.Bind([]);
+                return;
+            }
+
+            AppsPage.Bind(listed.Value);
+            await EnrichVisibleAppsAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("List installed apps failed.", ex);
+            AppsPage.IsLoading = false;
+            AppsPage.ErrorMessage = "Could not read installed apps.";
+        }
+    }
+
+    private async Task UninstallAppAsync(string packageId)
+    {
+        if (State.Device is null)
+        {
+            AppsPage.ErrorMessage = "No device is connected.";
+            return;
+        }
+
+        _uninstallCts?.Cancel();
+        _uninstallCts = new CancellationTokenSource();
+        AppsPage.BeginUninstall(packageId);
+        NotifyChrome();
+        try
+        {
+            var result = await _installedApps.UninstallAsync(State.Device.Serial, packageId, _uninstallCts.Token);
+            AppsPage.EndUninstall(result);
+            if (!result.Success)
+            {
+                PayloadWarning = result.Message;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            AppsPage.CancelBusy();
+            AppsPage.StatusMessage = "Removal was cancelled.";
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Uninstall failed.", ex);
+            AppsPage.EndUninstall(UninstallResult.Failed(packageId, "Could not remove this app."));
+            PayloadWarning = "Could not remove this app.";
+        }
+        finally
+        {
+            NotifyChrome();
+        }
+    }
+
+    private void CancelUninstall()
+    {
+        _uninstallCts?.Cancel();
+        AppsPage.CancelBusy();
+        NotifyChrome();
+    }
+
+    private async Task EnrichVisibleAppsAsync()
+    {
+        if (State.CurrentStep != WizardStep.InstalledApps || State.Device is null || AppsPage.IsBusy)
+        {
+            return;
+        }
+
+        var visible = AppsPage.VisibleModels
+            .Where(app => string.IsNullOrWhiteSpace(app.Label))
+            .Take(40)
+            .ToList();
+        if (visible.Count == 0)
+        {
+            return;
+        }
+
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(8));
+        var enriched = new List<InstalledApp>();
+        foreach (var app in visible)
+        {
+            if (timeout.IsCancellationRequested)
+            {
+                break;
+            }
+
+            try
+            {
+                enriched.Add(await _installedApps.EnrichAsync(State.Device.Serial, app, timeout.Token));
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
+            catch
+            {
+                enriched.Add(app);
+            }
+        }
+
+        if (enriched.Count > 0)
+        {
+            AppsPage.MergeEnrichment(enriched);
+        }
+    }
+
+    private HashSet<string> RecentPackageIds()
+    {
+        var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        if (State.Manifest.CanVerifyPackage)
+        {
+            ids.Add(State.Manifest.AppId);
+        }
+
+        foreach (var path in ChoosePage.SelectedPaths.Concat(ChoosePage.RecentFiles).Concat(_recents.Load().LastFiles))
+        {
+            try
+            {
+                var identity = _inspector.Inspect(path);
+                if (identity is { HasPackageId: true })
+                {
+                    ids.Add(identity.PackageId);
+                }
+            }
+            catch
+            {
+                // Skip unreadable recents; listing still works.
+            }
+        }
+
+        return ids;
+    }
+
+    private void NotifyChrome()
+    {
+        OnPropertyChanged(nameof(ShowPrimary));
+        OnPropertyChanged(nameof(ShowCancel));
+        OnPropertyChanged(nameof(CanPrimary));
+        OnPropertyChanged(nameof(ShowSecondaryExport));
+    }
+
     private async Task CheckForUpdateAsync()
     {
         try
@@ -537,6 +740,25 @@ public sealed partial class ShellViewModel : ObservableObject
     {
         if (State.CurrentStep is WizardStep.Welcome or WizardStep.Installing or WizardStep.Complete or WizardStep.InstallProblem)
         {
+            return;
+        }
+
+        if (State.CurrentStep == WizardStep.InstalledApps)
+        {
+            var connected = _devices.SelectPrimary(devices);
+            if (connected is null)
+            {
+                CancelUninstall();
+                Advance(WizardTrigger.DeviceRefresh, null, readyDevices: devices, health: _health.Snapshot(devices));
+                return;
+            }
+
+            if (AppsPage.IsBusy)
+            {
+                return;
+            }
+
+            Advance(WizardTrigger.DeviceRefresh, connected, readyDevices: devices);
             return;
         }
 

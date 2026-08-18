@@ -61,6 +61,11 @@ public sealed class ErrorClassifier
             return InstallError.MissingSplit;
         }
 
+        if (ContainsAny(lower, "delete_failed", "unknown package", "failure calling service package"))
+        {
+            return InstallError.UninstallFailed;
+        }
+
         if (ContainsAny(lower, "failed to connect", "cannot connect to", "failed to pair", "wrong password", "connection refused"))
         {
             return InstallError.WirelessConnectFailed;

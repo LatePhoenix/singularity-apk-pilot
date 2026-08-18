@@ -12,5 +12,7 @@ public enum WizardTrigger
     Cancel = 7,
     AutoFix = 8,
     Retry = 9,
-    Done = 10
+    Done = 10,
+    OpenInstalledApps = 11,
+    CloseInstalledApps = 12
 }

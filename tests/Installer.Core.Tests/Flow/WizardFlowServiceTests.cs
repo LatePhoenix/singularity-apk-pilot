@@ -163,6 +163,33 @@ public sealed class WizardFlowServiceTests
         Assert.Equal(WizardStep.ReadyToInstall, state.CurrentStep);
     }
 
+    [Fact]
+    public void Open_installed_apps_returns_to_ready()
+    {
+        var quest = Quest(DeviceConnectionState.ConnectedReady);
+        var state = Detected(quest);
+        state = _flow.Advance(state, WizardTrigger.Continue, quest, readyDevices: [quest]);
+        state = _flow.Advance(state, WizardTrigger.OpenInstalledApps, quest, readyDevices: [quest]);
+        Assert.Equal(WizardStep.InstalledApps, state.CurrentStep);
+        Assert.Equal(WizardStep.ReadyToInstall, state.ReturnStep);
+        Assert.Contains("Installed apps", state.Copy.Headline, StringComparison.OrdinalIgnoreCase);
+        Assert.Equal("Back", state.Copy.PrimaryAction);
+        state = _flow.Advance(state, WizardTrigger.CloseInstalledApps, quest, readyDevices: [quest]);
+        Assert.Equal(WizardStep.ReadyToInstall, state.CurrentStep);
+        Assert.Null(state.ReturnStep);
+    }
+
+    [Fact]
+    public void Installed_apps_disconnect_goes_to_connect()
+    {
+        var quest = Quest(DeviceConnectionState.ConnectedReady);
+        var state = Detected(quest);
+        state = _flow.Advance(state, WizardTrigger.Continue, quest, readyDevices: [quest]);
+        state = _flow.Advance(state, WizardTrigger.OpenInstalledApps, quest, readyDevices: [quest]);
+        state = _flow.Advance(state, WizardTrigger.DeviceRefresh, null, readyDevices: []);
+        Assert.Equal(WizardStep.ConnectDevice, state.CurrentStep);
+    }
+
     private WizardState Detected(DeviceInfo device)
     {
         var state = _flow.CreateInitialState(InstallManifest.Placeholder);
@@ -195,6 +222,10 @@ public sealed class WizardFlowServiceTests
         public Task<AdbProcessResult> UninstallAsync(string serial, string packageId, CancellationToken cancellationToken = default) =>
             Task.FromResult(new AdbProcessResult(0, "Success", "", TimeSpan.Zero, []));
         public Task<bool> IsPackageInstalledAsync(string serial, string packageId, CancellationToken cancellationToken = default) => Task.FromResult(true);
+        public Task<IReadOnlyList<string>> ListThirdPartyPackagesAsync(string serial, CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<string>>([]);
+        public Task<string> DumpPackageAsync(string serial, string packageId, CancellationToken cancellationToken = default) =>
+            Task.FromResult("");
         public Task<string> GetLogcatAsync(string serial, string? packageId, CancellationToken cancellationToken = default) => Task.FromResult("");
         public Task<AdbProcessResult> TcpIpAsync(string serial, int port = 5555, CancellationToken cancellationToken = default) =>
             Task.FromResult(new AdbProcessResult(0, "", "", TimeSpan.Zero, []));

@@ -15,5 +15,6 @@ public enum InstallError
     UnknownInstallFailure = 10,
     MissingPayload = 11,
     WirelessConnectFailed = 12,
-    MissingSplit = 13
+    MissingSplit = 13,
+    UninstallFailed = 14
 }

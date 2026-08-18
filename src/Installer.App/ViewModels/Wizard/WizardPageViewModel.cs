@@ -75,6 +75,11 @@ public abstract partial class WizardPageViewModel : ObservableObject
                     $"Choose APK files to install on {state.Device?.DisplayName ?? "your device"}.",
                     state.Device?.IsWireless == true ? "Connected over Wi-Fi" : "Device ready",
                     "Live"),
+            WizardStep.InstalledApps =>
+                (DeviceIllustrationKind.Package,
+                    $"Third-party apps on {state.Device?.DisplayName ?? "your device"}.",
+                    state.Device?.IsWireless == true ? "Connected over Wi-Fi" : "Device ready",
+                    "Live"),
             WizardStep.Installing =>
                 (DeviceIllustrationKind.Installing,
                     state.Device?.IsWireless == true

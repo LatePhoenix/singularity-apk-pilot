@@ -24,7 +24,7 @@ public sealed class WizardFlowService : IWizardFlowService
 
     public WizardState Advance(WizardState state, WizardTrigger trigger, DeviceInfo? device = null, InstallResult? installResult = null, IReadOnlyList<DeviceInfo>? readyDevices = null, DeviceHealth? health = null)
     {
-        var activeDevice = device ?? state.Device;
+        var activeDevice = readyDevices is not null ? device : device ?? state.Device;
         var ready = readyDevices ?? state.ReadyDevices;
         var connectAttempts = state.ConnectAttempts;
         if (trigger is WizardTrigger.Continue or WizardTrigger.ConfirmAuthorization or WizardTrigger.ConfirmDeveloperMode or WizardTrigger.DeviceRefresh
@@ -44,6 +44,19 @@ public sealed class WizardFlowService : IWizardFlowService
             activeDevice,
             installResult);
 
+        WizardStep? returnStep = state.ReturnStep;
+        if (trigger == WizardTrigger.OpenInstalledApps
+            && nextStep == WizardStep.InstalledApps
+            && state.CurrentStep is WizardStep.ReadyToInstall or WizardStep.Complete)
+        {
+            returnStep = state.CurrentStep;
+        }
+
+        if (nextStep != WizardStep.InstalledApps)
+        {
+            returnStep = null;
+        }
+
         var result = installResult ?? state.LastInstallResult;
         var actions = result is { Success: false, Error: not null }
             ? _recovery.Suggest(result.Error.Value, state.Manifest)
@@ -52,7 +65,7 @@ public sealed class WizardFlowService : IWizardFlowService
         if (nextStep != WizardStep.InstallProblem)
         {
             actions = nextStep == WizardStep.Complete ? [] : state.SuggestedActions;
-            if (nextStep is WizardStep.Welcome or WizardStep.ConnectDevice or WizardStep.ReadyToInstall)
+            if (nextStep is WizardStep.Welcome or WizardStep.ConnectDevice or WizardStep.ReadyToInstall or WizardStep.InstalledApps)
             {
                 actions = [];
             }
@@ -79,6 +92,7 @@ public sealed class WizardFlowService : IWizardFlowService
             connectAttempts,
             developerLikely,
             ready,
-            health ?? state.Health);
+            health ?? state.Health,
+            returnStep);
     }
 }

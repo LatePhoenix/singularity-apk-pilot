@@ -16,6 +16,8 @@ public sealed partial class CompletePageViewModel : WizardPageViewModel
 
     public event Action? OpenRequested;
 
+    public event Action? OpenInstalledAppsRequested;
+
     protected override void OnApplied(WizardState state)
     {
         var key = state.Device?.IsQuest == true ? "quest" : "android";
@@ -23,6 +25,12 @@ public sealed partial class CompletePageViewModel : WizardPageViewModel
         CanOpen = state.Manifest.CanVerifyPackage && state.Device?.State == DeviceConnectionState.ConnectedReady;
         OpenLabel = state.Manifest.CanVerifyPackage ? $"Open {state.Manifest.DisplayName}" : "Open on device";
         OnPropertyChanged(nameof(Notes));
+    }
+
+    [RelayCommand]
+    private void OpenInstalledApps()
+    {
+        OpenInstalledAppsRequested?.Invoke();
     }
 
     [RelayCommand]

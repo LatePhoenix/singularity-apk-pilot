@@ -57,6 +57,30 @@ public sealed class FlowDecisionEngine
             return WizardStep.ConnectDevice;
         }
 
+        if (trigger == WizardTrigger.OpenInstalledApps)
+        {
+            return active is { State: DeviceConnectionState.ConnectedReady }
+                ? WizardStep.InstalledApps
+                : state.CurrentStep;
+        }
+
+        if (trigger == WizardTrigger.CloseInstalledApps)
+        {
+            return state.ReturnStep is WizardStep.ReadyToInstall or WizardStep.Complete
+                ? state.ReturnStep.Value
+                : WizardStep.ReadyToInstall;
+        }
+
+        if (state.CurrentStep == WizardStep.InstalledApps)
+        {
+            if (active is null || active.State != DeviceConnectionState.ConnectedReady)
+            {
+                return WizardStep.ConnectDevice;
+            }
+
+            return WizardStep.InstalledApps;
+        }
+
         if (active is null || active.State == DeviceConnectionState.NotConnected)
         {
             if ((state.ConnectAttempts >= 2 || state.DeveloperModeLikelyRequired) &&

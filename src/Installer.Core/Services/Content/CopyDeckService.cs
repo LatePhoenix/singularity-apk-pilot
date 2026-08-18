@@ -94,6 +94,14 @@ public sealed class CopyDeckService : IContentService
                 "Done",
                 "If the app does not appear, put the headset on and search Library again. Then export diagnostics.",
                 manifest.CanVerifyPackage ? $"Package: {manifest.AppId} {version}" : "Package id is unknown for this file."),
+            WizardStep.InstalledApps => new WizardCopy(
+                "Installed apps",
+                $"{model} has these third-party apps. Search, then remove one at a time.",
+                "Back",
+                quest
+                    ? "Remove deletes the app and its data on the headset. Store apps can come back from the store. Sideloaded apps need the APK again. Library → Unknown Sources may still show a tile until you refresh."
+                    : "Remove deletes the app and its data on the phone. Store apps can come back from the store. Sideloaded apps need the APK again.",
+                "Third-party apps only. System apps are not listed."),
             _ => new WizardCopy(name, "", "Continue", "", "")
         };
     }

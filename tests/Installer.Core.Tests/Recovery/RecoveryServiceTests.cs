@@ -22,6 +22,7 @@ public sealed class RecoveryServiceTests
     [InlineData(InstallError.MissingPayload)]
     [InlineData(InstallError.WirelessConnectFailed)]
     [InlineData(InstallError.MissingSplit)]
+    [InlineData(InstallError.UninstallFailed)]
     public void Suggests_at_most_three_actions(InstallError error)
     {
         var actions = _sut.Suggest(error, InstallManifest.Placeholder);
@@ -55,6 +56,10 @@ public sealed class RecoveryServiceTests
         public Task<AdbProcessResult> UninstallAsync(string serial, string packageId, CancellationToken cancellationToken = default) =>
             Task.FromResult(new AdbProcessResult(0, "Success", "", TimeSpan.Zero, []));
         public Task<bool> IsPackageInstalledAsync(string serial, string packageId, CancellationToken cancellationToken = default) => Task.FromResult(true);
+        public Task<IReadOnlyList<string>> ListThirdPartyPackagesAsync(string serial, CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<string>>([]);
+        public Task<string> DumpPackageAsync(string serial, string packageId, CancellationToken cancellationToken = default) =>
+            Task.FromResult("");
         public Task<string> GetLogcatAsync(string serial, string? packageId, CancellationToken cancellationToken = default) => Task.FromResult("");
         public Task<AdbProcessResult> TcpIpAsync(string serial, int port = 5555, CancellationToken cancellationToken = default) =>
             Task.FromResult(new AdbProcessResult(0, "", "", TimeSpan.Zero, []));

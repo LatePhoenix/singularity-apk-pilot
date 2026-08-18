@@ -41,6 +41,9 @@
         <DataTemplate DataType="{x:Type wizard:CompletePageViewModel}">
             <pages:CompletePage/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type wizard:InstalledAppsPageViewModel}">
+            <pages:InstalledAppsPage/>
+        </DataTemplate>
     </Window.Resources>
     <Grid>
         <Grid.Background>

@@ -126,6 +126,14 @@ Serials are hashed. Do not ask testers to paste raw serial numbers in email.
 3. Pairing: the six-digit code and pairing port are only for first-time wireless debugging. After pairing, connect to the install address (usually port 5555), not the pairing port.
 4. After a headset reboot, USB-first switch is required again unless they re-pair.
 
+### Could not remove an app
+
+**Tester sees:** “The app could not be removed,” or the app is still on the device after Remove.
+
+**Likely causes:** Headset asleep, they tried a protected/system app (those are not listed), or the device disconnected.
+
+**Operator response:** Keep the device awake on USB or the same Wi-Fi. Use **Installed apps** from Choose apps or Complete. Confirm, then Remove. On Quest, Library → Unknown Sources can still show a tile until they refresh. Do not ask them to uninstall from a terminal.
+
 ### ADB server unhappy
 
 **Symptoms:** Empty device list despite a known-good cable, or stale unauthorized state.

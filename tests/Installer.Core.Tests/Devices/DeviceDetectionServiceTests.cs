@@ -89,6 +89,10 @@ public sealed class DeviceDetectionServiceTests
         public Task<AdbProcessResult> UninstallAsync(string serial, string packageId, CancellationToken cancellationToken = default) =>
             Task.FromResult(new AdbProcessResult(0, "Success", "", TimeSpan.Zero, []));
         public Task<bool> IsPackageInstalledAsync(string serial, string packageId, CancellationToken cancellationToken = default) => Task.FromResult(true);
+        public Task<IReadOnlyList<string>> ListThirdPartyPackagesAsync(string serial, CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<string>>([]);
+        public Task<string> DumpPackageAsync(string serial, string packageId, CancellationToken cancellationToken = default) =>
+            Task.FromResult("");
         public Task<string> GetLogcatAsync(string serial, string? packageId, CancellationToken cancellationToken = default) => Task.FromResult("");
         public Task<AdbProcessResult> TcpIpAsync(string serial, int port = 5555, CancellationToken cancellationToken = default) =>
             Task.FromResult(new AdbProcessResult(0, "", "", TimeSpan.Zero, []));

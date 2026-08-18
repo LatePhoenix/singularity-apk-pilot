@@ -71,6 +71,26 @@ public sealed class AdbClient : IAdbClient
         return _parser.IsPackageListed(result.StandardOutput, packageId);
     }
 
+    public async Task<IReadOnlyList<string>> ListThirdPartyPackagesAsync(string serial, CancellationToken cancellationToken = default)
+    {
+        Guard.NotBlank(serial, nameof(serial));
+        var result = await RunAsync(_commands.ListThirdPartyPackages(serial), cancellationToken);
+        return _parser.ParsePackageList(result.StandardOutput);
+    }
+
+    public async Task<string> DumpPackageAsync(string serial, string packageId, CancellationToken cancellationToken = default)
+    {
+        Guard.NotBlank(serial, nameof(serial));
+        Guard.NotBlank(packageId, nameof(packageId));
+        if (!AdbOutputParser.IsSafePackageId(packageId))
+        {
+            return "";
+        }
+
+        var result = await RunAsync(_commands.DumpPackage(serial, packageId), cancellationToken);
+        return result.CombinedOutput;
+    }
+
     public async Task<string> GetLogcatAsync(string serial, string? packageId, CancellationToken cancellationToken = default)
     {
         var result = await RunAsync(_commands.Logcat(serial, packageId), cancellationToken);
