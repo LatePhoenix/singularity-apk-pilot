@@ -6,7 +6,7 @@
 
 **⬇️ [Download SingularityApkInstaller-win-x64-setup.exe](https://github.com/LatePhoenix/singularity-apk-installer/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe)** — that link always serves the latest GitHub Release asset.
 
-Windows guided installer for non-technical testers. Plug in a Meta Quest 2/3 or Android phone, follow one highlighted action per screen, then choose APK files to install with portable `adb`. After the device has approved this computer, you can switch to Wi-Fi and unplug.
+Windows guided installer for non-technical testers. Plug in a Meta Quest 2/3 or Android phone, follow one highlighted action per screen, then choose APK files to install with portable `adb`. After the device has approved this computer, you can switch to Wi-Fi and unplug. **Installed apps** lists third-party apps so you can remove one at a time.
 
 > Part of the [Singularity](https://github.com/LatePhoenix/singularity-hub) app family.
 

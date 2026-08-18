@@ -101,6 +101,34 @@ public sealed class AdbOutputParserTests
     }
 
     [Fact]
+    public void Parses_third_party_package_list()
+    {
+        const string output = """
+            package:com.singularity.demo
+            package:com.other.app
+            junk
+            """;
+        var ids = _parser.ParsePackageList(output);
+        Assert.Equal(["com.singularity.demo", "com.other.app"], ids);
+        Assert.Empty(_parser.ParsePackageList(""));
+        Assert.Empty(_parser.ParsePackageList("package:not safe; rm -rf"));
+    }
+
+    [Fact]
+    public void Uninstall_success_and_dump_parse()
+    {
+        Assert.True(_parser.IsUninstallSuccess("Success\n"));
+        Assert.False(_parser.IsUninstallSuccess("Failure [DELETE_FAILED_INTERNAL_ERROR]"));
+        var (label, version) = _parser.ParsePackageDump("""
+            Package [com.demo] (abc):
+                versionName=1.2.3 minSdk=29
+                applicationLabel=Demo App
+            """);
+        Assert.Equal("Demo App", label);
+        Assert.Equal("1.2.3", version);
+    }
+
+    [Fact]
     public void Parses_launcher_component()
     {
         Assert.Equal("com.demo/.MainActivity", _parser.ParseLauncher("com.demo/.MainActivity\n", "com.demo"));

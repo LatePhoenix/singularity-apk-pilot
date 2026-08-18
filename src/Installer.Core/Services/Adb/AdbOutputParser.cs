@@ -141,6 +141,114 @@ public sealed class AdbOutputParser
                          || line.Trim().Equals(packageId, StringComparison.OrdinalIgnoreCase));
     }
 
+    public IReadOnlyList<string> ParsePackageList(string output)
+    {
+        var ids = new List<string>();
+        if (string.IsNullOrWhiteSpace(output))
+        {
+            return ids;
+        }
+
+        foreach (var raw in output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
+        {
+            var line = raw.Trim();
+            if (line.StartsWith("package:", StringComparison.OrdinalIgnoreCase))
+            {
+                var id = line["package:".Length..].Trim();
+                if (IsSafePackageId(id))
+                {
+                    ids.Add(id);
+                }
+            }
+        }
+
+        return ids;
+    }
+
+    public bool IsUninstallSuccess(string output)
+    {
+        var text = output ?? "";
+        if (text.Contains("Failure", StringComparison.OrdinalIgnoreCase)
+            || text.Contains("DELETE_FAILED", StringComparison.OrdinalIgnoreCase)
+            || text.Contains("Unknown package", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        return text.Contains("Success", StringComparison.OrdinalIgnoreCase);
+    }
+
+    public (string? Label, string? Version) ParsePackageDump(string output)
+    {
+        if (string.IsNullOrWhiteSpace(output))
+        {
+            return (null, null);
+        }
+
+        string? label = null;
+        string? version = null;
+        foreach (var raw in output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
+        {
+            var line = raw.Trim();
+            label ??= ReadTaggedValue(line, "applicationLabel=");
+            label ??= ReadTaggedValue(line, "nonLocalizedLabel=");
+            label ??= ReadTaggedValue(line, "application-label:");
+            version ??= ReadTaggedValue(line, "versionName=");
+            if (label is not null && version is not null)
+            {
+                break;
+            }
+        }
+
+        return (CleanDumpValue(label), CleanDumpValue(version));
+    }
+
+    public static bool IsSafePackageId(string? packageId)
+    {
+        if (string.IsNullOrWhiteSpace(packageId) || packageId.Length > 256)
+        {
+            return false;
+        }
+
+        foreach (var c in packageId)
+        {
+            if (!char.IsLetterOrDigit(c) && c is not '.' and not '_')
+            {
+                return false;
+            }
+        }
+
+        return packageId.Contains('.', StringComparison.Ordinal);
+    }
+
+    private static string? ReadTaggedValue(string line, string tag)
+    {
+        var index = line.IndexOf(tag, StringComparison.OrdinalIgnoreCase);
+        if (index < 0)
+        {
+            return null;
+        }
+
+        var value = line[(index + tag.Length)..].Trim().Trim('\'', '"');
+        var space = value.IndexOf(' ');
+        if (space > 0 && !tag.Contains("Label", StringComparison.OrdinalIgnoreCase) && !tag.Contains("label", StringComparison.Ordinal))
+        {
+            value = value[..space];
+        }
+
+        return string.IsNullOrWhiteSpace(value) ? null : value;
+    }
+
+    private static string? CleanDumpValue(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value is "null" or "0")
+        {
+            return null;
+        }
+
+        return value.Trim();
+    }
+
     private static IReadOnlyDictionary<string, string> ParseProperties(string rest)
     {
         var properties = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);

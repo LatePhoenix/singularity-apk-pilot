@@ -58,6 +58,9 @@ public sealed class RecoveryService : IRecoveryService
             case InstallError.MissingSplit:
                 actions.Add(Action("splits", "Add the rest of the app", "This file is only part of the app. Add the other files or an .apks package.", RecoveryActionKind.RetryInstall, false));
                 break;
+            case InstallError.UninstallFailed:
+                actions.Add(Action("retry", "Try again", "Keep the device awake and remove the app again.", RecoveryActionKind.RetryInstall, false));
+                break;
             default:
                 actions.Add(Action("restart", "Restart connection helper", "Restart the helper and try the install again.", RecoveryActionKind.RestartAdbServer, true));
                 actions.Add(Action("retry", "Try again", "Run the install one more time.", RecoveryActionKind.RetryInstall, true));

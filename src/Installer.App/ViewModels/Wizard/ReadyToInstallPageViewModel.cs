@@ -72,6 +72,8 @@ public sealed partial class ReadyToInstallPageViewModel : WizardPageViewModel
 
     public event Action? UseWifiRequested;
 
+    public event Action? OpenInstalledAppsRequested;
+
     public IReadOnlyList<string> SelectedPaths => ApkFiles.Select(file => file.Path).ToList();
 
     public void ClearFiles() => ApkFiles.Clear();
@@ -89,6 +91,12 @@ public sealed partial class ReadyToInstallPageViewModel : WizardPageViewModel
         var ready = state.Device is { State: DeviceConnectionState.ConnectedReady };
         ShowUseWifi = ready && state.Device is { IsWireless: false };
         ShowWifiConnected = ready && state.Device is { IsWireless: true };
+    }
+
+    [RelayCommand]
+    private void OpenInstalledApps()
+    {
+        OpenInstalledAppsRequested?.Invoke();
     }
 
     [RelayCommand]

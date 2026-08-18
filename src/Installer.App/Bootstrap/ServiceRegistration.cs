@@ -60,6 +60,7 @@ public static class ServiceRegistration
         services.AddSingleton<RetryPolicyFactory>();
         services.AddSingleton<FriendlyMessageService>();
         services.AddSingleton<IInstallService, InstallService>();
+        services.AddSingleton<IInstalledAppService, InstalledAppService>();
         services.AddSingleton<AutoFixExecutor>();
         services.AddSingleton<IRecoveryService, RecoveryService>();
         services.AddSingleton<QuestFlowStrategy>();

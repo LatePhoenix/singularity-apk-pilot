@@ -18,6 +18,7 @@ public sealed class FriendlyMessageService
         InstallError.MissingPayload => "The APK file could not be found",
         InstallError.WirelessConnectFailed => "Wi-Fi connection did not work",
         InstallError.MissingSplit => "This looks like only part of the app",
+        InstallError.UninstallFailed => "The app could not be removed",
         _ => "The install did not complete"
     };
 
@@ -35,6 +36,7 @@ public sealed class FriendlyMessageService
         InstallError.MissingPayload => "The selected APK is missing or was moved. Add the file again and retry.",
         InstallError.WirelessConnectFailed => "The headset or phone is not reachable over Wi-Fi. Use a USB cable, or confirm it is on the same network.",
         InstallError.MissingSplit => "Add the other app files or an .apks / .xapk package, then install again.",
+        InstallError.UninstallFailed => "The app is still on the device. Keep the device awake and try again.",
         _ => "See advanced details or export diagnostics."
     };
 }

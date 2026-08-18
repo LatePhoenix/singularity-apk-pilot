@@ -12,15 +12,15 @@ Plug in the device, follow one highlighted action per screen, choose APK files, 
 - Automatic Quest vs phone classification.
 - Typed recovery for common ADB/package failures.
 - Reusable JSON install policy (`app-manifest.json`) for flags and post-install notes. APK files are chosen in the app, not bundled.
-- Diagnostics ZIP for support, without collecting unrelated device data.
+- Diagnostics ZIP for support, without collecting a full device package inventory.
 
 ## Non-goals
 
-- File manager, debloater, store replacement, or developer console.
+- File manager, bulk debloater, store replacement, or developer console. System apps are never listed.
 
 ## Primary flow
 
-Welcome → Connect device → Device detected → Authorization / developer mode only if needed → Choose APKs → Installing → Problem or Complete.
+Welcome → Connect device → Device detected → Authorization / developer mode only if needed → Choose APKs (optional Installed apps) → Installing → Problem or Complete (optional Installed apps).
 
 Skip steps when device state already satisfies them. Branch Quest vs phone as soon as classification is known.
 
@@ -34,7 +34,7 @@ Sideloading requires developer mode and USB debugging approval. Current Meta set
 4. In-headset: Quick Control → Settings → Developer → MTP Notification on.
 5. Approve USB debugging and choose **Always allow from this computer**.
 6. Optional: on Choose apps, tap **Switch to Wi-Fi**, then unplug. Later sessions can tap **Connect over Wi-Fi** or enter an address / pairing code on Connect device. Quest 2 / 3 walkthrough is on that screen.
-7. Choose APK, APKS, or XAPK files, install (including split sets), then tell the tester the app may appear under Unknown Sources. Headset UI placement can change across Horizon OS updates. **Open on device** is optional after install.
+7. Choose APK, APKS, or XAPK files, install (including split sets), then tell the tester the app may appear under Unknown Sources. Headset UI placement can change across Horizon OS updates. **Open on device** is optional after install. **Installed apps** lists third-party apps so a tester can remove one at a time.
 
 ## Phone flow
 
@@ -53,6 +53,10 @@ Sideloading requires developer mode and USB debugging approval. Current Meta set
 ### Install
 
 One or more install sets, chosen after the device is ready. Same package id across `.apk` files becomes one split set (`adb install-multiple`). `.apks` / `.xapk` extract to a temp folder and install as one set. Different packages install sequentially. Policies: InstallFresh, ReinstallKeepData, ReinstallAllowDowngrade, UninstallThenInstall, InstallTestBuild. Flags: `-r`, `-d`, `-t`, `-g`. Verify with `pm list packages` when a real package id is known. Do not auto-launch; Complete can offer **Open on device**.
+
+### Installed apps
+
+From Choose apps or Complete, testers can open **Installed apps**. The list is third-party only (`pm list packages -3`). System / Horizon core ids are hidden and cannot be removed. Remove is one app at a time after an in-page confirm. Diagnostics do not include the full inventory.
 
 ### Recovery
 
@@ -82,4 +86,5 @@ Product copies: [`legal/PrivacyPolicy.md`](legal/PrivacyPolicy.md), [`legal/Term
 - Phone: unauthorized → authorized → install.
 - Quest: two ready devices → picker → continue with the selected headset.
 - Quest: install a split set / `.apks`, then Open on device.
+- Quest or phone: Installed apps → confirm → remove one third-party app → Back.
 - Installer package launches the app when the post-install checkbox is selected.

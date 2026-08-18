@@ -78,6 +78,7 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 - Secondary in page: Use last files (when previous paths still exist)
 - Secondary in page: **Switch to Wi-Fi** card (only when the device is USB and ready). After this you can unplug.
 - In-page: **Connected over Wi-Fi** card when the session is already wireless.
+- Secondary in page: **Installed apps** card. Opens the Installed apps step.
 - Warning: This looks like only part of an app. Add the other files or an .apks package.
 - Help: Existing copies of the same app may be replaced. Your photos and other apps are not touched. Switch to Wi-Fi only after the device has approved this computer.
 - Advanced: Policy name, package id, and split set.
@@ -118,6 +119,7 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 | MissingPayload | The APK file could not be found | Selected file missing or moved |
 | MissingSplit | This looks like only part of the app | Base APK or remaining splits missing |
 | WirelessConnectFailed | Wi-Fi connection did not work | Wrong network, reboot cleared wireless, or pairing port vs connect port |
+| UninstallFailed | The app could not be removed | Device asleep, protected app, or removal blocked |
 | UnknownInstallFailure | The install did not complete | See advanced details |
 
 ## Complete
@@ -128,5 +130,18 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 - Primary: Done
 - Secondary: Export diagnostics
 - In-page: **Open on device** when the package id resolved (does not auto-launch)
+- In-page: **Installed apps**
 - Help: If the app does not appear, unplug, put the headset on, and search Library again. Then export diagnostics.
 - Advanced: Package id and version when parsed; otherwise package id is unknown.
+
+## Installed apps
+
+- Headline: Installed apps
+- Body: {model} has these third-party apps. Search, then remove one at a time.
+- Primary: Back
+- Secondary: Export diagnostics (footer). Cancel in the footer while a removal is in progress.
+- In-page: search, refresh, list of third-party apps (name when known, package id in mono). **Remove** opens a confirm card.
+- Confirm: Remove deletes the app and its data. Store apps can come back from the store. Sideloaded apps need the APK again.
+- Help (Quest): Remove deletes the app and its data on the headset. Library → Unknown Sources may still show a tile until you refresh.
+- Help (phone): Remove deletes the app and its data on the phone.
+- Advanced: Third-party apps only. System apps are not listed.

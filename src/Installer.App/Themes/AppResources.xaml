@@ -10,6 +10,7 @@
 
     <conv:StringNotEmptyToVisibilityConverter x:Key="StringNotEmptyToVisibility"/>
     <conv:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibility"/>
+    <conv:InverseBoolConverter x:Key="InverseBoolToEnabled"/>
     <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
 
     <Style x:Key="FocusRing" TargetType="Control">

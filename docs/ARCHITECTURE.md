@@ -28,10 +28,10 @@ ViewModels call service interfaces only. `App/Bootstrap` is the only place that 
 - **Packages:** `IApkInspector` reads package id / version / split name from APK zip manifests (binary AXML or XML). `.apks` / `.xapk` are zip-of-apks. `IInstallSetFactory` groups files into install sets.
 - **Wireless:** `IWirelessAdbService` enables USB-first Wi-Fi, reconnects a saved endpoint, and pairs then connects. Last address is stored in AppData, never pairing codes. Connect device shows the Quest 2/3 walkthrough and a Wi-Fi form; Choose apps offers **Switch to Wi-Fi** after USB approval.
 - **Devices:** parse `adb devices -l`, classify Quest vs phone, prefer a Wi-Fi record when USB and Wi-Fi both appear, poll for WPF binding. `IDeviceHealthService` plus an Infrastructure USB registry probe distinguish empty `adb` from Windows seeing a headset.
-- **Install:** plan flags from `InstallPolicy` + manifest + `InstallSet`, execute `install` or `install-multiple`, verify package, optional launch.
-- **Flow:** deterministic wizard state machine with Quest and Android strategies. Device refresh does not leave Device detected while two or more ready devices are unresolved.
+- **Install:** plan flags from `InstallPolicy` + manifest + `InstallSet`, execute `install` or `install-multiple`, verify package, optional launch. `IInstalledAppService` lists third-party apps (`pm list packages -3`), refuses protected ids, uninstalls one at a time, and optionally reads a name/version from `dumpsys package` for visible rows only.
+- **Flow:** deterministic wizard state machine with Quest and Android strategies. Device refresh does not leave Device detected while two or more ready devices are unresolved. Installed apps is a side step from Choose apps / Complete; Back returns to the previous step.
 - **Recovery:** classify stderr into `InstallError`, return ≤3 actions, optional auto-fix, explicit replace/remove using the known package id.
-- **Diagnostics:** assemble a sanitized ZIP from snapshots already in memory plus filtered logcat. Export is available on Connect, Authorization, Developer mode, Problem, and Complete.
+- **Diagnostics:** assemble a sanitized ZIP from snapshots already in memory plus filtered logcat. Export is available on Connect, Authorization, Developer mode, Problem, Complete, and Installed apps. The ZIP does not include a full device package inventory.
 - **Content:** load `app-manifest.json`, resolve copy for the current step/device. Recents store last files/folder next to the Wi-Fi endpoint.
 
 ## Infrastructure modules
@@ -50,8 +50,10 @@ Welcome
  → Authorization          (if unauthorized)
  → DeveloperMode          (Quest, if developer mode likely missing)
  → ReadyToInstall (choose APK files)
+    ⇄ InstalledApps          (third-party list + one-at-a-time remove)
  → Installing
  → InstallProblem | Complete
+    ⇄ InstalledApps
 ```
 
 Transitions are driven by `DeviceInfo` and `InstallResult`, not by button order. An already-authorized Quest skips to ReadyToInstall (APK picker).
@@ -70,7 +72,7 @@ Manifest `grantPermissions` adds `-g`. `allowTestApk` adds `-t` even when the po
 
 ## Logging / privacy
 
-Log command lines, exit codes, and sanitized output. Hash device serials in exported bundles. Do not scan the device filesystem. Do not collect accounts, contacts, or unrelated packages.
+Log command lines, exit codes, and sanitized output. Hash device serials in exported bundles. Do not scan the device filesystem. Do not collect accounts, contacts, or a full package inventory in diagnostics. Installed apps reads third-party package names locally to show the list.
 
 ## Packaging output
 

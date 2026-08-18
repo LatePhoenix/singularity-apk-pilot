@@ -16,8 +16,15 @@
                 Command="{Binding OpenOnDeviceCommand}"
                 IsEnabled="{Binding CanOpen}"
                 HorizontalAlignment="Left"
+                Margin="0,0,0,12"
                 Visibility="{Binding CanOpen, Converter={StaticResource BoolToVisibility}}"
                 AutomationProperties.Name="Open on device"
                 AutomationProperties.AutomationId="OpenOnDevice"/>
+        <Button Content="Installed apps"
+                Style="{StaticResource SecondaryPill}"
+                Command="{Binding OpenInstalledAppsCommand}"
+                HorizontalAlignment="Left"
+                AutomationProperties.Name="Installed apps"
+                AutomationProperties.AutomationId="OpenInstalledAppsFromComplete"/>
     </StackPanel>
 </UserControl>

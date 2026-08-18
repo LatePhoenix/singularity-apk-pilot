@@ -13,6 +13,8 @@ public interface IAdbClient
     Task<AdbProcessResult> InstallMultipleAsync(string serial, IReadOnlyList<string> apkPaths, IReadOnlyList<string> flags, CancellationToken cancellationToken = default);
     Task<AdbProcessResult> UninstallAsync(string serial, string packageId, CancellationToken cancellationToken = default);
     Task<bool> IsPackageInstalledAsync(string serial, string packageId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<string>> ListThirdPartyPackagesAsync(string serial, CancellationToken cancellationToken = default);
+    Task<string> DumpPackageAsync(string serial, string packageId, CancellationToken cancellationToken = default);
     Task<string> GetLogcatAsync(string serial, string? packageId, CancellationToken cancellationToken = default);
     Task<string?> ResolveLauncherAsync(string serial, string packageId, CancellationToken cancellationToken = default);
     Task<AdbProcessResult> LaunchAsync(string serial, string packageId, string? activity, CancellationToken cancellationToken = default);

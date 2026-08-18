@@ -22,6 +22,7 @@ public sealed class ErrorClassifierTests
     [InlineData("failed to connect to 192.168.1.42:5555", InstallError.WirelessConnectFailed)]
     [InlineData("Failed: Wrong password", InstallError.WirelessConnectFailed)]
     [InlineData("Failure [INSTALL_FAILED_MISSING_SPLIT: Missing split for com.demo]", InstallError.MissingSplit)]
+    [InlineData("Failure [DELETE_FAILED_INTERNAL_ERROR]", InstallError.UninstallFailed)]
     public void Classifies_sample_output(string output, InstallError expected)
     {
         Assert.Equal(expected, _sut.Classify(output));
