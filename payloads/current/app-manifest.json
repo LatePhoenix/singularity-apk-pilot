@@ -5,7 +5,7 @@
   "allowTestApk": true,
   "launchAfterInstall": false,
   "targetPlatforms": ["quest", "android"],
-  "preferredDeviceFamilies": ["meta-quest-2", "meta-quest-3", "pixel", "samsung"],
+  "preferredDeviceFamilies": ["meta-quest-2", "meta-quest-3", "meta-quest-3s", "meta-quest-pro", "pixel", "samsung"],
   "postInstallNotes": {
     "quest": [
       "Open Library.",

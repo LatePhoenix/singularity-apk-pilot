@@ -2,7 +2,7 @@
 
 **Product:** APK Pilot  
 **Publisher:** Singularity Solutions and Services LLC  
-**Last updated:** August 18, 2026  
+**Last updated:** August 20, 2026  
 **Effective:** August 15, 2026
 
 These Terms of Service (“Terms”) govern your use of APK Pilot (the “Software”), published by Singularity Solutions and Services LLC, a Wisconsin limited liability company organized January 9, 2026 (Entity ID S165572), with its principal office at 206 S River St, Waterford, WI 53185, United States of America.
@@ -18,7 +18,7 @@ Subject to these Terms, Singularity Solutions and Services LLC grants you a limi
 
 ## 2. What the Software does
 
-The Software is a guided Windows tool that installs APK files you choose onto a Meta Quest headset or Android phone using portable `adb`, over USB or Wi-Fi. After a device is connected, you may also view third-party apps on that device and remove an app you select, one at a time. You must have the right to install or remove those APKs. Quest installs require Meta developer mode and USB debugging approval. You are responsible for complying with Meta, Google, and any other third-party terms that apply to the device and the app being installed.
+The Software is a guided Windows tool that installs APK files you choose onto a Meta Quest 2, Quest 3, Quest 3S, Quest Pro, or Android phone using portable `adb`, over USB or Wi-Fi. After a device is connected, you may also view third-party apps on that device and remove an app you select, one at a time. You must have the right to install or remove those APKs. Quest installs require Meta developer mode and USB debugging approval. You are responsible for complying with Meta, Google, and any other third-party terms that apply to the device and the app being installed.
 
 ## 3. Bundled third-party components
 
