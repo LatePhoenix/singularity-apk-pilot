@@ -31,6 +31,8 @@ public sealed partial class ShellViewModel : ObservableObject
     private readonly IQuestUsbHelperService _usbHelper;
     private readonly ISendReportUi _sendReport;
     private readonly ITroubleshootUi _troubleshootUi;
+    private readonly IGuideUi _guideUi;
+    private readonly IGuideCoach _guideCoach;
     private bool _helperOpen;
     private readonly Installer.Core.Services.Content.TroubleshootCopyDeck _troubleshootCopy;
     private readonly Dictionary<WizardStep, WizardPageViewModel> _pages;
@@ -58,6 +60,8 @@ public sealed partial class ShellViewModel : ObservableObject
         IQuestUsbHelperService usbHelper,
         ISendReportUi sendReport,
         ITroubleshootUi troubleshootUi,
+        IGuideUi guideUi,
+        IGuideCoach guideCoach,
         Installer.Core.Services.Content.TroubleshootCopyDeck troubleshootCopy,
         IAppLogger logger)
     {
@@ -79,6 +83,8 @@ public sealed partial class ShellViewModel : ObservableObject
         _usbHelper = usbHelper;
         _sendReport = sendReport;
         _troubleshootUi = troubleshootUi;
+        _guideUi = guideUi;
+        _guideCoach = guideCoach;
         _troubleshootCopy = troubleshootCopy;
         _logger = logger;
         _pages = new Dictionary<WizardStep, WizardPageViewModel>
@@ -96,7 +102,11 @@ public sealed partial class ShellViewModel : ObservableObject
             [WizardStep.Troubleshoot] = new TroubleshootPageViewModel()
         };
 
-        ChoosePage.FilesChanged += () => OnPropertyChanged(nameof(CanPrimary));
+        ChoosePage.FilesChanged += () =>
+        {
+            OnPropertyChanged(nameof(CanPrimary));
+            RefreshGuide();
+        };
         ChoosePage.UseWifiRequested += () => _ = UseWifiFromUsbAsync();
         ChoosePage.OpenInstalledAppsRequested += OpenInstalledApps;
         ConnectPage.ConnectRememberedRequested += () => _ = ConnectRememberedWifiAsync();
@@ -125,6 +135,11 @@ public sealed partial class ShellViewModel : ObservableObject
                 OnPropertyChanged(nameof(ShowPrimary));
                 OnPropertyChanged(nameof(HelperPrimaryAction));
             }
+        };
+        _guideUi.ClosedByUser += () =>
+        {
+            IsGuideDocked = true;
+            IsGuideVisible = true;
         };
 
         var loaded = _manifests.Load();
@@ -176,6 +191,31 @@ public sealed partial class ShellViewModel : ObservableObject
     [ObservableProperty]
     private string diagnosticsStatus = "";
 
+    [ObservableProperty]
+    private GuideScript guide = GuideScript.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowDockedGuide))]
+    [NotifyPropertyChangedFor(nameof(ShowMainBody))]
+    [NotifyPropertyChangedFor(nameof(ShowMainIllustration))]
+    [NotifyPropertyChangedFor(nameof(ShowMainHelp))]
+    private bool isGuideVisible = true;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ShowDockedGuide))]
+    private bool isGuideDocked = true;
+
+    [ObservableProperty]
+    private bool isGuideHelpExpanded;
+
+    public bool ShowDockedGuide => IsGuideVisible && IsGuideDocked;
+
+    public bool ShowMainBody => !IsGuideVisible;
+
+    public bool ShowMainIllustration => !IsGuideVisible;
+
+    public bool ShowMainHelp => !IsGuideVisible;
+
     public bool ShowSecondaryExport =>
         State.CurrentStep != WizardStep.Installing
         && State.CurrentStep != WizardStep.Troubleshoot
@@ -206,6 +246,37 @@ public sealed partial class ShellViewModel : ObservableObject
         State.CurrentStep == WizardStep.Troubleshoot
             ? !HelpPage.ShowFamilyPicker && !HelpPage.ActionBusy
             : State.CurrentStep != WizardStep.ReadyToInstall || ChoosePage.HasFiles;
+
+    [RelayCommand]
+    private void PopOutGuide()
+    {
+        IsGuideVisible = true;
+        IsGuideDocked = false;
+        _guideUi.ShowPopOut(this);
+    }
+
+    [RelayCommand]
+    private void DockGuide()
+    {
+        _guideUi.ClosePopOut();
+        IsGuideDocked = true;
+        IsGuideVisible = true;
+    }
+
+    [RelayCommand]
+    private void HideGuide()
+    {
+        _guideUi.ClosePopOut();
+        IsGuideDocked = true;
+        IsGuideVisible = false;
+    }
+
+    [RelayCommand]
+    private void ShowGuide()
+    {
+        IsGuideVisible = true;
+        IsGuideDocked = true;
+    }
 
     [RelayCommand]
     private async Task PrimaryAsync()
@@ -1042,6 +1113,12 @@ public sealed partial class ShellViewModel : ObservableObject
         OnPropertyChanged(nameof(CancelLabel));
         OnPropertyChanged(nameof(CanPrimary));
         OnPropertyChanged(nameof(HelperPrimaryAction));
+        RefreshGuide();
+    }
+
+    private void RefreshGuide()
+    {
+        Guide = _guideCoach.For(State, ChoosePage.HasFiles);
     }
 
     private void PresentHelper(bool entering)
@@ -1076,6 +1153,7 @@ public sealed partial class ShellViewModel : ObservableObject
 
     public void Shutdown()
     {
+        _guideUi.ClosePopOut();
         _installCts?.Cancel();
         _uninstallCts?.Cancel();
         _monitor.Stop();

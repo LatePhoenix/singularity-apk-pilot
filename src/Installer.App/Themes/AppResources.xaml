@@ -33,11 +33,11 @@
     <Style TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{StaticResource UiFontFamily}"/>
         <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}"/>
-        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontSize" Value="12"/>
     </Style>
     <Style TargetType="Button">
         <Setter Property="FontFamily" Value="{StaticResource UiFontFamily}"/>
-        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontSize" Value="12"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
@@ -63,38 +63,38 @@
         <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
     </Style>
     <Style x:Key="Display" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="20"/>
-        <Setter Property="LineHeight" Value="26"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="LineHeight" Value="21"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
         <Setter Property="TextWrapping" Value="Wrap"/>
-        <Setter Property="Margin" Value="0,0,0,12"/>
+        <Setter Property="Margin" Value="0,0,0,6"/>
     </Style>
     <Style x:Key="H1" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="20"/>
-        <Setter Property="LineHeight" Value="26"/>
+        <Setter Property="FontSize" Value="16"/>
+        <Setter Property="LineHeight" Value="21"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
         <Setter Property="TextWrapping" Value="Wrap"/>
     </Style>
     <Style x:Key="H2" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="15"/>
-        <Setter Property="LineHeight" Value="20"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="LineHeight" Value="17"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
         <Setter Property="TextWrapping" Value="Wrap"/>
     </Style>
     <Style x:Key="Body" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="LineHeight" Value="18"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="LineHeight" Value="16"/>
         <Setter Property="FontWeight" Value="Regular"/>
         <Setter Property="Foreground" Value="{DynamicResource BodyTextBrush}"/>
         <Setter Property="TextWrapping" Value="Wrap"/>
-        <Setter Property="Margin" Value="0,0,0,12"/>
+        <Setter Property="Margin" Value="0,0,0,8"/>
     </Style>
     <Style x:Key="Label" TargetType="TextBlock">
-        <Setter Property="FontSize" Value="12"/>
-        <Setter Property="LineHeight" Value="16"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="LineHeight" Value="15"/>
         <Setter Property="FontWeight" Value="Medium"/>
         <Setter Property="Foreground" Value="{DynamicResource BodyTextBrush}"/>
     </Style>
@@ -107,15 +107,26 @@
     </Style>
     <Style x:Key="WarningBanner" TargetType="TextBlock" BasedOn="{StaticResource Body}">
         <Setter Property="Foreground" Value="{DynamicResource WarningTextBrush}"/>
-        <Setter Property="Margin" Value="0,0,0,12"/>
+        <Setter Property="Margin" Value="0,0,0,6"/>
     </Style>
     <Style x:Key="ErrorBanner" TargetType="TextBlock" BasedOn="{StaticResource Body}">
         <Setter Property="Foreground" Value="{DynamicResource DangerRedBrush}"/>
-        <Setter Property="Margin" Value="0,0,0,12"/>
+        <Setter Property="Margin" Value="0,0,0,6"/>
     </Style>
     <Style x:Key="BusyLabel" TargetType="TextBlock" BasedOn="{StaticResource Label}">
         <Setter Property="Foreground" Value="{DynamicResource BrandCyanBrush}"/>
-        <Setter Property="Margin" Value="0,0,0,12"/>
+        <Setter Property="Margin" Value="0,0,0,6"/>
+    </Style>
+    <Style x:Key="GuideNow" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="LineHeight" Value="20"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="Margin" Value="0,0,0,8"/>
+    </Style>
+    <Style x:Key="GuideThen" TargetType="TextBlock" BasedOn="{StaticResource Body}">
+        <Setter Property="Margin" Value="0,0,0,8"/>
     </Style>
     <Style x:Key="StatusChipLabel" TargetType="TextBlock" BasedOn="{StaticResource Label}">
         <Setter Property="VerticalAlignment" Value="Center"/>
@@ -126,21 +137,21 @@
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushStrong}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="12"/>
-        <Setter Property="Padding" Value="16"/>
+        <Setter Property="Padding" Value="12"/>
     </Style>
     <Style x:Key="RaisedWell" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushStrong}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="12"/>
-        <Setter Property="Padding" Value="16"/>
+        <Setter Property="Padding" Value="10"/>
     </Style>
     <Style x:Key="SunkenWell" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource InputBackgroundBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushSubtle}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="12"/>
-        <Setter Property="Padding" Value="16"/>
+        <Setter Property="Padding" Value="10"/>
     </Style>
     <Style x:Key="AccentCard" TargetType="Border" BasedOn="{StaticResource RaisedWell}">
         <Setter Property="BorderBrush" Value="{DynamicResource BrandCyanBrush}"/>
@@ -150,25 +161,25 @@
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushStrong}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="12"/>
-        <Setter Property="Padding" Value="16"/>
+        <Setter Property="Padding" Value="10"/>
     </Style>
     <Style x:Key="IllustrationWell" TargetType="Border" BasedOn="{StaticResource SunkenWell}">
-        <Setter Property="Padding" Value="8"/>
-        <Setter Property="Margin" Value="0,0,0,12"/>
+        <Setter Property="Padding" Value="4"/>
+        <Setter Property="Margin" Value="0,0,0,8"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
     </Style>
     <Style x:Key="SkeletonRow" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource SurfaceRaisedBrush}"/>
-        <Setter Property="CornerRadius" Value="12"/>
-        <Setter Property="Height" Value="56"/>
-        <Setter Property="Margin" Value="0,0,0,8"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Margin" Value="0,0,0,6"/>
         <Setter Property="Opacity" Value="0.5"/>
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushSubtle}"/>
         <Setter Property="BorderThickness" Value="1"/>
     </Style>
     <Style x:Key="RowCard" TargetType="Border" BasedOn="{StaticResource RaisedWell}">
-        <Setter Property="Padding" Value="12,10"/>
-        <Setter Property="Margin" Value="0,0,0,8"/>
+        <Setter Property="Padding" Value="8,6"/>
+        <Setter Property="Margin" Value="0,0,0,6"/>
     </Style>
 
     <Style x:Key="SecondaryPill" TargetType="Button">
@@ -177,9 +188,9 @@
         <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Height" Value="40"/>
-        <Setter Property="MinWidth" Value="88"/>
-        <Setter Property="Padding" Value="16,0"/>
+        <Setter Property="Height" Value="32"/>
+        <Setter Property="MinWidth" Value="72"/>
+        <Setter Property="Padding" Value="12,0"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -253,9 +264,9 @@
     </Style>
 
     <Style x:Key="CompactPill" TargetType="Button" BasedOn="{StaticResource GhostPill}">
-        <Setter Property="Height" Value="32"/>
-        <Setter Property="MinWidth" Value="72"/>
-        <Setter Property="Padding" Value="12,0"/>
+        <Setter Property="Height" Value="28"/>
+        <Setter Property="MinWidth" Value="64"/>
+        <Setter Property="Padding" Value="10,0"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
@@ -295,9 +306,9 @@
         <Setter Property="Foreground" Value="{DynamicResource OnAccentTextBrush}"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Height" Value="48"/>
-        <Setter Property="MinWidth" Value="120"/>
-        <Setter Property="Padding" Value="20,0"/>
+        <Setter Property="Height" Value="36"/>
+        <Setter Property="MinWidth" Value="96"/>
+        <Setter Property="Padding" Value="16,0"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Template">
@@ -336,9 +347,9 @@
         <Setter Property="Foreground" Value="{DynamicResource OnDangerTextBrush}"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Height" Value="40"/>
-        <Setter Property="MinWidth" Value="88"/>
-        <Setter Property="Padding" Value="16,0"/>
+        <Setter Property="Height" Value="32"/>
+        <Setter Property="MinWidth" Value="72"/>
+        <Setter Property="Padding" Value="12,0"/>
         <Setter Property="FontWeight" Value="SemiBold"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Template">
@@ -386,10 +397,10 @@
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CaretBrush" Value="{DynamicResource PrimaryTextBrush}"/>
         <Setter Property="SelectionBrush" Value="{DynamicResource BrandCyanBrush}"/>
-        <Setter Property="Padding" Value="12,8"/>
-        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Padding" Value="10,6"/>
+        <Setter Property="FontSize" Value="12"/>
         <Setter Property="FontFamily" Value="{StaticResource UiFontFamily}"/>
-        <Setter Property="Height" Value="40"/>
+        <Setter Property="Height" Value="32"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Template">
@@ -434,8 +445,8 @@
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Padding" Value="0,8"/>
-        <Setter Property="MinHeight" Value="32"/>
+        <Setter Property="Padding" Value="0,4"/>
+        <Setter Property="MinHeight" Value="24"/>
         <Setter Property="HorizontalContentAlignment" Value="Left"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Template">
@@ -675,7 +686,7 @@
                                 BorderBrush="{DynamicResource BorderBrushStrong}"
                                 BorderThickness="1"
                                 CornerRadius="12"
-                                Padding="16">
+                                Padding="10">
                             <ContentPresenter/>
                         </Border>
                     </Border>
@@ -701,13 +712,13 @@
     </Style>
 
     <DataTemplate DataType="{x:Type wizard:GuideStep}">
-        <Grid Margin="0,0,0,10">
+        <Grid Margin="0,0,0,6">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="28"/>
-                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="22"/>
+                <ColumnDefinition Width="8"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Border Width="24" Height="24" CornerRadius="12"
+            <Border Width="20" Height="20" CornerRadius="10"
                     BorderBrush="{DynamicResource BrandCyanBrush}"
                     BorderThickness="1"
                     HorizontalAlignment="Left" VerticalAlignment="Top">

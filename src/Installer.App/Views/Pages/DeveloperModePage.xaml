@@ -3,6 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <TextBlock Text="{Binding HealthHint}"
                Style="{StaticResource WarningBanner}"
-               Margin="0,16,0,0"
+               Margin="0,0,0,0"
                Visibility="{Binding HealthHint, Converter={StaticResource StringNotEmptyToVisibility}}"/>
 </UserControl>

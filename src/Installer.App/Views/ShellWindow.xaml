@@ -6,8 +6,8 @@
         xmlns:controls="clr-namespace:Installer.App.Controls"
         xmlns:legal="clr-namespace:Installer.App"
         Title="APK Pilot"
-        Height="720" Width="960"
-        MinHeight="600" MinWidth="800"
+        Height="640" Width="1080"
+        MinHeight="520" MinWidth="880"
         WindowStartupLocation="CenterScreen"
         Icon="pack://application:,,,/Assets/app-icon.png"
         Background="{StaticResource AppBackgroundBrush}"
@@ -52,98 +52,131 @@
         </DataTemplate>
     </Window.Resources>
     <Grid Background="{StaticResource AppBackgroundGridBrush}">
-        <Grid Margin="20">
+        <Grid Margin="12">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <DockPanel Margin="0,0,0,12">
-                <TextBlock DockPanel.Dock="Right"
+            <DockPanel Margin="0,0,0,8">
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="Show helper"
+                            Style="{StaticResource CompactPill}"
+                            Command="{Binding ShowGuideCommand}"
+                            Margin="0,0,12,0"
+                            Visibility="{Binding IsGuideVisible, Converter={StaticResource InverseBoolToVisibility}}"
+                            AutomationProperties.Name="Show helper"
+                            AutomationProperties.AutomationId="ShowGuide"/>
+                    <TextBlock VerticalAlignment="Center"
+                               Style="{StaticResource Label}"
+                               AutomationProperties.Name="Legal links">
+                        <Hyperlink NavigateUri="{x:Static legal:PublisherLegal.PrivacyUri}"
+                                   RequestNavigate="OnLegalNavigate">Privacy</Hyperlink>
+                        <Run Text="  ·  "/>
+                        <Hyperlink NavigateUri="{x:Static legal:PublisherLegal.TermsUri}"
+                                   RequestNavigate="OnLegalNavigate">Terms</Hyperlink>
+                    </TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="pack://application:,,,/Assets/app-icon.png"
+                           Width="20" Height="20"
+                           Margin="0,0,8,0"
                            VerticalAlignment="Center"
-                           Style="{StaticResource Label}"
-                           AutomationProperties.Name="Legal links">
-                    <Hyperlink NavigateUri="{x:Static legal:PublisherLegal.PrivacyUri}"
-                               RequestNavigate="OnLegalNavigate">Privacy</Hyperlink>
-                    <Run Text="  ·  "/>
-                    <Hyperlink NavigateUri="{x:Static legal:PublisherLegal.TermsUri}"
-                               RequestNavigate="OnLegalNavigate">Terms</Hyperlink>
-                </TextBlock>
-                <StackPanel>
-                    <TextBlock Text="INSTALLER" Style="{StaticResource Eyebrow}"/>
-                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                        <TextBlock Text="APK Pilot" Style="{StaticResource H2}" VerticalAlignment="Center"/>
-                        <Image Source="pack://application:,,,/Assets/app-icon.png"
-                               Width="24" Height="24"
-                               Margin="8,0,0,0"
-                               VerticalAlignment="Center"
-                               RenderOptions.BitmapScalingMode="HighQuality"
-                               AutomationProperties.Name="APK Pilot"/>
-                    </StackPanel>
+                           RenderOptions.BitmapScalingMode="HighQuality"
+                           AutomationProperties.Name="APK Pilot"/>
+                    <TextBlock Text="APK Pilot" Style="{StaticResource H2}" VerticalAlignment="Center"/>
+                    <TextBlock Text="  ·  installer" Style="{StaticResource Eyebrow}" VerticalAlignment="Center" Margin="4,2,0,0"/>
                 </StackPanel>
             </DockPanel>
 
-            <Border Grid.Row="1" Style="{StaticResource Card}">
-                <DockPanel>
-                    <StackPanel DockPanel.Dock="Bottom">
-                        <Expander x:Name="HelpExpander"
-                                  Header="Why am I seeing this?"
-                                  Margin="0,8,0,0"
-                                  TabIndex="4"
-                                  AutomationProperties.Name="Why am I seeing this?">
-                            <TextBlock Text="{Binding CurrentPage.Help}" Style="{StaticResource Body}" Margin="0,8,0,0"/>
-                        </Expander>
-                        <Expander x:Name="AdvancedExpander"
-                                  Header="Advanced details"
-                                  Margin="0,8,0,0"
-                                  TabIndex="5"
-                                  AutomationProperties.Name="Advanced details">
-                            <TextBlock Text="{Binding CurrentPage.AdvancedDetails}" Style="{StaticResource Mono}" Margin="0,8,0,0"/>
-                        </Expander>
-                    </StackPanel>
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" CanContentScroll="False" Padding="0,0,8,0">
-                        <StackPanel>
-                            <TextBlock Text="{Binding PayloadWarning}"
-                                       Style="{StaticResource WarningBanner}"
-                                       Visibility="{Binding PayloadWarning, Converter={StaticResource StringNotEmptyToVisibility}}"/>
-                            <Border Style="{StaticResource IllustrationWell}"
-                                    Visibility="{Binding CurrentPage.ShowIllustration, Converter={StaticResource BoolToVisibility}}">
-                                <controls:DeviceIllustration Kind="{Binding CurrentPage.Illustration}"
-                                                             Description="{Binding CurrentPage.IllustrationDescription}"/>
-                            </Border>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12"
-                                        Visibility="{Binding CurrentPage.ShowStatus, Converter={StaticResource BoolToVisibility}}">
-                                <Ellipse>
-                                    <Ellipse.Style>
-                                        <Style TargetType="Ellipse" BasedOn="{StaticResource StatusDot}">
-                                            <Setter Property="Fill" Value="{DynamicResource MutedTextBrush}"/>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Style="{StaticResource Card}">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Bottom"
+                                    Visibility="{Binding ShowMainHelp, Converter={StaticResource BoolToVisibility}}">
+                            <Expander Header="Why am I seeing this?"
+                                      Margin="0,6,0,0"
+                                      TabIndex="4"
+                                      AutomationProperties.Name="Why am I seeing this?">
+                                <TextBlock Text="{Binding CurrentPage.Help}" Style="{StaticResource Body}" Margin="0,6,0,0"/>
+                            </Expander>
+                            <Expander Header="Advanced details"
+                                      Margin="0,4,0,0"
+                                      TabIndex="5"
+                                      AutomationProperties.Name="Advanced details">
+                                <TextBlock Text="{Binding CurrentPage.AdvancedDetails}" Style="{StaticResource Mono}" Margin="0,6,0,0"/>
+                            </Expander>
+                        </StackPanel>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" CanContentScroll="False" Padding="0,0,8,0">
+                            <StackPanel>
+                                <TextBlock Text="{Binding PayloadWarning}"
+                                           Style="{StaticResource WarningBanner}"
+                                           Visibility="{Binding PayloadWarning, Converter={StaticResource StringNotEmptyToVisibility}}"/>
+                                <Border>
+                                    <Border.Style>
+                                        <Style TargetType="Border" BasedOn="{StaticResource IllustrationWell}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding CurrentPage.StatusTone}" Value="Live">
-                                                    <Setter Property="Fill" Value="{DynamicResource AccentGreenBrush}"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding CurrentPage.StatusTone}" Value="Warning">
-                                                    <Setter Property="Fill" Value="{DynamicResource WarningTextBrush}"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding CurrentPage.StatusTone}" Value="Error">
-                                                    <Setter Property="Fill" Value="{DynamicResource DangerRedBrush}"/>
-                                                </DataTrigger>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding ShowMainIllustration}" Value="True"/>
+                                                        <Condition Binding="{Binding CurrentPage.ShowIllustration}" Value="True"/>
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </MultiDataTrigger>
                                             </Style.Triggers>
                                         </Style>
-                                    </Ellipse.Style>
-                                </Ellipse>
-                                <TextBlock Text="{Binding CurrentPage.StatusText}" Style="{StaticResource StatusChipLabel}"/>
+                                    </Border.Style>
+                                    <controls:DeviceIllustration Kind="{Binding CurrentPage.Illustration}"
+                                                                 Description="{Binding CurrentPage.IllustrationDescription}"/>
+                                </Border>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8"
+                                            Visibility="{Binding CurrentPage.ShowStatus, Converter={StaticResource BoolToVisibility}}">
+                                    <Ellipse>
+                                        <Ellipse.Style>
+                                            <Style TargetType="Ellipse" BasedOn="{StaticResource StatusDot}">
+                                                <Setter Property="Fill" Value="{DynamicResource MutedTextBrush}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding CurrentPage.StatusTone}" Value="Live">
+                                                        <Setter Property="Fill" Value="{DynamicResource AccentGreenBrush}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding CurrentPage.StatusTone}" Value="Warning">
+                                                        <Setter Property="Fill" Value="{DynamicResource WarningTextBrush}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding CurrentPage.StatusTone}" Value="Error">
+                                                        <Setter Property="Fill" Value="{DynamicResource DangerRedBrush}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Ellipse.Style>
+                                    </Ellipse>
+                                    <TextBlock Text="{Binding CurrentPage.StatusText}" Style="{StaticResource StatusChipLabel}"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding CurrentPage.Headline}"
+                                           Style="{StaticResource Display}"/>
+                                <TextBlock Text="{Binding CurrentPage.Body}"
+                                           Style="{StaticResource Body}"
+                                           Visibility="{Binding ShowMainBody, Converter={StaticResource BoolToVisibility}}"/>
+                                <ContentControl Content="{Binding CurrentPage}" IsTabStop="False"/>
                             </StackPanel>
-                            <TextBlock Text="{Binding CurrentPage.Headline}"
-                                       Style="{StaticResource Display}"/>
-                            <TextBlock Text="{Binding CurrentPage.Body}" Style="{StaticResource Body}"/>
-                            <ContentControl Content="{Binding CurrentPage}" IsTabStop="False"/>
-                        </StackPanel>
-                    </ScrollViewer>
-                </DockPanel>
-            </Border>
+                        </ScrollViewer>
+                    </DockPanel>
+                </Border>
 
-            <Grid Grid.Row="2" Margin="0,16,0,0">
+                <controls:GuideCompanion Grid.Column="1"
+                                         Width="292"
+                                         Margin="8,0,0,0"
+                                         Visibility="{Binding ShowDockedGuide, Converter={StaticResource BoolToVisibility}}"
+                                         AutomationProperties.Name="Pilot helper"/>
+            </Grid>
+
+            <Grid Grid.Row="2" Margin="0,8,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
@@ -170,7 +203,7 @@
                 </WrapPanel>
                 <TextBlock Grid.Column="1"
                            VerticalAlignment="Center"
-                           Margin="16,0,16,0"
+                           Margin="12,0,12,0"
                            Text="{Binding DiagnosticsStatus}"
                            Style="{StaticResource Label}"
                            TextWrapping="Wrap"

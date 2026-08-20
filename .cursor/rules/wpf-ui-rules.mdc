@@ -17,5 +17,6 @@ alwaysApply: false
   - short explanation
   - primary action
   - optional help/advanced expander
-- Keep visual density low and novice-friendly.
+- Keep the main work column compact so a typical step fits without scrolling.
+- Put novice guidance in the Pilot helper (docked or popped out). One current action, plain language.
 - Device-specific copy should be resolved by ViewModel state, not hardcoded in the view.

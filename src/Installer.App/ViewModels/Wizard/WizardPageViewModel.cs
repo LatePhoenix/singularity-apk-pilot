@@ -55,9 +55,7 @@ public abstract partial class WizardPageViewModel : ObservableObject
     }
 
     private static bool IllustrationVisible(WizardStep step) =>
-        step is not WizardStep.ConnectDevice
-            and not WizardStep.ReadyToInstall
-            and not WizardStep.InstalledApps
+        step is not WizardStep.InstalledApps
             and not WizardStep.Troubleshoot;
 
     private static (DeviceIllustrationKind kind, string description, string status, string tone) ResolveChrome(WizardState state)

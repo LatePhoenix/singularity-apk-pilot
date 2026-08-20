@@ -12,7 +12,7 @@
                 <ColumnDefinition Width="12"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Border Style="{StaticResource AccentCard}" Padding="12">
+            <Border Style="{StaticResource AccentCard}" Padding="10">
                 <StackPanel>
                     <TextBlock Text="QUEST" Style="{StaticResource Eyebrow}"/>
                     <TextBlock Text="Quest 2 or Quest 3" Style="{StaticResource H2}" Margin="0,4,0,8"/>

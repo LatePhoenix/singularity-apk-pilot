@@ -1,0 +1,46 @@
+<UserControl x:Class="Installer.App.Controls.GuideAvatar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="48" Height="48"
+             Focusable="False"
+             IsTabStop="False">
+    <Grid>
+        <Ellipse Stroke="{DynamicResource BrandCyanBrush}"
+                 StrokeThickness="1.5"
+                 Fill="{DynamicResource SurfaceRaisedBrush}"/>
+        <Ellipse Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center"
+                 Stroke="{DynamicResource BorderBrushStrong}" StrokeThickness="1" Fill="Transparent"/>
+        <Line X1="24" Y1="8" X2="24" Y2="40" Stroke="{DynamicResource BorderBrushStrong}" StrokeThickness="0.75" Opacity="0.6"/>
+        <Line X1="8" Y1="24" X2="40" Y2="24" Stroke="{DynamicResource BorderBrushStrong}" StrokeThickness="0.75" Opacity="0.6"/>
+
+        <Canvas x:Name="CalmCanvas">
+            <Ellipse Canvas.Left="15" Canvas.Top="18" Width="5" Height="5" Fill="{DynamicResource BrandCyanBrush}"/>
+            <Ellipse Canvas.Left="28" Canvas.Top="18" Width="5" Height="5" Fill="{DynamicResource BrandCyanBrush}"/>
+            <Path Data="M 16,30 Q 24,35 32,30" Stroke="{DynamicResource BrandCyanBrush}" StrokeThickness="1.5"
+                  Fill="Transparent" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+        </Canvas>
+        <Canvas x:Name="WaitCanvas" Visibility="Collapsed">
+            <Ellipse Canvas.Left="15" Canvas.Top="18" Width="5" Height="5" Fill="{DynamicResource BrandCyanBrush}"/>
+            <Ellipse Canvas.Left="28" Canvas.Top="18" Width="5" Height="5" Fill="{DynamicResource BrandCyanBrush}"/>
+            <Path Data="M 18,31 Q 24,28 30,31" Stroke="{DynamicResource BrandCyanBrush}" StrokeThickness="1.5"
+                  Fill="Transparent" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+        </Canvas>
+        <Canvas x:Name="WorkCanvas" Visibility="Collapsed">
+            <Ellipse Canvas.Left="15" Canvas.Top="19" Width="5" Height="3" Fill="{DynamicResource BrandCyanBrush}"/>
+            <Ellipse Canvas.Left="28" Canvas.Top="19" Width="5" Height="3" Fill="{DynamicResource BrandCyanBrush}"/>
+            <Line X1="18" Y1="31" X2="30" Y2="31" Stroke="{DynamicResource BrandCyanBrush}" StrokeThickness="1.5" StrokeStartLineCap="Round"/>
+        </Canvas>
+        <Canvas x:Name="WarnCanvas" Visibility="Collapsed">
+            <Ellipse Canvas.Left="15" Canvas.Top="18" Width="5" Height="5" Fill="{DynamicResource WarningTextBrush}"/>
+            <Ellipse Canvas.Left="28" Canvas.Top="18" Width="5" Height="5" Fill="{DynamicResource WarningTextBrush}"/>
+            <Path Data="M 18,33 Q 24,28 30,33" Stroke="{DynamicResource WarningTextBrush}" StrokeThickness="1.5"
+                  Fill="Transparent" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+        </Canvas>
+        <Canvas x:Name="DoneCanvas" Visibility="Collapsed">
+            <Ellipse Canvas.Left="15" Canvas.Top="18" Width="5" Height="5" Fill="{DynamicResource AccentGreenBrush}"/>
+            <Ellipse Canvas.Left="28" Canvas.Top="18" Width="5" Height="5" Fill="{DynamicResource AccentGreenBrush}"/>
+            <Path Data="M 15,29 Q 24,38 33,29" Stroke="{DynamicResource AccentGreenBrush}" StrokeThickness="1.5"
+                  Fill="Transparent" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+        </Canvas>
+    </Grid>
+</UserControl>

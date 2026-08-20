@@ -1,9 +1,8 @@
 ﻿<UserControl x:Class="Installer.App.Views.Pages.WelcomePage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StackPanel Margin="0,16,0,0"
-                Visibility="{Binding HasUpdate, Converter={StaticResource BoolToVisibility}}">
-        <Border Style="{StaticResource AccentCard}" Padding="16">
+    <StackPanel Visibility="{Binding HasUpdate, Converter={StaticResource BoolToVisibility}}">
+        <Border Style="{StaticResource AccentCard}" Padding="10">
             <TextBlock Style="{StaticResource Label}" TextWrapping="Wrap">
                 <Run Text="{Binding UpdateMessage, Mode=OneWay}"/>
                 <Run Text=" "/>
