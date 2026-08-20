@@ -1,0 +1,20 @@
+<Window x:Class="Installer.App.Views.GuideWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:Installer.App.Controls"
+        Title="Pilot"
+        Width="320"
+        MinWidth="280"
+        MinHeight="360"
+        ShowInTaskbar="False"
+        ResizeMode="CanResizeWithGrip"
+        WindowStartupLocation="Manual"
+        Background="{StaticResource AppBackgroundBrush}"
+        FontFamily="{StaticResource UiFontFamily}"
+        SnapsToDevicePixels="True"
+        UseLayoutRounding="True"
+        AutomationProperties.Name="Pilot helper">
+    <Grid Background="{StaticResource AppBackgroundGridBrush}" Margin="8">
+        <controls:GuideCompanion x:Name="Companion"/>
+    </Grid>
+</Window>

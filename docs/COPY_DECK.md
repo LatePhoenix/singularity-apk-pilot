@@ -6,6 +6,37 @@ Primary button is the only required action on each page. Help expander label: **
 
 Testers get the Windows setup from the GitHub README download button (`SingularityApkInstaller-win-x64-setup.exe`). This deck is in-app copy after that setup has launched.
 
+## Pilot helper
+
+Always-on companion (docked on the right, or popped out as a second window). Plain language. One current action. Never says ADB, sideload, or USB transport.
+
+- Name: Pilot
+- Greeting: short, calm, first person
+- Now: what to do this moment
+- Then: what happens next
+- Button hint: When that is done, press {Primary}
+- Checks: 0–3 short safety notes
+- Progress: 1 of 6 … 6 of 6 (Help / Apps for side paths)
+- Hide helper / Show helper / Pop out / Dock. Closing the popped-out window docks it back. F1 opens Why am I seeing this?
+
+When the helper is visible, the main column hides the long body, illustration, and help expanders so the step fits on one screen. The green primary button stays on the main window.
+
+| Step | Now (summary) |
+| --- | --- |
+| Welcome | You are about to install an app. One thing at a time. |
+| Connect | Plug in with a USB-C cable that can copy files. |
+| Detected | The device is connected. Press Continue. |
+| Authorization (Quest) | Put the headset on. Always allow, then Allow. |
+| Authorization (phone) | Unlock the phone. Always allow, then Allow. |
+| Developer mode | Meta Horizon app → Headset Settings → Developer Mode. |
+| Choose apps (empty) | Press Add app files and choose the .apk you were sent. |
+| Choose apps (ready) | Press Install now. Leave the device as it is. |
+| Installing | Please wait. Do not unplug. |
+| Problem | Use the suggested action. You are not in trouble. |
+| Complete (Quest) | Library → Unknown Sources. |
+| Complete (phone) | Find the app in the app list. |
+| Installed apps | Remove one at a time, then Back. |
+
 ## Welcome
 
 - Headline: Install apps on your device
@@ -24,8 +55,8 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 - Secondary: **Send a report** (footer)
 - Secondary: **Need help connecting?** opens a compact connection helper window (Quest vs phone, one task per screen). Two failed **I connected it** attempts open the same helper. The helper closes when a device is ready, or when Leave helper is used.
 - In-page health (after failed attempts): Windows sees a headset but this installer does not → data cable + Oculus ADB driver. Windows sees nothing → cable/hub. Status chip when Windows sees USB but this installer does not.
-- In-page: Wi-Fi card is always visible. Wi-Fi guide and pairing expanders stay collapsed until opened.
-- In-page: **Connect over Wi-Fi** as a raised card when a last address is saved (one tap). Same network; after a reboot, plug in once more.
+- In-page: **Connect over Wi-Fi** as a compact saved-address row when a last address is saved (one tap). Same network; after a reboot, plug in once more.
+- In-page expander: **Connect over Wi-Fi instead** — address form, collapsed until opened. Wi-Fi guide and pairing expanders stay collapsed until opened.
 - In-page expander: **How to set up Wi-Fi on Quest 2 or Quest 3** — numbered USB-once path (Horizon app Developer Mode → data cable → Quick Control → Settings → Developer → MTP Notification → Always allow → **Switch to Wi-Fi** on Choose apps).
 - In-page expander: **I already have a pairing code from the headset** — same Wi-Fi, Settings → System → Developer → wireless debugging, install address vs pairing port, then the form.
 - In-page form: install address (IP, port 5555 if omitted), optional pairing port and six-digit code, then **Connect over Wi-Fi**. Pairing numbers are not the install port.
@@ -77,9 +108,9 @@ Testers get the Windows setup from the GitHub README download button (`Singulari
 - Primary: Install now (disabled until at least one APK is added)
 - Secondary in page: Add app files (multi-select `*.apk;*.apks;*.xapk`; drag-and-drop onto the page)
 - Secondary in page: Use last files (when previous paths still exist)
-- Secondary in page: **Switch to Wi-Fi** card (only when the device is USB and ready). After this you can unplug.
-- In-page: **Connected over Wi-Fi** card when the session is already wireless.
-- Secondary in page: **Installed apps** card. Opens the Installed apps step.
+- Secondary in page: compact **Switch to Wi-Fi** (only when the device is USB and ready). After this you can unplug.
+- In-page: muted **Connected over Wi-Fi** when the session is already wireless.
+- Secondary in page: compact **Installed apps**. Opens the Installed apps step.
 - Warning: This looks like only part of an app. Add the other files or an .apks package.
 - Help: Existing copies of the same app may be replaced. Your photos and other apps are not touched. Switch to Wi-Fi only after the device has approved this computer.
 - Advanced: Policy name, package id, and split set.

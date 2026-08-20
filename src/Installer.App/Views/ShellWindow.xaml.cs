@@ -28,14 +28,14 @@ public partial class ShellWindow : Window
 
     protected override void OnPreviewKeyDown(KeyEventArgs e)
     {
-        if (e.Key == Key.F1)
+        if (e.Key == Key.F1 && DataContext is ShellViewModel viewModel)
         {
-            HelpExpander.IsExpanded = !HelpExpander.IsExpanded;
-            if (HelpExpander.IsExpanded)
+            if (!viewModel.IsGuideVisible)
             {
-                HelpExpander.Focus();
+                viewModel.ShowGuideCommand.Execute(null);
             }
 
+            viewModel.IsGuideHelpExpanded = !viewModel.IsGuideHelpExpanded;
             e.Handled = true;
         }
 

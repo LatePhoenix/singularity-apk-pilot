@@ -79,6 +79,7 @@ public static class ServiceRegistration
         services.AddSingleton<AndroidPhoneFlowStrategy>();
         services.AddSingleton<FlowDecisionEngine>();
         services.AddSingleton<IContentService, CopyDeckService>();
+        services.AddSingleton<IGuideCoach, GuideCoachService>();
         services.AddSingleton<IWizardFlowService, WizardFlowService>();
         services.AddSingleton<IManifestService, ManifestService>();
         services.AddSingleton<LogcatCollector>();
@@ -86,6 +87,7 @@ public static class ServiceRegistration
         services.AddSingleton<IDiagnosticsService, DiagnosticsService>();
         services.AddSingleton<ISendReportUi, SendReportUi>();
         services.AddSingleton<ITroubleshootUi, TroubleshootUi>();
+        services.AddSingleton<IGuideUi, GuideUi>();
         services.AddSingleton<ContentPackResolver>();
         services.AddSingleton<BuildStampReader>();
         services.AddSingleton<ShellViewModel>();
