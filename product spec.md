@@ -1,4 +1,4 @@
-> Canonical product spec: [`docs/PRODUCT_SPEC.md`](docs/PRODUCT_SPEC.md). Testers download the latest setup from [GitHub Releases](https://github.com/LatePhoenix/singularity-apk-pilot/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe).
+> **Archived research notes — not the shipping spec.** The product is **APK Pilot** (v0.6.0). Canonical spec: [`docs/PRODUCT_SPEC.md`](docs/PRODUCT_SPEC.md). Testers download [`SingularityApkInstaller-win-x64-setup.exe`](https://github.com/LatePhoenix/singularity-apk-pilot/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe).
 
 <img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
 

@@ -16,7 +16,7 @@ Optional JSON at `payloads/current/app-manifest.json` for install policy and pos
 | `grantPermissions` | bool | no | Default `false` when present in JSON; shipped defaults set `true`. Adds `adb install -g`. |
 | `allowTestApk` | bool | no | Default `false` when present in JSON; shipped defaults set `true`. Adds `-t`. |
 | `launchAfterInstall` | bool | no | Default `false`. Offer in-app launch when the device supports it. |
-| `preferredDeviceFamilies` | string[] | no | Hints only: `meta-quest-2`, `meta-quest-3`, `pixel`, `samsung`. |
+| `preferredDeviceFamilies` | string[] | no | Hints only: `meta-quest-2`, `meta-quest-3`, `meta-quest-3s`, `meta-quest-pro`, `pixel`, `samsung`. |
 | `postInstallNotes` | object | no | `quest` / `android` string arrays shown on Complete. |
 | `support.contactLabel` | string | no | Button/label text. |
 | `support.contactEmail` | string | no | Prefills **Send a report**. Placeholder `example.com` addresses are ignored. |

@@ -32,7 +32,7 @@ public sealed record InstallManifest(
         GrantPermissions: true,
         AllowTestApk: true,
         LaunchAfterInstall: false,
-        PreferredDeviceFamilies: ["meta-quest-2", "meta-quest-3", "pixel", "samsung"],
+        PreferredDeviceFamilies: ["meta-quest-2", "meta-quest-3", "meta-quest-3s", "meta-quest-pro", "pixel", "samsung"],
         PostInstallNotes: new Dictionary<string, IReadOnlyList<string>>
         {
             ["quest"] = ["Open Library.", "Open the filter menu.", "Select Unknown Sources.", "Find the app you installed."],

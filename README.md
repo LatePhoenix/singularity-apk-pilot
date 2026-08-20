@@ -12,7 +12,7 @@ Windows guided installer for non-technical testers. Plug in a Meta Quest 2, Ques
 
 ## Download
 
-1. Get **`SingularityApkInstaller-win-x64-setup.exe`** from [Releases](https://github.com/LatePhoenix/singularity-apk-pilot/releases/latest) (or the button above).
+1. Get **`SingularityApkInstaller-win-x64-setup.exe`** from [Releases](https://github.com/LatePhoenix/singularity-apk-pilot/releases/latest) (or the button above). That stable name is always the current release (**v0.6.0** now).
 2. Run the setup wizard. No separate .NET install is required (self-contained win-x64).
 3. Launch **APK Pilot** from the Start menu, plug in the device, then choose the APK files to install. Pilot stays on the right and says the next step.
 
@@ -44,7 +44,7 @@ dotnet test SingularityTesterInstaller.sln
 powershell -ExecutionPolicy Bypass -File build\packaging\scripts\pack.ps1
 ```
 
-Requires .NET SDK 8.0.424 (`global.json`) and [Inno Setup 7](https://jrsoftware.org/isinfo.php). Output: `artifacts\installer\SingularityApkInstaller-0.5.1-win-x64-setup.exe`. Details: [`docs/PACKAGING.md`](docs/PACKAGING.md).
+Requires .NET SDK 8.0.424 (`global.json`) and [Inno Setup 7](https://jrsoftware.org/isinfo.php). Output: `artifacts\installer\SingularityApkInstaller-0.6.0-win-x64-setup.exe` plus the stable `SingularityApkInstaller-win-x64-setup.exe` used by the download button above. Details: [`docs/PACKAGING.md`](docs/PACKAGING.md).
 
 ## Docs
 

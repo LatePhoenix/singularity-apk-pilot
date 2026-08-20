@@ -2,10 +2,10 @@
 
 **Product:** APK Pilot  
 **Publisher:** Singularity Solutions and Services LLC  
-**Last updated:** August 18, 2026  
+**Last updated:** August 20, 2026  
 **Effective:** August 15, 2026
 
-This Privacy Policy describes how APK Pilot (the “Software”), published by Singularity Solutions and Services LLC (a Wisconsin LLC, Entity ID S165572, principal office 206 S River St, Waterford, WI 53185, United States of America), handles information on your computer and a connected headset or phone.
+This Privacy Policy describes how APK Pilot (the “Software”), published by Singularity Solutions and Services LLC (a Wisconsin LLC, Entity ID S165572, principal office 206 S River St, Waterford, WI 53185, United States of America), handles information on your computer and a connected Meta Quest 2, Quest 3, Quest 3S, Quest Pro, or Android phone.
 
 The publisher’s company Privacy Policy is hosted at  
 https://singularity.mhbross725.workers.dev/privacy
@@ -26,6 +26,7 @@ Depending on how you use the Software, it may process:
 - File names of APKs you choose to install
 - Command results from install, uninstall, and verification
 - Third-party app names and package ids, read locally when you open Installed apps (not uploaded)
+- The in-app Pilot helper is local UI only. It does not send extra data.
 - Package-filtered logcat and the session log, only when you send a report and (for logcat) the device is authorized
 
 This processing happens on your machine so the wizard can install the APK files you select and, if you ask, remove an app you select. The Software does not scan the device filesystem for unrelated files, accounts, or contacts. Diagnostics export does not include a full list of apps on the device.
