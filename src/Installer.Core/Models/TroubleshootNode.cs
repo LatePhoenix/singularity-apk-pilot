@@ -17,5 +17,7 @@ public enum TroubleshootNode
     PhoneOemDriver = 12,
     WifiRescue = 13,
     RebootDevice = 14,
-    StillStuck = 15
+    StillStuck = 15,
+    DeveloperAccount = 16,
+    PhoneAutoBlocker = 17
 }

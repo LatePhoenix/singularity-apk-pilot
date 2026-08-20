@@ -37,6 +37,7 @@ public sealed class GuideCoachServiceTests
         Assert.Contains("headset", script.Now, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Always allow", script.Now, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("I allowed it", script.ButtonHint, StringComparison.Ordinal);
+        Assert.Contains("notice", script.Then, StringComparison.OrdinalIgnoreCase);
         Assert.Equal("Wait", script.Mood);
     }
 
@@ -83,6 +84,90 @@ public sealed class GuideCoachServiceTests
         var script = _coach.For(state);
         Assert.Equal("Warn", script.Mood);
         Assert.Equal(copy.Headline, script.Now);
+        Assert.DoesNotContain("ADB", script.Now, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void Troubleshoot_developer_account_stays_plain()
+    {
+        var copy = new TroubleshootCopyDeck().Page(new TroubleshootSession(
+            TroubleshootFamily.MetaQuest,
+            TroubleshootNode.DeveloperAccount,
+            UsbEvidence.None,
+            WizardStep.ConnectDevice,
+            null,
+            [],
+            TroubleshootActionKind.None,
+            "",
+            "Idle",
+            [],
+            "",
+            false));
+        var state = new WizardState(
+            WizardStep.Troubleshoot,
+            InstallManifest.Session,
+            null,
+            null,
+            [],
+            copy,
+            Troubleshoot: new TroubleshootSession(
+                TroubleshootFamily.MetaQuest,
+                TroubleshootNode.DeveloperAccount,
+                UsbEvidence.None,
+                WizardStep.ConnectDevice,
+                null,
+                [],
+                TroubleshootActionKind.None,
+                "",
+                "Idle",
+                [],
+                "",
+                false));
+        var script = _coach.For(state);
+        Assert.Contains("developer", script.Greeting, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ADB", script.Now, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("18", string.Join(' ', script.Checks), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Troubleshoot_auto_blocker_mentions_samsung()
+    {
+        var copy = new TroubleshootCopyDeck().Page(new TroubleshootSession(
+            TroubleshootFamily.AndroidPhone,
+            TroubleshootNode.PhoneAutoBlocker,
+            UsbEvidence.None,
+            WizardStep.ConnectDevice,
+            null,
+            [],
+            TroubleshootActionKind.None,
+            "",
+            "Idle",
+            [],
+            "",
+            false));
+        var state = new WizardState(
+            WizardStep.Troubleshoot,
+            InstallManifest.Session,
+            null,
+            null,
+            [],
+            copy,
+            Troubleshoot: new TroubleshootSession(
+                TroubleshootFamily.AndroidPhone,
+                TroubleshootNode.PhoneAutoBlocker,
+                UsbEvidence.None,
+                WizardStep.ConnectDevice,
+                null,
+                [],
+                TroubleshootActionKind.None,
+                "",
+                "Idle",
+                [],
+                "",
+                false));
+        var script = _coach.For(state);
+        Assert.Contains("Samsung", script.Greeting, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Auto Blocker", script.Now, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("ADB", script.Now, StringComparison.OrdinalIgnoreCase);
     }
 

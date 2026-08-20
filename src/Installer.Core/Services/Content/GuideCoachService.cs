@@ -24,13 +24,13 @@ public sealed class GuideCoachService : IGuideCoach
             WizardStep.ConnectDevice => new GuideScript(
                 "Let's connect the device.",
                 "Plug the headset or phone into this computer with a USB-C cable.",
-                "Next we will check that this computer can see it.",
+                "Wi-Fi comes later. After the device allows this computer, you can press Switch to Wi-Fi on Choose apps.",
                 Press(action),
                 "2 of 6",
                 [
                     "Use a cable that copies files. The short cable in a Quest box often only charges.",
                     "Plug into the computer itself, not a hub, keyboard, or monitor.",
-                    "Wi-Fi is optional. You can set that up later."
+                    "Quest 2, Quest 3, Quest 3S, and Quest Pro use this same cable-first path."
                 ],
                 string.IsNullOrWhiteSpace(state.Health?.StatusChip) ? "Wait" : state.Health!.StatusTone == "Error" ? "Warn" : "Wait"),
             WizardStep.DeviceDetected => new GuideScript(
@@ -47,17 +47,17 @@ public sealed class GuideCoachService : IGuideCoach
                 "Done"),
             WizardStep.Authorization when quest => new GuideScript(
                 "This part happens inside the headset.",
-                "Put the headset on. Look for a message asking to allow this computer. Choose Always allow, then Allow.",
-                "After you allow it, come back to this computer.",
-                Press(action),
+                "Put the headset on. You may see two messages. Allow USB debugging and Always allow from this computer — not only the files message. Keep the headset on, or cover the sensor, so it does not sleep.",
+                "You do not have to rush back. I will notice when the device allows this computer.",
+                "Press I allowed it only if you want me to check now.",
                 "4 of 6",
                 ["Keep the cable plugged in.", "If you already closed the message, unplug and plug the cable back in."],
                 "Wait"),
             WizardStep.Authorization => new GuideScript(
                 "This part happens on the phone.",
                 "Unlock the phone. Look for a message about USB debugging. Check Always allow from this computer, then tap Allow.",
-                "After you allow it, come back to this computer.",
-                Press(action),
+                "You do not have to rush back. I will notice when the phone allows this computer.",
+                "Press I allowed it only if you want me to check now.",
                 "4 of 6",
                 ["If no message appears, unplug, plug back in, and choose File transfer if the phone asks."],
                 "Wait"),
@@ -143,15 +143,44 @@ public sealed class GuideCoachService : IGuideCoach
     {
         var node = state.Troubleshoot?.CurrentNode ?? TroubleshootNode.PickDevice;
         var now = string.IsNullOrWhiteSpace(state.Copy.Body) ? state.Copy.Headline : state.Copy.Body;
+        var (greeting, then, checks) = node switch
+        {
+            TroubleshootNode.DeveloperAccount => (
+                "The headset needs a Meta developer account first.",
+                "After this, we will turn on developer mode in the Horizon app.",
+                new[] { "18 or older. Verified. On a developer team.", "Same account in the Horizon app and on the headset." }),
+            TroubleshootNode.AllowComputer => (
+                "Two messages can appear inside the headset.",
+                "You do not have to rush back. I will notice when the headset allows this computer.",
+                new[] { "Allow USB debugging and Always allow.", "Keep the headset on so it does not sleep." }),
+            TroubleshootNode.PhoneAutoBlocker => (
+                "Samsung phones have an extra safety switch.",
+                "Turn off Block commands by USB, then we will turn on USB debugging.",
+                new[] { "A work phone may block this. Use a personal Galaxy or ask IT." }),
+            TroubleshootNode.RestartHelper => (
+                "Another tool on this computer may be in the way.",
+                "Close those apps, then press the green button.",
+                new[] { "Chrome or Edge SideQuest Web Installer.", "Meta Quest Developer Hub, SideQuest, or Android Studio." }),
+            TroubleshootNode.WifiRescue => (
+                "Wi-Fi comes after a cable works.",
+                "Same Wi-Fi. No guest network. Turn off VPN. After a reboot, plug in once more.",
+                new[] { "Do not start with a pairing code unless you already have one." }),
+            TroubleshootNode.PickDevice => (
+                "Let's fix the connection. One small step.",
+                "When this step is done, press the green button. I will take you to the next one.",
+                new[] { "Quest is the headset you wear.", "Phone is a regular Android phone." }),
+            _ => (
+                "Let's fix the connection. One small step.",
+                "When this step is done, press the green button. I will take you to the next one.",
+                Array.Empty<string>())
+        };
         return new GuideScript(
-            "Let's fix the connection. One small step.",
+            greeting,
             now,
-            "When this step is done, press the green button. I will take you to the next one.",
+            then,
             Press(action),
             "Help",
-            node == TroubleshootNode.PickDevice
-                ? ["Quest is the headset you wear.", "Phone is a regular Android phone."]
-                : [],
+            checks,
             "Wait");
     }
 

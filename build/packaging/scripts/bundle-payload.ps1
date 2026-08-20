@@ -61,6 +61,30 @@ else {
     Write-Warning "adb.exe not found. Place platform-tools in payloads\tools\adb or pass -AdbSource."
 }
 
+$infDestDir = Join-Path $RepoRoot "payloads\tools\oculus-adb-drivers"
+$infDest = Join-Path $infDestDir "android_winusb.inf"
+$infCandidates = @(
+    $env:OCULUS_ADB_INF
+    (Join-Path $RepoRoot "tools\oculus-adb-drivers\android_winusb.inf")
+    $infDest
+) | Where-Object { $_ }
+
+$infSource = $infCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+if ($infSource) {
+    Write-Host "Copying Quest USB INF from $infSource"
+    if (-not $DryRun) {
+        New-Item -ItemType Directory -Force -Path $infDestDir | Out-Null
+        $destFull = Join-Path $infDestDir "android_winusb.inf"
+        $srcFull = (Resolve-Path $infSource).Path
+        if ($srcFull -ne (Resolve-Path $destFull -ErrorAction SilentlyContinue).Path) {
+            Copy-Item -Path $srcFull -Destination $destFull -Force
+        }
+    }
+}
+else {
+    Write-Host "Quest USB INF not found. Testers can still use Get Quest USB support in the helper."
+}
+
 if (-not (Test-Path $manifest)) {
     throw "Missing $manifest"
 }

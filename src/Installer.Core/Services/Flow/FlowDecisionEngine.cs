@@ -54,7 +54,7 @@ public sealed class FlowDecisionEngine
 
         if (trigger == WizardTrigger.Start)
         {
-            return WizardStep.ConnectDevice;
+            return AfterConnect(state, active);
         }
 
         if (trigger == WizardTrigger.OpenInstalledApps)
@@ -128,7 +128,7 @@ public sealed class FlowDecisionEngine
 
         if (state.CurrentStep == WizardStep.ConnectDevice)
         {
-            return WizardStep.DeviceDetected;
+            return AfterConnect(state, active);
         }
 
         if (trigger == WizardTrigger.DeviceRefresh
@@ -152,5 +152,21 @@ public sealed class FlowDecisionEngine
         }
 
         return state.CurrentStep;
+    }
+
+    private WizardStep AfterConnect(WizardState state, DeviceInfo? active)
+    {
+        if (active is null || active.State == DeviceConnectionState.NotConnected)
+        {
+            return WizardStep.ConnectDevice;
+        }
+
+        var readyCount = (state.ReadyDevices ?? []).Count(d => d.State == DeviceConnectionState.ConnectedReady);
+        if (readyCount >= 2)
+        {
+            return WizardStep.DeviceDetected;
+        }
+
+        return StrategyFor(active).NextAfterDetection(active, state.ConnectAttempts);
     }
 }

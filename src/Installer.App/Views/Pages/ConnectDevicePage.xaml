@@ -34,14 +34,14 @@
         <Expander Header="Connect over Wi-Fi instead"
                   AutomationProperties.Name="Connect over Wi-Fi instead">
             <StackPanel Margin="0,8,0,0">
-                <TextBlock Text="Quest 2 and Quest 3: set up with a cable once, then unplug. Phones can use the same address form."
+                <TextBlock Text="Quest 2, Quest 3, Quest 3S, or Quest Pro: set up with a cable once, then unplug. Phones can use the same address form."
                            Style="{StaticResource Label}"
                            TextWrapping="Wrap"
                            Margin="0,0,0,6"/>
 
-                <Expander Header="How to set up Wi-Fi on Quest 2 or Quest 3"
+                <Expander Header="How to set up Wi-Fi on Quest 2, Quest 3, Quest 3S, or Quest Pro"
                           Margin="0,0,0,4"
-                          AutomationProperties.Name="How to set up Wi-Fi on Quest 2 or Quest 3">
+                          AutomationProperties.Name="How to set up Wi-Fi on Quest 2, Quest 3, Quest 3S, or Quest Pro">
                     <StackPanel Margin="0,8,0,0">
                         <TextBlock Text="Recommended: USB once, then switch"
                                    Style="{StaticResource H2}"

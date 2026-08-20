@@ -13,7 +13,7 @@ public sealed class TroubleshootCopyDeck
                 "What are you connecting?",
                 "Pick the device you want to set up. You can change this later.",
                 "Continue",
-                "Quest 2 and Quest 3 use the Meta Horizon phone app for developer mode. Phones use the developer settings on the phone itself.",
+                "Quest 2, Quest 3, Quest 3S, and Quest Pro use the Meta Horizon phone app for developer mode. Phones use the developer settings on the phone itself.",
                 "Device family picker."),
             (TroubleshootFamily.MetaQuest, TroubleshootNode.CableAndPort) => new WizardCopy(
                 "Use a USB-C data cable",
@@ -33,6 +33,12 @@ public sealed class TroubleshootCopyDeck
                 "I have it on",
                 "If the headset sleeps, press the power button and put it on again. Leave the cable plugged in.",
                 "Headset must be worn for the USB debugging prompt."),
+            (_, TroubleshootNode.DeveloperAccount) => new WizardCopy(
+                "Check your Meta account",
+                "You need to be 18 or older, with a verified Meta account, on a developer team. The Meta Horizon app on your phone must be signed in with that same account.",
+                "I checked it",
+                "A work or school Meta account is not enough. Use the same account that is signed into the headset.",
+                "Meta developer team membership."),
             (_, TroubleshootNode.DeveloperMode) => new WizardCopy(
                 "Turn on developer mode",
                 "On your phone, open the Meta Horizon app. Tap the headset icon, then your headset, then Headset Settings, then Developer Mode, and turn it on. Restart the headset if you just switched it on.",
@@ -47,10 +53,10 @@ public sealed class TroubleshootCopyDeck
                 "Quick Control → Settings → Developer → MTP Notification."),
             (_, TroubleshootNode.AllowComputer) => new WizardCopy(
                 "Allow this computer",
-                "Look inside the headset for a permission message. Choose Always allow from this computer, then Allow. If you already dismissed it, unplug and plug the cable back in.",
+                "Put the headset on. You may see two messages. Allow USB debugging and Always allow from this computer — not only the files message. Keep the headset on your head, or cover the sensor, so it does not sleep.",
                 "I allowed it",
-                "The message is only in the headset. This computer will not show it.",
-                "USB debugging authorization prompt."),
+                "The debugging message is only in the headset. Stay in the headset. This installer notices when you allow it. If you already dismissed it, unplug and plug the cable back in.",
+                "USB debugging authorization prompt, not MTP file-access."),
             (_, TroubleshootNode.UsbHelper) => new WizardCopy(
                 "Install Quest USB support",
                 "Windows can see the headset, but this installer still cannot talk to it. Install Meta’s USB helper on this computer, then check again.",
@@ -60,10 +66,10 @@ public sealed class TroubleshootCopyDeck
             (_, TroubleshootNode.RestartHelper) => new WizardCopy(
                 "Restart the connection helper",
                 session.Evidence.CompetingAdbProcess
-                    ? "Another Android tool may be using the connection. Close SideQuest, Meta Quest Developer Hub, or Android Studio if they are open, then restart the helper."
+                    ? "Another Android tool may be using the connection. Close Chrome or Edge if SideQuest Web Installer is open, and close Meta Quest Developer Hub, SideQuest, or Android Studio. Then restart the helper."
                     : "Restart the helper this installer uses, then we will look for the device again. Keep the device plugged in and awake.",
                 "Restart connection helper",
-                "If another Android tool is open, close it first. Then tap Restart connection helper.",
+                "If Chrome, Edge, SideQuest, Meta Quest Developer Hub, or Android Studio is open, close it first. Then tap Restart connection helper.",
                 "adb kill-server / start-server."),
             (_, TroubleshootNode.PhoneUnlock) => new WizardCopy(
                 "Unlock your phone",
@@ -79,10 +85,16 @@ public sealed class TroubleshootCopyDeck
                 "MTP / file transfer USB mode."),
             (_, TroubleshootNode.PhoneDebugging) => new WizardCopy(
                 "Turn on USB debugging",
-                "On the phone, open Settings, then About phone, tap Build number seven times, go back to System, then Developer options, and turn on USB debugging.",
+                PhoneDebugBody(session.Device),
                 "I turned it on",
-                "Samsung: Settings → About phone → Software information → Build number, then Settings → Developer options. Pixel: Settings → About phone → Build number, then System → Developer options.",
+                "A work phone may block this. Use a personal Galaxy or ask IT. Do not try to bypass a work profile.",
                 "Android developer options → USB debugging."),
+            (_, TroubleshootNode.PhoneAutoBlocker) => new WizardCopy(
+                "Turn off Auto Blocker",
+                "On a Samsung phone, Auto Blocker can stop this computer from installing apps. Open Settings, then Security and privacy, then Auto Blocker, and turn off Block commands by USB. The wording may vary.",
+                "I turned it off",
+                "A work phone may block this. Use a personal Galaxy or ask IT. Do not try to bypass a work profile.",
+                "Samsung Auto Blocker / Knox USB restriction."),
             (_, TroubleshootNode.PhoneAllow) => new WizardCopy(
                 "Allow this computer",
                 "Look on the phone for a USB debugging prompt. Check Always allow from this computer, then tap Allow.",
@@ -97,9 +109,9 @@ public sealed class TroubleshootCopyDeck
                 "OEM USB driver."),
             (_, TroubleshootNode.WifiRescue) => new WizardCopy(
                 "Try Wi-Fi after USB works",
-                "Wi-Fi setup needs the headset to allow this computer over a cable first. Plug in, allow the prompt inside the headset, then you can switch to Wi-Fi on Choose apps. Pairing codes are only for a first wireless setup and they expire quickly.",
+                "Keep the headset and this computer on the same Wi-Fi. Guest networks will not work. Turn off a VPN if one is on. After a headset reboot, plug in with a cable once more. Pairing codes are only if you already have one, and they expire quickly.",
                 "Check again",
-                "Keep the headset and this computer on the same Wi-Fi. Guest networks will not work. After a headset reboot, plug in with USB once more.",
+                "Wi-Fi setup needs the headset to allow this computer over a cable first. Then use Switch to Wi-Fi on Choose apps.",
                 "USB-first wireless: adb tcpip then connect. Pairing port is not the install port."),
             (_, TroubleshootNode.RebootDevice) => new WizardCopy(
                 "Restart the device and this computer",
@@ -146,6 +158,12 @@ public sealed class TroubleshootCopyDeck
                 "If the display is dark, press the power button.",
                 "Keep the cable plugged in."
             ],
+            TroubleshootNode.DeveloperAccount =>
+            [
+                "On your phone, open the Meta Horizon app.",
+                "Confirm you are signed in with the same account as the headset.",
+                "That account must be 18 or older, verified, and on a developer team."
+            ],
             TroubleshootNode.DeveloperMode =>
             [
                 "Open the Meta Horizon app on your phone.",
@@ -160,9 +178,9 @@ public sealed class TroubleshootCopyDeck
             ],
             TroubleshootNode.AllowComputer =>
             [
-                "Look for a permission message inside the headset.",
-                "Choose Always allow from this computer, then Allow.",
-                "If you do not see it, unplug and plug the cable back in."
+                "Put the headset on and keep it awake.",
+                "Allow USB debugging, then Always allow from this computer. Skip the files-only popup if that is all you see.",
+                "Stay in the headset. This installer notices when you allow it."
             ],
             TroubleshootNode.UsbHelper =>
             [
@@ -173,9 +191,9 @@ public sealed class TroubleshootCopyDeck
             TroubleshootNode.RestartHelper => session.Evidence.CompetingAdbProcess
                 ?
                 [
-                    "Close SideQuest, Meta Quest Developer Hub, and Android Studio if they are open.",
-                    "Keep the device plugged in and awake.",
-                    "Tap Restart connection helper."
+                    "Close Chrome or Edge if SideQuest Web Installer is open.",
+                    "Close Meta Quest Developer Hub, SideQuest, and Android Studio if they are open.",
+                    "Keep the device plugged in and awake, then tap Restart connection helper."
                 ]
                 :
                 [
@@ -190,6 +208,12 @@ public sealed class TroubleshootCopyDeck
             ],
             TroubleshootNode.PhoneUsbMode => PhoneUsbModeSteps(session.Device),
             TroubleshootNode.PhoneDebugging => PhoneDebugSteps(session.Device),
+            TroubleshootNode.PhoneAutoBlocker =>
+            [
+                "Settings → Security and privacy → Auto Blocker.",
+                "Turn off Block commands by USB. The wording may vary.",
+                "Use a personal Galaxy if this is a work phone."
+            ],
             TroubleshootNode.PhoneAllow =>
             [
                 "Look on the phone screen for USB debugging.",
@@ -204,9 +228,9 @@ public sealed class TroubleshootCopyDeck
             ],
             TroubleshootNode.WifiRescue =>
             [
-                "Plug the headset in with a data cable first.",
-                "Put it on and allow this computer if asked.",
-                "After this installer shows the headset is ready, use Switch to Wi-Fi on Choose apps. Do not use a pairing port as the install address."
+                "Same Wi-Fi as this computer. Not a guest network. Turn off VPN.",
+                "Plug in with a data cable first and allow this computer if asked.",
+                "After this installer shows the headset is ready, use Switch to Wi-Fi on Choose apps."
             ],
             TroubleshootNode.RebootDevice =>
             [
@@ -338,6 +362,16 @@ public sealed class TroubleshootCopyDeck
             "Tap Build number seven times.",
             "System → Developer options → USB debugging on."
         ];
+    }
+
+    private static string PhoneDebugBody(DeviceInfo? device)
+    {
+        if (IsSamsung(device))
+        {
+            return "On a Samsung phone, open Settings, then About phone, then Software information. Tap Build number seven times. Go back, open Developer options at the bottom of Settings, and turn on USB debugging.";
+        }
+
+        return "On the phone, open Settings, then About phone, tap Build number seven times, go back to System, then Developer options, and turn on USB debugging.";
     }
 
     private static bool IsSamsung(DeviceInfo? device) =>

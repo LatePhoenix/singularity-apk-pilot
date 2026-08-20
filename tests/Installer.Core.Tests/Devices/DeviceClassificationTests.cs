@@ -9,7 +9,8 @@ public sealed class DeviceClassificationTests
 
     [Theory]
     [InlineData("Oculus", "Quest 2", "hollywood", DeviceKind.MetaQuest)]
-    [InlineData("Meta", "Quest 3", "eureka", DeviceKind.MetaQuest)]
+    [InlineData("Meta", "Quest 3S", "panther", DeviceKind.MetaQuest)]
+    [InlineData("Oculus", "Quest Pro", "seacliff", DeviceKind.MetaQuest)]
     [InlineData("oculus", "Quest_3", "eureka", DeviceKind.MetaQuest)]
     [InlineData("Google", "Pixel 9", "komodo", DeviceKind.AndroidPhone)]
     [InlineData("samsung", "SM-S928U", "e3q", DeviceKind.AndroidPhone)]

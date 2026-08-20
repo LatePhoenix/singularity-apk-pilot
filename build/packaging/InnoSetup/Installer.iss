@@ -6,7 +6,7 @@
 #define MyAppExeName "SingularityApkInstaller.exe"
 
 #ifndef MyAppVersion
-  #define MyAppVersion "0.5.1"
+  #define MyAppVersion "0.6.0"
 #endif
 
 #ifndef PublishDir
@@ -44,7 +44,6 @@ ArchitecturesInstallIn64BitMode=x64compatible
 DisableProgramGroupPage=yes
 UninstallDisplayIcon={app}\{#MyAppExeName}
 SetupIconFile=..\..\..\src\Installer.App\Assets\app-icon.ico
-; TODO(signing): SignTool=signtool
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"

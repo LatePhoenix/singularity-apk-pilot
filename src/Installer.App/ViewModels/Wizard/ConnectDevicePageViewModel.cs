@@ -47,7 +47,7 @@ public sealed partial class ConnectDevicePageViewModel : WizardPageViewModel
 
     public IReadOnlyList<GuideStep> QuestWifiSteps { get; } =
     [
-        new("1", "On your phone, open the Meta Horizon app. Tap the headset icon, then your Quest 2 or Quest 3, then Headset Settings, then Developer Mode, and turn it on."),
+        new("1", "On your phone, open the Meta Horizon app. Tap the headset icon, then your Quest 2, Quest 3, Quest 3S, or Quest Pro, then Headset Settings, then Developer Mode, and turn it on."),
         new("2", "Plug a USB-C data cable into the headset and this computer. The cable in the Quest box is often charge-only — use one that can transfer files."),
         new("3", "Put the headset on. Open Quick Control, then Settings (gear), then Developer, and turn on MTP Notification."),
         new("4", "When asked, choose Always allow from this computer, then Allow. Wait until this installer shows the headset is ready."),
