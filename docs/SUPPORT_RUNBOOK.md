@@ -13,7 +13,7 @@ Use this when a tester says the installer “didn’t work.” Ask them to tap *
 3. If SmartScreen appears (unsigned build), **More info** → **Run anyway**.
 4. Confirm they launched **APK Pilot** from the Start menu after setup. If the window never appears, they are on v0.1.1 or earlier and Windows Application Control may be blocking satellite DLLs. Install **v0.4.0** or later (single-file).
 
-**v0.1.0:** no test `.apk` in the GitHub installer; install failed as `failed to stat`. **v0.1.1** bundled Halo to unblock testers. **v0.2.0** does not ship any app APK: connect a device first, then choose APK files. **v0.3.0** adds split packages, verify/open, recents, multi-device picker, Connect-screen diagnostics, and optional Authenticode. **v0.4.0** adds Quest Wi-Fi setup, Switch to Wi-Fi, and Installed apps (third-party uninstall). **v0.5.1** opens Need help connecting in a compact helper window and restarts the connection helper from the primary button. Publish is a single-file exe so Windows Application Control does not block unsigned DLLs.
+**v0.1.0:** no test `.apk` in the GitHub installer; install failed as `failed to stat`. **v0.1.1** bundled Halo to unblock testers. **v0.2.0** does not ship any app APK: connect a device first, then choose APK files. **v0.3.0** adds split packages, verify/open, recents, multi-device picker, Connect-screen diagnostics, and optional Authenticode. **v0.4.0** adds Quest Wi-Fi setup, Switch to Wi-Fi, and Installed apps (third-party uninstall). **v0.6.0** adds Pilot, single-device skip, Meta developer account / two headset prompts / Samsung Auto Blocker, and Quest 3S / Pro names. **v0.5.1** opens Need help connecting in a compact helper window and restarts the connection helper from the primary button. Publish is a single-file exe so Windows Application Control does not block unsigned DLLs.
 
 ## Bundle contents
 
@@ -40,10 +40,10 @@ Serials are hashed. Do not ask testers to paste raw serial numbers in email.
 **Operator response:**
 
 1. Confirm they used a USB-C **data** cable into a motherboard port.
-2. Have them tap **Need help connecting?** and pick Quest or phone. The helper walks one task at a time (headset on, Horizon developer mode, MTP Notification, Allow; phones get file transfer and USB debugging). If Windows sees the headset and the installer does not, the USB helper step opens Meta’s Oculus ADB Drivers page (or installs a bundled INF if you shipped one).
-3. Quest: walk Meta Horizon app → headset → Headset Settings → Developer Mode on. Then in-headset Developer → MTP Notification on.
-4. Phone: File transfer / MTP, then retry.
-5. Windows: if the device never appears, install Oculus ADB Drivers for Quest, or the phone OEM USB driver.
+2. Have them tap **Need help connecting?** and pick Quest or phone. The helper walks one task at a time (Meta account, headset on, Horizon developer mode, MTP Notification, two Allow prompts; phones get file transfer, Samsung Auto Blocker, then USB debugging). If Windows sees the headset and the installer does not, the USB helper step opens Meta’s USB support page (or installs a bundled INF if you shipped one).
+3. Quest: same Meta account in Horizon and on the headset; 18+, verified, on a developer team. Then Headset Settings → Developer Mode on. Then in-headset Developer → MTP Notification on.
+4. Phone: File transfer / MTP. Samsung: Settings → Security and privacy → Auto Blocker → turn off Block commands by USB. Then USB debugging.
+5. Windows: if the device never appears, install Quest USB support, or the phone OEM USB driver. Close Chrome/Edge SideQuest Web Installer, MQDH, SideQuest, and Android Studio.
 6. If still empty, have them tap **Send a report**, enter your email, and send the message from their email app.
 
 ### Unauthorized
@@ -52,7 +52,7 @@ Serials are hashed. Do not ask testers to paste raw serial numbers in email.
 
 **Likely causes:** Prompt dismissed, headset off the head, phone locked, “Always allow” not checked.
 
-**Operator response:** Unplug/replug, keep the device awake, choose **Always allow from this computer**. Quest prompt is inside the headset, not on the PC.
+**Operator response:** Unplug/replug, keep the device awake (headset on the head or cover the proximity sensor), choose **Always allow from this computer**. There may be two messages — USB debugging, not only files. Quest prompt is inside the headset, not on the PC. The installer notices when they allow it; they do not have to rush back.
 
 ### Developer mode likely disabled (Quest)
 
@@ -122,9 +122,9 @@ Serials are hashed. Do not ask testers to paste raw serial numbers in email.
 
 **Likely causes:** Device and PC are on different networks, headset rebooted (USB-first Wi-Fi is cleared until they plug in again), they entered the pairing port instead of the connect port, or the pairing code expired.
 
-**Operator response:** Point them at **How to set up Wi-Fi on Quest 2 or Quest 3** on the Connect screen. Then:
+**Operator response:** Point them at **How to set up Wi-Fi on Quest 2, Quest 3, Quest 3S, or Quest Pro** on the Connect screen. Then:
 
-1. Same Wi-Fi as the PC. Guest networks and client isolation will fail.
+1. Same Wi-Fi as the PC. Guest networks and client isolation will fail. Turn off VPN.
 2. Plug in USB, approve debugging, then tap **Switch to Wi-Fi** on the choose-apps screen. That is the reliable Quest path.
 3. Pairing: the six-digit code and pairing port are only for first-time wireless debugging. After pairing, connect to the install address (usually port 5555), not the pairing port.
 4. After a headset reboot, USB-first switch is required again unless they re-pair.
@@ -143,11 +143,13 @@ Serials are hashed. Do not ask testers to paste raw serial numbers in email.
 
 **Auto-fix:** Restart ADB server, then rescan.
 
-**Operator response:** If restart loops, reboot the PC and the device, then reopen the installer. Confirm only one installer/ADB client is running (close Android Studio / MQDH if they have it).
+**Operator response:** If restart loops, reboot the PC and the device, then reopen the installer. Confirm only one installer is running. Close Chrome or Edge if SideQuest Web Installer is open, plus Android Studio, MQDH, and SideQuest desktop.
+
+Store channels (Horizon Store, Play) exist **outside this app**. Testers still get APK Pilot for sideloaded APK / APKS / XAPK files only.
 
 ## What to send back to engineering
 
 1. Diagnostics ZIP.
-2. Device family (Quest 2/3 vs Pixel vs Samsung) and roughly when it failed in the wizard.
+2. Device family (Quest 2 / 3 / 3S / Pro vs Pixel vs Samsung) and roughly when it failed in the wizard.
 3. Whether they ever saw the USB debugging prompt.
 4. Whether this was a first install or a replacement of an older test build.

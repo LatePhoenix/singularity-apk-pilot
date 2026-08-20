@@ -117,13 +117,13 @@ public abstract partial class WizardPageViewModel : ObservableObject
                 (DeviceIllustrationKind.ConnectOptions, "Choose a headset or a phone.", chip, tone),
             TroubleshootNode.CableAndPort =>
                 (DeviceIllustrationKind.Cable, "USB-C data cable into a port on this computer.", chip, tone),
-            TroubleshootNode.WearHeadset or TroubleshootNode.DeveloperMode or TroubleshootNode.MtpNotification =>
+            TroubleshootNode.WearHeadset or TroubleshootNode.DeveloperAccount or TroubleshootNode.DeveloperMode or TroubleshootNode.MtpNotification =>
                 (DeviceIllustrationKind.DeveloperMode, "Headset setup in the Meta Horizon app and on the headset.", chip, tone),
             TroubleshootNode.AllowComputer =>
                 (DeviceIllustrationKind.HeadsetPrompt, "Allow this computer inside the headset.", chip, tone),
             TroubleshootNode.UsbHelper or TroubleshootNode.RestartHelper or TroubleshootNode.WifiRescue or TroubleshootNode.RebootDevice or TroubleshootNode.StillStuck =>
                 (DeviceIllustrationKind.Problem, "Fix the connection between this computer and the device.", chip, tone),
-            TroubleshootNode.PhoneUnlock or TroubleshootNode.PhoneUsbMode or TroubleshootNode.PhoneDebugging or TroubleshootNode.PhoneOemDriver =>
+            TroubleshootNode.PhoneUnlock or TroubleshootNode.PhoneUsbMode or TroubleshootNode.PhoneAutoBlocker or TroubleshootNode.PhoneDebugging or TroubleshootNode.PhoneOemDriver =>
                 (DeviceIllustrationKind.Phone, "Phone USB setup.", chip, tone),
             TroubleshootNode.PhoneAllow =>
                 (DeviceIllustrationKind.PhonePrompt, "Allow this computer on the phone.", chip, tone),

@@ -56,6 +56,8 @@ public sealed class TroubleshootingServiceTests
         session = _service.Confirm(session, []);
         Assert.Equal(TroubleshootNode.WearHeadset, session.CurrentNode);
         session = _service.Confirm(session, []);
+        Assert.Equal(TroubleshootNode.DeveloperAccount, session.CurrentNode);
+        session = _service.Confirm(session, []);
         Assert.Equal(TroubleshootNode.DeveloperMode, session.CurrentNode);
         session = _service.Confirm(session, []);
         Assert.Equal(TroubleshootNode.MtpNotification, session.CurrentNode);
@@ -184,6 +186,84 @@ public sealed class TroubleshootingServiceTests
             false);
         var body = new TroubleshootCopyDeck().Page(session).Body;
         Assert.Contains("Transfer files", body, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void Competing_adb_opens_restart_helper_first()
+    {
+        var evidence = new UsbEvidence(true, false, false, false, true, true);
+        var session = _service.Start(WizardStep.ConnectDevice, evidence, null, []);
+        Assert.Equal(TroubleshootNode.RestartHelper, session.CurrentNode);
+    }
+
+    [Fact]
+    public void Quest_usb_skips_developer_account()
+    {
+        var evidence = new UsbEvidence(true, false, false, false, true, false);
+        var session = _service.Start(WizardStep.ConnectDevice, evidence, null, []);
+        Assert.Equal(TroubleshootNode.WearHeadset, session.CurrentNode);
+        session = _service.Confirm(session, []);
+        Assert.Equal(TroubleshootNode.DeveloperMode, session.CurrentNode);
+    }
+
+    [Fact]
+    public void Samsung_phone_includes_auto_blocker()
+    {
+        var phone = new DeviceInfo(
+            "phone",
+            "samsung",
+            "SM-S928U",
+            "14",
+            DeviceKind.AndroidPhone,
+            DeviceConnectionState.NotConnected,
+            false,
+            false,
+            new Dictionary<string, string>());
+        var session = _service.SelectFamily(
+            _service.Start(WizardStep.ConnectDevice, UsbEvidence.None, phone, []),
+            TroubleshootFamily.AndroidPhone,
+            []);
+        while (session.CurrentNode != TroubleshootNode.PhoneAutoBlocker
+               && session.CurrentNode != TroubleshootNode.StillStuck)
+        {
+            session = _service.Confirm(session, []);
+        }
+
+        Assert.Equal(TroubleshootNode.PhoneAutoBlocker, session.CurrentNode);
+        var copy = new TroubleshootCopyDeck().Page(session);
+        Assert.Contains("Auto Blocker", copy.Body, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("ADB", copy.Body, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void Samsung_debug_copy_uses_software_information()
+    {
+        var phone = new DeviceInfo(
+            "phone",
+            "samsung",
+            "Galaxy S24",
+            "14",
+            DeviceKind.AndroidPhone,
+            DeviceConnectionState.NotConnected,
+            false,
+            false,
+            new Dictionary<string, string>());
+        var session = new TroubleshootSession(
+            TroubleshootFamily.AndroidPhone,
+            TroubleshootNode.PhoneDebugging,
+            UsbEvidence.None,
+            WizardStep.ConnectDevice,
+            phone,
+            [],
+            TroubleshootActionKind.None,
+            "",
+            "Idle",
+            [],
+            "",
+            false);
+        var body = new TroubleshootCopyDeck().Page(session).Body;
+        Assert.Contains("Software information", body, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("System → Developer options", body, StringComparison.Ordinal);
     }
 
     private static DeviceInfo Quest(DeviceConnectionState state) =>

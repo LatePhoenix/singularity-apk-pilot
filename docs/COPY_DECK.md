@@ -26,7 +26,7 @@ When the helper is visible, the main column hides the long body, illustration, a
 | Welcome | You are about to install an app. One thing at a time. |
 | Connect | Plug in with a USB-C cable that can copy files. |
 | Detected | The device is connected. Press Continue. |
-| Authorization (Quest) | Put the headset on. Always allow, then Allow. |
+| Authorization (Quest) | Put the headset on. Two messages: debugging Allow, not only files. I will notice when you allow it. |
 | Authorization (phone) | Unlock the phone. Always allow, then Allow. |
 | Developer mode | Meta Horizon app → Headset Settings → Developer Mode. |
 | Choose apps (empty) | Press Add app files and choose the .apk you were sent. |
@@ -42,22 +42,23 @@ When the helper is visible, the main column hides the long body, illustration, a
 - Headline: Install apps on your device
 - Body: Connect a headset or phone first. A USB-C data cable is the usual first step. After the device has approved this computer, you can switch to Wi-Fi and unplug. Then choose the APK files to install.
 - Primary: Start
-- Help: You will plug in the device, approve a permission if asked, then pick one or more APK files. Wi-Fi setup for Quest 2 and Quest 3 is on the next screen. Privacy and Terms open from the header. **Send a report** is always available if something goes wrong.
+- Help: You will plug in the device, approve a permission if asked, then pick one or more APK files. Wi-Fi setup for Quest 2, Quest 3, Quest 3S, or Quest Pro is later, after the device has approved this computer. Privacy and Terms open from the header. **Send a report** is always available if something goes wrong.
+- If a headset or phone is already connected when they press Start, skip Connect / Device detected and jump to Authorization or Choose apps.
 - Advanced: No app is bundled. APK files are chosen after the device is connected.
 - In-page (muted): A newer installer is available, with a Download link to the stable setup.exe. No auto-download.
 
 ## Connect device
 
 - Headline: Connect your device
-- Body: Plug in with a USB-C data cable, then tap I connected it. Or connect over Wi-Fi using the Quest 2 / Quest 3 steps below.
+- Body: Plug in with a USB-C data cable, then tap I connected it. You can switch to Wi-Fi later on Choose apps.
 - Primary: I connected it
-- Help: Charge-only cables will not work. The cable that ships with Quest is often charge-only. Try another USB-C data cable and a USB port on the computer, not a hub. For Wi-Fi, the headset and this computer must be on the same network. Pairing codes expire quickly. After a headset reboot, plug in with USB once more unless you pair again.
+- Help: Charge-only cables will not work. The cable that ships with Quest is often charge-only. Try another USB-C data cable and a USB port on the computer, not a hub. Quest 2, Quest 3, Quest 3S, and Quest Pro use the same cable-first path. For Wi-Fi, the headset and this computer must be on the same network. Pairing codes expire quickly and are only if you already have one. After a headset reboot, plug in with USB once more unless you pair again.
 - Secondary: **Send a report** (footer)
-- Secondary: **Need help connecting?** opens a compact connection helper window (Quest vs phone, one task per screen). Two failed **I connected it** attempts open the same helper. The helper closes when a device is ready, or when Leave helper is used.
+- Secondary: **Need help connecting?** opens a compact connection helper window (Quest vs phone, one task per screen). Two failed **I connected it** attempts open the same helper. The helper closes when a device is ready, or when Leave helper is used. If exactly one device appears, skip Device detected.
 - In-page health (after failed attempts): Windows sees a headset but this installer does not → data cable + Oculus ADB driver. Windows sees nothing → cable/hub. Status chip when Windows sees USB but this installer does not.
 - In-page: **Connect over Wi-Fi** as a compact saved-address row when a last address is saved (one tap). Same network; after a reboot, plug in once more.
 - In-page expander: **Connect over Wi-Fi instead** — address form, collapsed until opened. Wi-Fi guide and pairing expanders stay collapsed until opened.
-- In-page expander: **How to set up Wi-Fi on Quest 2 or Quest 3** — numbered USB-once path (Horizon app Developer Mode → data cable → Quick Control → Settings → Developer → MTP Notification → Always allow → **Switch to Wi-Fi** on Choose apps).
+- In-page expander: **How to set up Wi-Fi on Quest 2, Quest 3, Quest 3S, or Quest Pro** — numbered USB-once path (Horizon app Developer Mode → data cable → Quick Control → Settings → Developer → MTP Notification → Always allow → **Switch to Wi-Fi** on Choose apps).
 - In-page expander: **I already have a pairing code from the headset** — same Wi-Fi, Settings → System → Developer → wireless debugging, install address vs pairing port, then the form.
 - In-page form: install address (IP, port 5555 if omitted), optional pairing port and six-digit code, then **Connect over Wi-Fi**. Pairing numbers are not the install port.
 - Advanced: Last detection status and raw device list.
@@ -70,16 +71,16 @@ When the helper is visible, the main column hides the long body, illustration, a
 - Body (phone): Your phone is connected. Next we will check that it has approved this computer.
 - Primary: Continue
 - Help: If this is the wrong device, pick it in the list or unplug extras so only one device is connected.
-- In-page: when two or more ready devices are connected, a list (model, USB vs Wi-Fi). Continue uses the selected row.
+- In-page: skipped when exactly one device is connected (goes straight to Authorization or Choose apps). When two or more ready devices are connected, a list (model, USB vs Wi-Fi). Continue uses the selected row.
 - Advanced: Serial (hashed in logs), manufacturer, Android version, classification.
 
 ## Authorization (Quest)
 
 - Headline: Put on your headset now
-- Body: A permission message is waiting inside the headset. Select Always allow from this computer, then choose Allow.
+- Body: A permission message is waiting inside the headset. You may see two messages. Allow USB debugging and Always allow from this computer — not only the files message. Keep the headset on your head, or cover the sensor, so it does not sleep.
 - Primary: I allowed it
 - Secondary: **Send a report** (footer)
-- Help: The headset must be on your head, awake, and showing the USB debugging prompt. If you already dismissed it, unplug and plug the cable back in.
+- Help: You do not have to rush back. This installer notices when the device allows this computer. **I allowed it** checks now. If you already dismissed the message, unplug and plug the cable back in.
 - Advanced: Connection state `unauthorized`.
 
 ## Authorization (phone)
@@ -88,7 +89,7 @@ When the helper is visible, the main column hides the long body, illustration, a
 - Body: Look for a USB debugging prompt on the phone. Check Always allow from this computer, then tap Allow.
 - Primary: I allowed it
 - Secondary: **Send a report** (footer)
-- Help: Unlock the phone first. If no prompt appears, unplug, plug back in, and set USB mode to File transfer / MTP if the phone asks.
+- Help: You do not have to rush back. This installer notices when the phone allows this computer. Unlock the phone first. If no prompt appears, unplug, plug back in, and set USB mode to File transfer / MTP if the phone asks.
 - Advanced: Connection state `unauthorized`.
 
 ## Developer mode (Quest only)
@@ -139,7 +140,7 @@ When the helper is visible, the main column hides the long body, illustration, a
 
 | Error | Title | Likely cause |
 | --- | --- | --- |
-| UnauthorizedDevice | Your device has not approved this computer yet | USB debugging prompt not accepted |
+| UnauthorizedDevice | Your device has not approved this computer yet | USB debugging prompt not accepted (includes unused DebuggingNotApproved) |
 | OfflineDevice | The device disconnected | Cable, sleep, or USB mode |
 | NoDevicesFound | No device was found | Cable, driver, or developer mode |
 | VersionDowngrade | An older incompatible version is already installed | Test build number went backwards |
@@ -182,8 +183,13 @@ When the helper is visible, the main column hides the long body, illustration, a
 
 Owned modal helper window from Connect, Authorization, Developer mode, or a connection-lost Install problem. The main installer waits. Primary copy never says ADB. Leave helper or closing the window returns to the previous screen. A ready device closes the helper immediately.
 
-- Headline / primary depend on the current node (What are you connecting?, cable, wear headset, developer mode, MTP Notification, allow, USB helper, restart helper, phone USB mode, Wi-Fi rescue, reboot, still stuck).
-- Primary: **I plugged it in** / **I have it on** / **I turned it on** / **I allowed it** / **Check again** for confirm-only nodes.
+- Headline / primary depend on the current node (What are you connecting?, cable, wear headset, Meta account, developer mode, MTP Notification, two-prompt allow, USB helper, restart helper, phone USB mode, Samsung Auto Blocker, Wi-Fi rescue, reboot, still stuck).
+- Primary: **I plugged it in** / **I have it on** / **I checked it** / **I turned it on** / **I turned it off** / **I allowed it** / **Check again** for confirm-only nodes.
+- Quest: **Check your Meta account** before developer mode when USB does not yet show the headset (18+, verified, developer team, same Horizon account). Skip if Windows already sees the headset.
+- Allow: two popups — USB debugging / Always allow, not only the files message. Keep the headset on (or cover the sensor). Pilot: I will notice when you allow it.
+- Restart helper: close Chrome/Edge SideQuest Web Installer, MQDH, SideQuest desktop, Android Studio.
+- Phone: **Turn off Auto Blocker** on Samsung after file transfer (Settings → Security and privacy → Auto Blocker → Block commands by USB). USB debugging on Samsung uses About phone → Software information → Build number, then Developer options at the bottom of Settings.
+- Wi-Fi rescue: same network, no guest, turn off VPN, plug in once more after reboot. Pairing is not the default.
 - Primary on helper-action nodes: **Restart connection helper** (restarts the helper this installer uses, then rescan; stay on this node if it fails), **Install Quest USB support** / **Get Quest USB support**, **Open USB support page**. After USB helper opens or installs, **I installed it** confirms.
 - In-page: family picker (Quest vs phone); numbered steps; **I installed it** after USB helper actions.
 - Secondary: **Send a report** (helper footer). Opens a window asking for the email of the person who asked them to test, then opens their email app with the report attached. Includes `session-log.txt`. They still press Send in the email app.

@@ -149,6 +149,7 @@ public sealed partial class ShellViewModel : ObservableObject
         ApplyState();
         _monitor.DevicesChanged += OnDevicesChanged;
         _ = CheckForUpdateAsync();
+        _ = _monitor.StartAsync();
     }
 
     private ReadyToInstallPageViewModel ChoosePage =>
@@ -284,8 +285,12 @@ public sealed partial class ShellViewModel : ObservableObject
         switch (State.CurrentStep)
         {
             case WizardStep.Welcome:
-                await _monitor.StartAsync();
-                Advance(WizardTrigger.Start);
+                var seen = _monitor.CurrentDevices;
+                Advance(
+                    WizardTrigger.Start,
+                    _devices.SelectPrimary(seen),
+                    readyDevices: seen,
+                    health: seen.Count > 0 ? _health.Snapshot(seen) : null);
                 break;
             case WizardStep.ConnectDevice:
                 await ContinueFromConnectAsync();

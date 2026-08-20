@@ -15,7 +15,7 @@
             <Border Style="{StaticResource AccentCard}" Padding="10">
                 <StackPanel>
                     <TextBlock Text="QUEST" Style="{StaticResource Eyebrow}"/>
-                    <TextBlock Text="Quest 2 or Quest 3" Style="{StaticResource H2}" Margin="0,4,0,8"/>
+                    <TextBlock Text="Quest 2, 3, 3S, or Pro" Style="{StaticResource H2}" Margin="0,4,0,8"/>
                     <Button Content="This is a Quest"
                             Style="{StaticResource SecondaryPill}"
                             Command="{Binding ChooseQuestCommand}"

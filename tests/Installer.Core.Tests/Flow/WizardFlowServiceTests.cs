@@ -23,21 +23,52 @@ public sealed class WizardFlowServiceTests
     }
 
     [Fact]
-    public void Connect_copy_offers_usb_and_wifi()
+    public void Connect_copy_offers_usb_first()
     {
         var state = _flow.CreateInitialState(InstallManifest.Session);
         state = _flow.Advance(state, WizardTrigger.Start);
         Assert.Equal(WizardStep.ConnectDevice, state.CurrentStep);
         Assert.Contains("USB", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("I connected it", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Wi-Fi", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Quest 2", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Choose apps", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Quest 3S", state.Copy.Help, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("Quest Pro", state.Copy.Help, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void Start_with_ready_device_skips_to_choose_apps()
+    {
+        var quest = Quest(DeviceConnectionState.ConnectedReady);
+        var state = _flow.CreateInitialState(InstallManifest.Session);
+        state = _flow.Advance(state, WizardTrigger.Start, quest, readyDevices: [quest]);
+        Assert.Equal(WizardStep.ReadyToInstall, state.CurrentStep);
+    }
+
+    [Fact]
+    public void Start_with_unauthorized_device_skips_to_authorization()
+    {
+        var quest = Quest(DeviceConnectionState.Unauthorized);
+        var state = _flow.CreateInitialState(InstallManifest.Session);
+        state = _flow.Advance(state, WizardTrigger.Start, quest, readyDevices: [quest]);
+        Assert.Equal(WizardStep.Authorization, state.CurrentStep);
+    }
+
+    [Fact]
+    public void Connect_one_device_skips_detected()
+    {
+        var quest = Quest(DeviceConnectionState.ConnectedReady);
+        var state = _flow.CreateInitialState(InstallManifest.Session);
+        state = _flow.Advance(state, WizardTrigger.Start);
+        Assert.Equal(WizardStep.ConnectDevice, state.CurrentStep);
+        state = _flow.Advance(state, WizardTrigger.DeviceRefresh, quest, readyDevices: [quest]);
+        Assert.Equal(WizardStep.ReadyToInstall, state.CurrentStep);
     }
 
     [Fact]
     public void Quest_unauthorized_goes_to_authorization()
     {
         var state = Detected(Quest(DeviceConnectionState.Unauthorized));
-        state = _flow.Advance(state, WizardTrigger.Continue, state.Device);
         Assert.Equal(WizardStep.Authorization, state.CurrentStep);
         Assert.Contains("headset", state.Copy.Headline, StringComparison.OrdinalIgnoreCase);
     }
@@ -46,7 +77,6 @@ public sealed class WizardFlowServiceTests
     public void Quest_authorized_but_not_ready_goes_to_developer_mode()
     {
         var state = Detected(Quest(DeviceConnectionState.Offline));
-        state = _flow.Advance(state, WizardTrigger.Continue, state.Device);
         Assert.Equal(WizardStep.DeveloperMode, state.CurrentStep);
     }
 
@@ -54,7 +84,6 @@ public sealed class WizardFlowServiceTests
     public void Quest_ready_goes_to_ready_to_install()
     {
         var state = Detected(Quest(DeviceConnectionState.ConnectedReady));
-        state = _flow.Advance(state, WizardTrigger.Continue, state.Device);
         Assert.Equal(WizardStep.ReadyToInstall, state.CurrentStep);
         Assert.Contains("Choose apps", state.Copy.Headline, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Wi-Fi", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
@@ -64,7 +93,6 @@ public sealed class WizardFlowServiceTests
     public void Android_unauthorized_goes_to_authorization()
     {
         var state = Detected(Phone(DeviceConnectionState.Unauthorized));
-        state = _flow.Advance(state, WizardTrigger.Continue, state.Device);
         Assert.Equal(WizardStep.Authorization, state.CurrentStep);
         Assert.Contains("phone", state.Copy.Headline, StringComparison.OrdinalIgnoreCase);
     }
@@ -73,7 +101,6 @@ public sealed class WizardFlowServiceTests
     public void Android_ready_goes_to_ready_to_install()
     {
         var state = Detected(Phone(DeviceConnectionState.ConnectedReady));
-        state = _flow.Advance(state, WizardTrigger.Continue, state.Device);
         Assert.Equal(WizardStep.ReadyToInstall, state.CurrentStep);
         Assert.Contains("Choose apps", state.Copy.Headline, StringComparison.OrdinalIgnoreCase);
     }
@@ -134,7 +161,6 @@ public sealed class WizardFlowServiceTests
             true,
             new Dictionary<string, string>());
         var state = Detected(device);
-        state = _flow.Advance(state, WizardTrigger.Continue, device);
         Assert.Equal(WizardStep.ReadyToInstall, state.CurrentStep);
         Assert.Contains("over Wi-Fi", state.Copy.Body, StringComparison.OrdinalIgnoreCase);
     }
@@ -160,7 +186,6 @@ public sealed class WizardFlowServiceTests
         var quest = Quest(DeviceConnectionState.ConnectedReady);
         var state = Detected(quest);
         Assert.False(state.NeedsDevicePicker);
-        state = _flow.Advance(state, WizardTrigger.Continue, quest, readyDevices: [quest]);
         Assert.Equal(WizardStep.ReadyToInstall, state.CurrentStep);
     }
 
@@ -169,7 +194,6 @@ public sealed class WizardFlowServiceTests
     {
         var quest = Quest(DeviceConnectionState.ConnectedReady);
         var state = Detected(quest);
-        state = _flow.Advance(state, WizardTrigger.Continue, quest, readyDevices: [quest]);
         state = _flow.Advance(state, WizardTrigger.OpenInstalledApps, quest, readyDevices: [quest]);
         Assert.Equal(WizardStep.InstalledApps, state.CurrentStep);
         Assert.Equal(WizardStep.ReadyToInstall, state.ReturnStep);
@@ -185,7 +209,6 @@ public sealed class WizardFlowServiceTests
     {
         var quest = Quest(DeviceConnectionState.ConnectedReady);
         var state = Detected(quest);
-        state = _flow.Advance(state, WizardTrigger.Continue, quest, readyDevices: [quest]);
         state = _flow.Advance(state, WizardTrigger.OpenInstalledApps, quest, readyDevices: [quest]);
         state = _flow.Advance(state, WizardTrigger.DeviceRefresh, null, readyDevices: []);
         Assert.Equal(WizardStep.ConnectDevice, state.CurrentStep);

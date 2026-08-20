@@ -11,6 +11,7 @@ public sealed class TroubleshootingService : ITroubleshootingService
         TroubleshootNode.PickDevice,
         TroubleshootNode.CableAndPort,
         TroubleshootNode.WearHeadset,
+        TroubleshootNode.DeveloperAccount,
         TroubleshootNode.DeveloperMode,
         TroubleshootNode.MtpNotification,
         TroubleshootNode.AllowComputer,
@@ -27,6 +28,7 @@ public sealed class TroubleshootingService : ITroubleshootingService
         TroubleshootNode.CableAndPort,
         TroubleshootNode.PhoneUnlock,
         TroubleshootNode.PhoneUsbMode,
+        TroubleshootNode.PhoneAutoBlocker,
         TroubleshootNode.PhoneDebugging,
         TroubleshootNode.PhoneAllow,
         TroubleshootNode.PhoneOemDriver,
@@ -142,6 +144,11 @@ public sealed class TroubleshootingService : ITroubleshootingService
                 return TroubleshootNode.UsbHelper;
             }
 
+            if (evidence.CompetingAdbProcess)
+            {
+                return TroubleshootNode.RestartHelper;
+            }
+
             if (evidence.QuestUsbPresent && !evidence.AdbInterfacePresent)
             {
                 return TroubleshootNode.WearHeadset;
@@ -172,9 +179,9 @@ public sealed class TroubleshootingService : ITroubleshootingService
         IReadOnlyList<DeviceInfo> devices,
         IReadOnlyList<TroubleshootNode> history)
     {
-        if (family != TroubleshootFamily.Unknown && ShouldSkip(node, family, evidence))
+        if (family != TroubleshootFamily.Unknown && ShouldSkip(node, family, evidence, device))
         {
-            node = NextNode(family, node, evidence);
+            node = NextNode(family, node, evidence, device);
         }
 
         var looksLikeQuest = family == TroubleshootFamily.AndroidPhone && evidence.QuestUsbPresent;
@@ -205,9 +212,13 @@ public sealed class TroubleshootingService : ITroubleshootingService
     }
 
     private TroubleshootNode NextNode(TroubleshootSession session) =>
-        NextNode(session.Family, session.CurrentNode, session.Evidence);
+        NextNode(session.Family, session.CurrentNode, session.Evidence, session.Device);
 
-    private static TroubleshootNode NextNode(TroubleshootFamily family, TroubleshootNode current, UsbEvidence evidence)
+    private static TroubleshootNode NextNode(
+        TroubleshootFamily family,
+        TroubleshootNode current,
+        UsbEvidence evidence,
+        DeviceInfo? device)
     {
         var sequence = Sequence(family);
         var index = sequence.ToList().IndexOf(current);
@@ -218,7 +229,7 @@ public sealed class TroubleshootingService : ITroubleshootingService
 
         for (var i = index + 1; i < sequence.Count; i++)
         {
-            if (!ShouldSkip(sequence[i], family, evidence))
+            if (!ShouldSkip(sequence[i], family, evidence, device))
             {
                 return sequence[i];
             }
@@ -227,7 +238,7 @@ public sealed class TroubleshootingService : ITroubleshootingService
         return TroubleshootNode.StillStuck;
     }
 
-    private static bool ShouldSkip(TroubleshootNode node, TroubleshootFamily family, UsbEvidence evidence)
+    private static bool ShouldSkip(TroubleshootNode node, TroubleshootFamily family, UsbEvidence evidence, DeviceInfo? device)
     {
         if (node == TroubleshootNode.PickDevice)
         {
@@ -244,6 +255,16 @@ public sealed class TroubleshootingService : ITroubleshootingService
         if (node == TroubleshootNode.UsbHelper)
         {
             return !evidence.AdbDriverMissing;
+        }
+
+        if (node == TroubleshootNode.DeveloperAccount)
+        {
+            return evidence.QuestUsbPresent || evidence.AndroidUsbPresent || evidence.AdbInterfacePresent;
+        }
+
+        if (node == TroubleshootNode.PhoneAutoBlocker)
+        {
+            return !IsSamsung(device);
         }
 
         return false;
@@ -269,6 +290,14 @@ public sealed class TroubleshootingService : ITroubleshootingService
 
     private static bool HasUnauthorized(IReadOnlyList<DeviceInfo> devices) =>
         devices.Any(d => d.State == DeviceConnectionState.Unauthorized);
+
+    private static bool IsSamsung(DeviceInfo? device) =>
+        Contains(device?.Manufacturer, "samsung")
+        || Contains(device?.Model, "SM-")
+        || Contains(device?.Model, "Galaxy");
+
+    private static bool Contains(string? value, string needle) =>
+        !string.IsNullOrEmpty(value) && value.Contains(needle, StringComparison.OrdinalIgnoreCase);
 
     private static TroubleshootNode AllowNode(TroubleshootFamily family) =>
         family == TroubleshootFamily.AndroidPhone ? TroubleshootNode.PhoneAllow : TroubleshootNode.AllowComputer;

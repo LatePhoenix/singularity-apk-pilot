@@ -53,13 +53,13 @@ public sealed class CopyDeckService : IContentService
                 "Install apps on your device",
                 "Connect a headset or phone first. A USB-C data cable is the usual first step. After the device has approved this computer, you can switch to Wi-Fi and unplug. Then choose the APK files to install.",
                 "Start",
-                "You will plug in the device, approve a permission if asked, then pick one or more APK files. Wi-Fi setup for Quest 2 and Quest 3 is on the next screen. Privacy and Terms open from the header. Send a report is available if something goes wrong.",
+                "You will plug in the device, approve a permission if asked, then pick one or more APK files. Wi-Fi setup for Quest 2, Quest 3, Quest 3S, or Quest Pro is later, after the device has approved this computer. Privacy and Terms open from the header. Send a report is available if something goes wrong.",
                 "No app is bundled. APK files are chosen after the device is connected."),
             WizardStep.ConnectDevice => new WizardCopy(
                 "Connect your device",
-                "Plug in with a USB-C data cable, then tap I connected it. Or connect over Wi-Fi using the Quest 2 / Quest 3 steps below.",
+                "Plug in with a USB-C data cable, then tap I connected it. You can switch to Wi-Fi later on Choose apps.",
                 "I connected it",
-                AppendHealth("Charge-only cables will not work. The cable that ships with Quest is often charge-only. Try another USB-C data cable and a USB port on the computer, not a hub. For Wi-Fi, the headset and this computer must be on the same network. Pairing codes expire quickly. After a headset reboot, plug in with USB once more unless you pair again.", healthHint),
+                AppendHealth("Charge-only cables will not work. The cable that ships with Quest is often charge-only. Try another USB-C data cable and a USB port on the computer, not a hub. Quest 2, Quest 3, Quest 3S, and Quest Pro use the same cable-first path. For Wi-Fi, the headset and this computer must be on the same network. Pairing codes expire quickly and are only if you already have one. After a headset reboot, plug in with USB once more unless you pair again.", healthHint),
                 "Waiting for a connected device."),
             WizardStep.DeviceDetected => new WizardCopy(
                 $"{model} detected",
@@ -71,15 +71,15 @@ public sealed class CopyDeckService : IContentService
                 $"Manufacturer: {device?.Manufacturer}; Android: {device?.AndroidVersion}"),
             WizardStep.Authorization when quest => new WizardCopy(
                 "Put on your headset now",
-                "A permission message is waiting inside the headset. Select Always allow from this computer, then choose Allow.",
+                "A permission message is waiting inside the headset. You may see two messages. Allow USB debugging and Always allow from this computer — not only the files message. Keep the headset on your head, or cover the sensor, so it does not sleep.",
                 "I allowed it",
-                "The headset must be on your head, awake, and showing the USB debugging prompt. If you already dismissed it, unplug and plug the cable back in.",
+                "You do not have to rush back. This installer notices when the device allows this computer. I allowed it checks now. If you already dismissed the message, unplug and plug the cable back in.",
                 "Connection state: unauthorized"),
             WizardStep.Authorization => new WizardCopy(
                 "Unlock your phone and allow this computer",
                 "Look for a USB debugging prompt on the phone. Check Always allow from this computer, then tap Allow.",
                 "I allowed it",
-                "Unlock the phone first. If no prompt appears, unplug, plug back in, and set USB mode to File transfer / MTP if the phone asks.",
+                "You do not have to rush back. This installer notices when the phone allows this computer. Unlock the phone first. If no prompt appears, unplug, plug back in, and set USB mode to File transfer / MTP if the phone asks.",
                 "Connection state: unauthorized"),
             WizardStep.DeveloperMode => new WizardCopy(
                 "Turn on developer mode",

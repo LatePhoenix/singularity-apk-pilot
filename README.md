@@ -6,7 +6,7 @@
 
 **⬇️ [Download APK Pilot](https://github.com/LatePhoenix/singularity-apk-pilot/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe)** — that link always serves the latest GitHub Release asset (`SingularityApkInstaller-win-x64-setup.exe`).
 
-Windows guided installer for non-technical testers. Plug in a Meta Quest 2/3 or Android phone, follow one highlighted action per screen, then choose APK files to install with portable `adb`. After the device has approved this computer, you can switch to Wi-Fi and unplug. **Installed apps** lists third-party apps so you can remove one at a time.
+Windows guided installer for non-technical testers. Plug in a Meta Quest 2, Quest 3, Quest 3S, Quest Pro, or Android phone. **Pilot** tells you what to do next. Follow the green button, then choose APK files to install. After the device has approved this computer, you can switch to Wi-Fi and unplug. **Installed apps** lists third-party apps so you can remove one at a time.
 
 > Part of the [Singularity](https://github.com/LatePhoenix/singularity-hub) app family.
 
@@ -14,11 +14,11 @@ Windows guided installer for non-technical testers. Plug in a Meta Quest 2/3 or 
 
 1. Get **`SingularityApkInstaller-win-x64-setup.exe`** from [Releases](https://github.com/LatePhoenix/singularity-apk-pilot/releases/latest) (or the button above).
 2. Run the setup wizard. No separate .NET install is required (self-contained win-x64).
-3. Launch **APK Pilot** from the Start menu, plug in the device, then choose the APK files to install.
+3. Launch **APK Pilot** from the Start menu, plug in the device, then choose the APK files to install. Pilot stays on the right and says the next step.
 
 The installer is unsigned unless `pack.ps1` is run with a code-signing certificate configured. Windows SmartScreen may warn on first run of an unsigned build. Choose **More info** → **Run anyway**.
 
-**v0.5.1** opens **Need help connecting?** in a compact helper window, makes **Restart connection helper** actually restart the helper, and tightens the wizard so footer actions stay on screen. **v0.5.0** renames the product to **APK Pilot**. **v0.4.0** adds Quest Wi-Fi setup on Connect, **Switch to Wi-Fi** after USB approval, and **Installed apps** so testers can remove a third-party app one at a time. It still ships portable `adb` only — no bundled test app. See [`docs/SUPPORT_RUNBOOK.md`](docs/SUPPORT_RUNBOOK.md).
+**v0.6.0** adds **Pilot** (always-on next-step helper), skips extra Detected screens when one device is connected, walks Meta developer account / two headset prompts / Samsung Auto Blocker, and names Quest 3S and Quest Pro. **v0.5.1** opens **Need help connecting?** in a compact helper window. **v0.5.0** renames the product to **APK Pilot**. **v0.4.0** adds Quest Wi-Fi setup on Connect, **Switch to Wi-Fi** after USB approval, and **Installed apps**. It still does not ship a bundled test app. See [`docs/SUPPORT_RUNBOOK.md`](docs/SUPPORT_RUNBOOK.md).
 
 ## Legal
 
@@ -31,10 +31,10 @@ The installer is unsigned unless `pack.ps1` is run with a code-signing certifica
 
 - Windows 10/11 x64
 - USB-C **data** cable (the cable in the Quest box is not suitable)
-- Oculus ADB Drivers for Quest on Windows
-- For Quest: Developer Mode in the Meta Horizon app, then **Always allow from this computer** in-headset
-- If the device is not detected, **Need help connecting?** walks Quest and phone setup, including Meta’s USB helper on Windows
-- Optional Wi-Fi: after that approval, **Switch to Wi-Fi** on Choose apps; later sessions use **Connect over Wi-Fi**. Headset and PC must be on the same network.
+- Quest USB support on Windows (the helper can install it or open Meta’s page)
+- For Quest: Developer Mode in the Meta Horizon app, then **Always allow from this computer** in-headset (there may be two messages; keep the headset on)
+- If the device is not detected, **Need help connecting?** walks Quest and phone setup, including Meta’s USB helper on Windows and Samsung Auto Blocker
+- Optional Wi-Fi: after that approval, **Switch to Wi-Fi** on Choose apps; later sessions use **Connect over Wi-Fi**. Headset and PC must be on the same network. Turn off VPN. Guest networks will not work.
 
 ## Build from source
 
