@@ -7,7 +7,7 @@
     <UserControl.Resources>
         <SolidColorBrush x:Key="AvatarStroke" Color="#2FA8C8"/>
         <Style x:Key="Mark" TargetType="Shape">
-            <Setter Property="Stroke" Value="{StaticResource AvatarStroke}"/>
+            <Setter Property="Stroke" Value="{DynamicResource AvatarStroke}"/>
             <Setter Property="StrokeThickness" Value="2.25"/>
             <Setter Property="Fill" Value="Transparent"/>
             <Setter Property="StrokeStartLineCap" Value="Round"/>

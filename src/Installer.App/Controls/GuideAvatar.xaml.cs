@@ -31,20 +31,18 @@ public partial class GuideAvatar : UserControl
 
     private void ApplyMood()
     {
-        if (Resources["AvatarStroke"] is not SolidColorBrush stroke)
-        {
-            return;
-        }
-
         var key = Mood switch
         {
             "Warn" => "WarningTextBrush",
             "Done" => "AccentGreenBrush",
             _ => "BrandCyanBrush"
         };
+        var color = Color.FromRgb(0x2F, 0xA8, 0xC8);
         if (TryFindResource(key) is SolidColorBrush source)
         {
-            stroke.Color = source.Color;
+            color = source.Color;
         }
+
+        Resources["AvatarStroke"] = new SolidColorBrush(color);
     }
 }
