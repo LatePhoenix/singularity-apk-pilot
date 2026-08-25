@@ -40,9 +40,17 @@ public sealed class WizardFlowService : IWizardFlowService
         var activeDevice = readyDevices is not null ? device : device ?? state.Device;
         var ready = readyDevices ?? state.ReadyDevices;
         var connectAttempts = state.ConnectAttempts;
-        if (trigger is WizardTrigger.Continue or WizardTrigger.ConfirmAuthorization or WizardTrigger.ConfirmDeveloperMode or WizardTrigger.DeviceRefresh
-            && state.CurrentStep == WizardStep.ConnectDevice
-            && (activeDevice is null || activeDevice.State == DeviceConnectionState.NotConnected))
+        var userFailedGate = trigger is WizardTrigger.Continue or WizardTrigger.ConfirmAuthorization or WizardTrigger.ConfirmDeveloperMode
+                             && state.CurrentStep is WizardStep.ConnectDevice or WizardStep.Authorization or WizardStep.DeveloperMode
+                             && (activeDevice is null
+                                 || activeDevice.State is DeviceConnectionState.NotConnected
+                                     or DeviceConnectionState.Unauthorized
+                                     or DeviceConnectionState.Offline);
+        var monitorFailedConnect = trigger == WizardTrigger.DeviceRefresh
+                                   && !state.HoldStep
+                                   && state.CurrentStep == WizardStep.ConnectDevice
+                                   && (activeDevice is null || activeDevice.State == DeviceConnectionState.NotConnected);
+        if (userFailedGate || monitorFailedConnect)
         {
             connectAttempts++;
         }
@@ -50,6 +58,11 @@ public sealed class WizardFlowService : IWizardFlowService
         var developerLikely = state.DeveloperModeLikelyRequired
                               || connectAttempts >= 2
                               || (activeDevice?.Kind == DeviceKind.MetaQuest && activeDevice.State == DeviceConnectionState.Offline);
+        if (trigger is WizardTrigger.StartOver or WizardTrigger.Done)
+        {
+            connectAttempts = 0;
+            developerLikely = false;
+        }
 
         var nextStep = _engine.Decide(
             state with { ConnectAttempts = connectAttempts, DeveloperModeLikelyRequired = developerLikely, Device = activeDevice, ReadyDevices = ready },
@@ -92,7 +105,9 @@ public sealed class WizardFlowService : IWizardFlowService
             health,
             troubleshoot);
 
-        var result = installResult ?? state.LastInstallResult;
+        var result = trigger is WizardTrigger.StartOver or WizardTrigger.Done
+            ? null
+            : installResult ?? state.LastInstallResult;
         var actions = result is { Success: false, Error: not null }
             ? _recovery.Suggest(result.Error.Value, state.Manifest)
             : Array.Empty<RecoveryAction>();
@@ -107,6 +122,14 @@ public sealed class WizardFlowService : IWizardFlowService
         }
 
         var copy = _copy.GetCopy(nextStep, state.Manifest, activeDevice, result?.Error, health ?? state.Health, session);
+        if (nextStep == WizardStep.InstallProblem)
+        {
+            var primary = actions.FirstOrDefault(action => action.Kind != RecoveryActionKind.ExportDiagnostics);
+            if (primary is not null)
+            {
+                copy = copy with { PrimaryAction = primary.Title };
+            }
+        }
         var busy = nextStep == WizardStep.Installing;
         var status = nextStep switch
         {
@@ -114,6 +137,8 @@ public sealed class WizardFlowService : IWizardFlowService
             WizardStep.Complete => "Installed",
             _ => null
         };
+        var hold = trigger is WizardTrigger.Back or WizardTrigger.StartOver
+                   || (state.HoldStep && trigger == WizardTrigger.DeviceRefresh);
 
         return new WizardState(
             nextStep,
@@ -129,7 +154,8 @@ public sealed class WizardFlowService : IWizardFlowService
             ready,
             health ?? state.Health,
             returnStep,
-            session);
+            session,
+            hold);
     }
 
     private TroubleshootSession? ResolveSession(

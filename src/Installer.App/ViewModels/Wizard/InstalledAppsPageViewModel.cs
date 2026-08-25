@@ -49,6 +49,9 @@ public sealed partial class InstalledAppsPageViewModel : WizardPageViewModel
     private bool isBusy;
 
     [ObservableProperty]
+    private bool needsConnectionHelp;
+
+    [ObservableProperty]
     private string searchText = "";
 
     [ObservableProperty]
@@ -99,7 +102,14 @@ public sealed partial class InstalledAppsPageViewModel : WizardPageViewModel
     {
         _all = apps.Select(app => new InstalledAppRow(app)).ToList();
         IsLoading = false;
+        NeedsConnectionHelp = false;
         ApplyFilter();
+    }
+
+    public void SetConnectionError(string message)
+    {
+        ErrorMessage = message;
+        NeedsConnectionHelp = true;
     }
 
     public void MergeEnrichment(IReadOnlyList<InstalledApp> enriched)
@@ -142,12 +152,14 @@ public sealed partial class InstalledAppsPageViewModel : WizardPageViewModel
             PendingRemove = null;
             StatusMessage = "Removed.";
             ErrorMessage = "";
+            NeedsConnectionHelp = false;
             ApplyFilter();
             return;
         }
 
         StatusMessage = "";
         ErrorMessage = result.Message;
+        NeedsConnectionHelp = InstallProblems.NeedsConnectionHelp(result.Error);
     }
 
     public void CancelBusy()
@@ -184,6 +196,7 @@ public sealed partial class InstalledAppsPageViewModel : WizardPageViewModel
         IsLoading = true;
         ErrorMessage = "";
         StatusMessage = "";
+        NeedsConnectionHelp = false;
         RefreshRequested?.Invoke();
     }
 

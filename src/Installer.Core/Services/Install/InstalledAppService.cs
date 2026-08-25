@@ -2,6 +2,8 @@ using Installer.Core.Abstractions;
 using Installer.Core.Models;
 using Installer.Core.Services.Adb;
 using Installer.Core.Services.Packages;
+using Installer.Core.Services.Recovery;
+using Installer.Core.Services.Support;
 using Installer.Core.Utilities;
 
 namespace Installer.Core.Services.Install;
@@ -10,12 +12,21 @@ public sealed class InstalledAppService : IInstalledAppService
 {
     private readonly IAdbClient _adb;
     private readonly AdbOutputParser _parser;
+    private readonly ErrorClassifier _classifier;
+    private readonly FriendlyMessageService _messages;
     private readonly IAppLogger _logger;
 
-    public InstalledAppService(IAdbClient adb, AdbOutputParser parser, IAppLogger logger)
+    public InstalledAppService(
+        IAdbClient adb,
+        AdbOutputParser parser,
+        ErrorClassifier classifier,
+        FriendlyMessageService messages,
+        IAppLogger logger)
     {
         _adb = adb;
         _parser = parser;
+        _classifier = classifier;
+        _messages = messages;
         _logger = logger;
     }
 
@@ -71,19 +82,13 @@ public sealed class InstalledAppService : IInstalledAppService
             if (!_parser.IsUninstallSuccess(output) && !removed.Succeeded)
             {
                 _logger.Warn($"uninstall failed: {output}");
-                return UninstallResult.Failed(
-                    packageId,
-                    "Could not remove this app. Keep the device awake and try again.",
-                    output);
+                return FailUninstall(packageId, output);
             }
 
             var stillThere = await _adb.IsPackageInstalledAsync(serial, packageId, cancellationToken);
             if (stillThere)
             {
-                return UninstallResult.Failed(
-                    packageId,
-                    "The app is still on the device. Try again, or remove it from headset settings.",
-                    output);
+                return FailUninstall(packageId, output, "The app is still on the device. Try again, or remove it from headset settings.");
             }
 
             return UninstallResult.Ok(packageId);
@@ -95,8 +100,22 @@ public sealed class InstalledAppService : IInstalledAppService
         catch (Exception ex)
         {
             _logger.Error("Uninstall threw.", ex);
-            return UninstallResult.Failed(packageId, "Could not remove this app.", ex.Message);
+            return FailUninstall(packageId, ex.Message);
         }
+    }
+
+    private UninstallResult FailUninstall(string packageId, string? raw, string? fallback = null)
+    {
+        var error = _classifier.Classify(raw);
+        if (!InstallProblems.NeedsConnectionHelp(error) && error is not InstallError.UninstallFailed)
+        {
+            error = InstallError.UninstallFailed;
+        }
+
+        var message = InstallProblems.NeedsConnectionHelp(error)
+            ? _messages.CauseFor(error) + " Then try again."
+            : fallback ?? "Could not remove this app. Keep the device awake and try again.";
+        return UninstallResult.Failed(packageId, message, raw, error);
     }
 
     public async Task<InstalledApp> EnrichAsync(string serial, InstalledApp app, CancellationToken cancellationToken = default)

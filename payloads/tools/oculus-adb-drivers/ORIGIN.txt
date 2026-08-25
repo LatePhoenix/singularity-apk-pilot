@@ -1,0 +1,9 @@
+Oculus ADB Drivers 2.0 (Meta, 2019-09-04)
+
+Official Quest USB package used so testers can install USB support from
+Need help connecting, with one Windows permission prompt.
+
+Source: https://developers.meta.com/horizon/downloads/package/oculus-adb-drivers/
+
+Do not edit these files. Meta still documents this package for Quest 2, Quest 3,
+Quest 3S, and Quest Pro. Phone OEM USB installers are not bundled.

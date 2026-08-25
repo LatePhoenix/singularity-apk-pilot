@@ -14,7 +14,8 @@ public sealed record WizardState(
     IReadOnlyList<DeviceInfo>? ReadyDevices = null,
     DeviceHealth? Health = null,
     WizardStep? ReturnStep = null,
-    TroubleshootSession? Troubleshoot = null)
+    TroubleshootSession? Troubleshoot = null,
+    bool HoldStep = false)
 {
     public IReadOnlyList<DeviceInfo> Ready => ReadyDevices ?? [];
 

@@ -114,7 +114,7 @@ public sealed partial class ShellViewModel : ObservableObject
         ConnectPage.BindEndpoint(_wireless.LastEndpoint);
         CompletePage.OpenRequested += () => _ = OpenOnDeviceAsync();
         CompletePage.OpenInstalledAppsRequested += OpenInstalledApps;
-        ProblemPage.PolicyRetryRequested += policy => _ = RetryWithPolicyAsync(policy);
+        ProblemPage.ActionRequested += action => _ = ApplyRecoveryAsync(action);
         AppsPage.RefreshRequested += () => _ = LoadInstalledAppsAsync();
         AppsPage.UninstallRequested += packageId => _ = UninstallAppAsync(packageId);
         AppsPage.CancelUninstallRequested += CancelUninstall;
@@ -226,7 +226,24 @@ public sealed partial class ShellViewModel : ObservableObject
         State.CurrentStep is WizardStep.ConnectDevice
             or WizardStep.Authorization
             or WizardStep.DeveloperMode
-        || (State.CurrentStep == WizardStep.InstallProblem && IsConnectionFailure(State.LastInstallResult?.Error));
+        || (State.CurrentStep == WizardStep.InstallProblem && InstallProblems.NeedsConnectionHelp(State.LastInstallResult?.Error))
+        || (State.CurrentStep == WizardStep.InstalledApps && AppsPage.NeedsConnectionHelp);
+
+    public bool ShowGoBack =>
+        State.CurrentStep is WizardStep.ConnectDevice
+            or WizardStep.DeviceDetected
+            or WizardStep.Authorization
+            or WizardStep.DeveloperMode
+            or WizardStep.ReadyToInstall
+            or WizardStep.InstallProblem
+            or WizardStep.Complete;
+
+    public bool ShowStartOver =>
+        State.CurrentStep is not WizardStep.Welcome
+            and not WizardStep.ConnectDevice
+            and not WizardStep.Installing
+            and not WizardStep.Troubleshoot
+        && !AppsPage.IsBusy;
 
     public bool ShowPrimary =>
         State.CurrentStep != WizardStep.Installing
@@ -280,6 +297,40 @@ public sealed partial class ShellViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void GoBack()
+    {
+        if (!ShowGoBack)
+        {
+            return;
+        }
+
+        PayloadWarning = "";
+        Advance(WizardTrigger.Back, State.Device, readyDevices: State.Ready, health: State.Health);
+    }
+
+    [RelayCommand]
+    private void StartOver()
+    {
+        if (!ShowStartOver)
+        {
+            return;
+        }
+
+        CancelUninstall();
+        _installCts?.Cancel();
+        ChoosePage.ClearFiles();
+        PayloadWarning = "";
+        DiagnosticsStatus = "";
+        var seen = _monitor.CurrentDevices;
+        State = State with { Manifest = Manifest };
+        Advance(
+            WizardTrigger.StartOver,
+            _devices.SelectPrimary(seen),
+            readyDevices: seen,
+            health: seen.Count > 0 ? _health.Snapshot(seen) : null);
+    }
+
+    [RelayCommand]
     private async Task PrimaryAsync()
     {
         switch (State.CurrentStep)
@@ -308,7 +359,14 @@ public sealed partial class ShellViewModel : ObservableObject
                 await InstallAsync();
                 break;
             case WizardStep.InstallProblem:
-                await AutoFixOrRetryAsync();
+                if (ProblemPage.PrimaryRecovery is not null)
+                {
+                    await ApplyRecoveryAsync(ProblemPage.PrimaryRecovery);
+                }
+                else
+                {
+                    await AutoFixOrRetryAsync();
+                }
                 break;
             case WizardStep.Complete:
                 ChoosePage.ClearFiles();
@@ -407,6 +465,77 @@ public sealed partial class ShellViewModel : ObservableObject
         var primary = _devices.SelectPrimary(detected) ?? State.Device;
         var health = _health.Snapshot(detected);
         Advance(WizardTrigger.OpenTroubleshoot, primary, readyDevices: detected, health: health);
+    }
+
+    private async Task ApplyRecoveryAsync(RecoveryAction action)
+    {
+        switch (action.Kind)
+        {
+            case RecoveryActionKind.ShowCableHelp:
+                await OpenTroubleshootAsync();
+                return;
+            case RecoveryActionKind.ShowAuthorization:
+            case RecoveryActionKind.ShowDeveloperMode:
+            case RecoveryActionKind.RetryDetection:
+                await ResumeSetupAsync();
+                return;
+            case RecoveryActionKind.RestartAdbServer:
+                try
+                {
+                    await _adb.RestartServerAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error("Connection helper restart failed.", ex);
+                }
+
+                await ResumeSetupAsync(retryInstallIfReady: true);
+                return;
+            case RecoveryActionKind.RetryInstall:
+                if (InstallProblems.NeedsConnectionHelp(State.LastInstallResult?.Error)
+                    || State.LastInstallResult?.Error is InstallError.MissingPayload or InstallError.MissingSplit)
+                {
+                    if (State.LastInstallResult?.Error is InstallError.MissingPayload or InstallError.MissingSplit)
+                    {
+                        Advance(WizardTrigger.Back, State.Device, readyDevices: State.Ready, health: State.Health);
+                        return;
+                    }
+
+                    await ResumeSetupAsync();
+                    return;
+                }
+
+                await AutoFixOrRetryAsync();
+                return;
+            case RecoveryActionKind.ExportDiagnostics:
+                await ExportDiagnosticsAsync();
+                return;
+        }
+
+        var policy = InstallProblems.PolicyFor(action.Kind);
+        if (policy is not null)
+        {
+            await RetryWithPolicyAsync(policy.Value);
+        }
+    }
+
+    private async Task ResumeSetupAsync(bool retryInstallIfReady = false)
+    {
+        var detected = await _devices.DetectAsync();
+        var primary = _devices.SelectPrimary(detected);
+        var health = detected.Count > 0 || primary is null ? _health.Snapshot(detected) : null;
+        if (retryInstallIfReady && primary is { State: DeviceConnectionState.ConnectedReady })
+        {
+            Advance(WizardTrigger.ResumeSetup, primary, readyDevices: detected, health: health);
+            if (State.CurrentStep == WizardStep.ReadyToInstall && ChoosePage.HasFiles)
+            {
+                await InstallAsync();
+            }
+
+            return;
+        }
+
+        Advance(WizardTrigger.ResumeSetup, primary, readyDevices: detected, health: health);
     }
 
     private async Task ContinueFromTroubleshootAsync()
@@ -527,10 +656,7 @@ public sealed partial class ShellViewModel : ObservableObject
     }
 
     private static bool IsConnectionFailure(InstallError? error) =>
-        error is InstallError.NoDevicesFound
-            or InstallError.OfflineDevice
-            or InstallError.CableOrUsbModeIssue
-            or InstallError.WirelessConnectFailed;
+        InstallProblems.NeedsConnectionHelp(error);
 
     private async Task InstallAsync()
     {
@@ -760,7 +886,7 @@ public sealed partial class ShellViewModel : ObservableObject
         if (State.Device is null)
         {
             AppsPage.IsLoading = false;
-            AppsPage.ErrorMessage = "No device is connected.";
+            AppsPage.SetConnectionError("No device is connected.");
             return;
         }
 
@@ -771,19 +897,22 @@ public sealed partial class ShellViewModel : ObservableObject
             if (!listed.IsSuccess || listed.Value is null)
             {
                 AppsPage.IsLoading = false;
-                AppsPage.ErrorMessage = listed.Error ?? "Could not read installed apps.";
+                AppsPage.SetConnectionError(listed.Error ?? "Could not read installed apps. Keep the device awake and try again.");
                 AppsPage.Bind([]);
+                NotifyChrome();
                 return;
             }
 
             AppsPage.Bind(listed.Value);
+            NotifyChrome();
             await EnrichVisibleAppsAsync();
         }
         catch (Exception ex)
         {
             _logger.Error("List installed apps failed.", ex);
             AppsPage.IsLoading = false;
-            AppsPage.ErrorMessage = "Could not read installed apps.";
+            AppsPage.SetConnectionError("Could not read installed apps. Keep the device awake and try again.");
+            NotifyChrome();
         }
     }
 
@@ -791,7 +920,8 @@ public sealed partial class ShellViewModel : ObservableObject
     {
         if (State.Device is null)
         {
-            AppsPage.ErrorMessage = "No device is connected.";
+            AppsPage.SetConnectionError("No device is connected.");
+            NotifyChrome();
             return;
         }
 
@@ -911,6 +1041,9 @@ public sealed partial class ShellViewModel : ObservableObject
         OnPropertyChanged(nameof(ShowCancel));
         OnPropertyChanged(nameof(CanPrimary));
         OnPropertyChanged(nameof(ShowSecondaryExport));
+        OnPropertyChanged(nameof(ShowNeedHelpConnecting));
+        OnPropertyChanged(nameof(ShowGoBack));
+        OnPropertyChanged(nameof(ShowStartOver));
     }
 
     private async Task CheckForUpdateAsync()
@@ -995,6 +1128,11 @@ public sealed partial class ShellViewModel : ObservableObject
                 return;
             }
 
+            if (State.HoldStep)
+            {
+                State = State with { HoldStep = false };
+            }
+
             Advance(WizardTrigger.DeviceRefresh, primary, readyDevices: detected);
         }
         catch (Exception ex)
@@ -1069,7 +1207,11 @@ public sealed partial class ShellViewModel : ObservableObject
         var primary = _devices.SelectPrimary(devices);
         if (primary is null)
         {
-            if (State.CurrentStep is WizardStep.ConnectDevice or WizardStep.Authorization or WizardStep.DeveloperMode)
+            if (State.CurrentStep is WizardStep.ConnectDevice
+                or WizardStep.Authorization
+                or WizardStep.DeveloperMode
+                or WizardStep.ReadyToInstall
+                or WizardStep.DeviceDetected)
             {
                 Advance(WizardTrigger.DeviceRefresh, null, readyDevices: devices, health: _health.Snapshot(devices));
             }
@@ -1112,6 +1254,8 @@ public sealed partial class ShellViewModel : ObservableObject
 
         OnPropertyChanged(nameof(ShowSecondaryExport));
         OnPropertyChanged(nameof(ShowNeedHelpConnecting));
+        OnPropertyChanged(nameof(ShowGoBack));
+        OnPropertyChanged(nameof(ShowStartOver));
         OnPropertyChanged(nameof(ShowPrimary));
         OnPropertyChanged(nameof(ShowHelperPrimary));
         OnPropertyChanged(nameof(ShowCancel));

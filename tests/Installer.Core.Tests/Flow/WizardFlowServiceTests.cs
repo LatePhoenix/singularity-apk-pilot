@@ -270,6 +270,131 @@ public sealed class WizardFlowServiceTests
         Assert.Equal(TroubleshootFamily.MetaQuest, state.Troubleshoot?.Family);
     }
 
+    [Fact]
+    public void Two_failed_authorization_opens_troubleshoot()
+    {
+        var quest = Quest(DeviceConnectionState.Unauthorized);
+        var state = Detected(quest);
+        Assert.Equal(WizardStep.Authorization, state.CurrentStep);
+        state = _flow.Advance(state, WizardTrigger.ConfirmAuthorization, quest, readyDevices: [quest]);
+        Assert.Equal(WizardStep.Authorization, state.CurrentStep);
+        state = _flow.Advance(state, WizardTrigger.ConfirmAuthorization, quest, readyDevices: [quest]);
+        Assert.Equal(WizardStep.Troubleshoot, state.CurrentStep);
+        Assert.Equal(TroubleshootNode.AllowComputer, state.Troubleshoot?.CurrentNode);
+    }
+
+    [Fact]
+    public void Install_unauthorized_primary_is_approve()
+    {
+        var quest = Quest(DeviceConnectionState.Unauthorized);
+        var state = _flow.CreateInitialState(InstallManifest.Placeholder);
+        state = _flow.Advance(state, WizardTrigger.Install, quest);
+        var failed = InstallResult.Failed(InstallError.UnauthorizedDevice, "error: device unauthorized", []);
+        state = _flow.Advance(state, WizardTrigger.InstallFinished, quest, failed);
+        Assert.Equal(WizardStep.InstallProblem, state.CurrentStep);
+        Assert.Equal("Approve this computer", state.Copy.PrimaryAction);
+    }
+
+    [Fact]
+    public void Resume_setup_from_problem_returns_to_authorization()
+    {
+        var quest = Quest(DeviceConnectionState.Unauthorized);
+        var state = _flow.CreateInitialState(InstallManifest.Placeholder);
+        state = _flow.Advance(state, WizardTrigger.Install, quest);
+        var failed = InstallResult.Failed(InstallError.UnauthorizedDevice, "error: device unauthorized", []);
+        state = _flow.Advance(state, WizardTrigger.InstallFinished, quest, failed);
+        Assert.Equal(WizardStep.InstallProblem, state.CurrentStep);
+        state = _flow.Advance(state, WizardTrigger.ResumeSetup, quest, readyDevices: [quest]);
+        Assert.Equal(WizardStep.Authorization, state.CurrentStep);
+    }
+
+    [Fact]
+    public void Back_from_connect_goes_to_welcome()
+    {
+        var state = _flow.CreateInitialState(InstallManifest.Session);
+        state = _flow.Advance(state, WizardTrigger.Start);
+        Assert.Equal(WizardStep.ConnectDevice, state.CurrentStep);
+        state = _flow.Advance(state, WizardTrigger.Back);
+        Assert.Equal(WizardStep.Welcome, state.CurrentStep);
+    }
+
+    [Fact]
+    public void Back_from_ready_stays_on_connect_until_continue()
+    {
+        var quest = Quest(DeviceConnectionState.ConnectedReady);
+        var state = Detected(quest);
+        Assert.Equal(WizardStep.ReadyToInstall, state.CurrentStep);
+        state = _flow.Advance(state, WizardTrigger.Back, quest, readyDevices: [quest]);
+        Assert.Equal(WizardStep.ConnectDevice, state.CurrentStep);
+        Assert.True(state.HoldStep);
+        state = _flow.Advance(state, WizardTrigger.DeviceRefresh, quest, readyDevices: [quest]);
+        Assert.Equal(WizardStep.ConnectDevice, state.CurrentStep);
+        state = _flow.Advance(state, WizardTrigger.Continue, quest, readyDevices: [quest]);
+        Assert.Equal(WizardStep.ReadyToInstall, state.CurrentStep);
+        Assert.False(state.HoldStep);
+    }
+
+    [Fact]
+    public void Back_from_complete_goes_to_ready()
+    {
+        var device = Quest(DeviceConnectionState.ConnectedReady);
+        var state = Detected(device);
+        state = _flow.Advance(state, WizardTrigger.Install, device);
+        var plan = new InstallPlan("com.singularity.exampleapp", "app.apk", ["-r"], false, true, false, InstallPolicy.ReinstallKeepData);
+        state = _flow.Advance(state, WizardTrigger.InstallFinished, device, InstallResult.Succeeded("0.9.3", "Success", plan));
+        Assert.Equal(WizardStep.Complete, state.CurrentStep);
+        state = _flow.Advance(state, WizardTrigger.Back, device, readyDevices: [device]);
+        Assert.Equal(WizardStep.ReadyToInstall, state.CurrentStep);
+    }
+
+    [Fact]
+    public void Back_from_problem_goes_to_ready()
+    {
+        var state = _flow.CreateInitialState(InstallManifest.Placeholder);
+        state = _flow.Advance(state, WizardTrigger.Install, Quest(DeviceConnectionState.ConnectedReady));
+        var failed = InstallResult.Failed(InstallError.VersionDowngrade, "Failure [INSTALL_FAILED_VERSION_DOWNGRADE]", []);
+        state = _flow.Advance(state, WizardTrigger.InstallFinished, state.Device, failed);
+        Assert.Equal(WizardStep.InstallProblem, state.CurrentStep);
+        state = _flow.Advance(state, WizardTrigger.Back, state.Device, readyDevices: [state.Device!]);
+        Assert.Equal(WizardStep.ReadyToInstall, state.CurrentStep);
+    }
+
+    [Fact]
+    public void Two_devices_back_from_ready_goes_to_picker()
+    {
+        var quest = Quest(DeviceConnectionState.ConnectedReady);
+        var phone = Phone(DeviceConnectionState.ConnectedReady);
+        var state = _flow.CreateInitialState(InstallManifest.Placeholder);
+        state = _flow.Advance(state, WizardTrigger.Start);
+        state = _flow.Advance(state, WizardTrigger.DeviceRefresh, quest, readyDevices: [quest, phone]);
+        Assert.Equal(WizardStep.DeviceDetected, state.CurrentStep);
+        state = _flow.Advance(state, WizardTrigger.Continue, quest, readyDevices: [quest, phone]);
+        Assert.Equal(WizardStep.ReadyToInstall, state.CurrentStep);
+        state = _flow.Advance(state, WizardTrigger.Back, quest, readyDevices: [quest, phone]);
+        Assert.Equal(WizardStep.DeviceDetected, state.CurrentStep);
+        Assert.True(state.HoldStep);
+        state = _flow.Advance(state, WizardTrigger.DeviceRefresh, quest, readyDevices: [quest, phone]);
+        Assert.Equal(WizardStep.DeviceDetected, state.CurrentStep);
+    }
+
+    [Fact]
+    public void StartOver_returns_to_connect_and_clears_install()
+    {
+        var device = Quest(DeviceConnectionState.ConnectedReady);
+        var state = Detected(device);
+        state = _flow.Advance(state, WizardTrigger.Install, device);
+        var plan = new InstallPlan("com.singularity.exampleapp", "app.apk", ["-r"], false, true, false, InstallPolicy.ReinstallKeepData);
+        state = _flow.Advance(state, WizardTrigger.InstallFinished, device, InstallResult.Succeeded("0.9.3", "Success", plan));
+        Assert.Equal(WizardStep.Complete, state.CurrentStep);
+        state = _flow.Advance(state, WizardTrigger.StartOver, device, readyDevices: [device]);
+        Assert.Equal(WizardStep.ConnectDevice, state.CurrentStep);
+        Assert.Null(state.LastInstallResult);
+        Assert.Equal(0, state.ConnectAttempts);
+        Assert.True(state.HoldStep);
+        state = _flow.Advance(state, WizardTrigger.DeviceRefresh, device, readyDevices: [device]);
+        Assert.Equal(WizardStep.ConnectDevice, state.CurrentStep);
+    }
+
     private WizardState Detected(DeviceInfo device)
     {
         var state = _flow.CreateInitialState(InstallManifest.Placeholder);

@@ -16,5 +16,8 @@ public enum WizardTrigger
     OpenInstalledApps = 11,
     CloseInstalledApps = 12,
     OpenTroubleshoot = 13,
-    CloseTroubleshoot = 14
+    CloseTroubleshoot = 14,
+    Back = 15,
+    StartOver = 16,
+    ResumeSetup = 17
 }

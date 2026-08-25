@@ -44,6 +44,13 @@ public sealed class RecoveryServiceTests
         Assert.Contains(actions, a => a.Kind == RecoveryActionKind.ReplaceExistingApp && a.Title.Contains("Replace", StringComparison.OrdinalIgnoreCase));
     }
 
+    [Fact]
+    public void Unauthorized_offers_approve_this_computer()
+    {
+        var actions = _sut.Suggest(InstallError.UnauthorizedDevice, InstallManifest.Placeholder);
+        Assert.Contains(actions, a => a.Kind == RecoveryActionKind.ShowAuthorization);
+    }
+
     private sealed class NoopAdb : IAdbClient
     {
         public Task StartServerAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;

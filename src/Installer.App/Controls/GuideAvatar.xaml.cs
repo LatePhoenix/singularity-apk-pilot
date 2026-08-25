@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Installer.App.Controls;
 
@@ -30,28 +31,20 @@ public partial class GuideAvatar : UserControl
 
     private void ApplyMood()
     {
-        if (CalmCanvas is null)
+        if (Resources["AvatarStroke"] is not SolidColorBrush stroke)
         {
             return;
         }
 
-        CalmCanvas.Visibility = VisibleIf("Calm");
-        WaitCanvas.Visibility = VisibleIf("Wait");
-        WorkCanvas.Visibility = VisibleIf("Work");
-        WarnCanvas.Visibility = VisibleIf("Warn");
-        DoneCanvas.Visibility = VisibleIf("Done");
-        if (CalmCanvas.Visibility == Visibility.Collapsed
-            && WaitCanvas.Visibility == Visibility.Collapsed
-            && WorkCanvas.Visibility == Visibility.Collapsed
-            && WarnCanvas.Visibility == Visibility.Collapsed
-            && DoneCanvas.Visibility == Visibility.Collapsed)
+        var key = Mood switch
         {
-            CalmCanvas.Visibility = Visibility.Visible;
+            "Warn" => "WarningTextBrush",
+            "Done" => "AccentGreenBrush",
+            _ => "BrandCyanBrush"
+        };
+        if (TryFindResource(key) is SolidColorBrush source)
+        {
+            stroke.Color = source.Color;
         }
     }
-
-    private Visibility VisibleIf(string mood) =>
-        string.Equals(Mood, mood, StringComparison.OrdinalIgnoreCase)
-            ? Visibility.Visible
-            : Visibility.Collapsed;
 }
