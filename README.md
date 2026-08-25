@@ -12,13 +12,13 @@ Windows guided installer for non-technical testers. Plug in a Meta Quest 2, Ques
 
 ## Download
 
-1. Get **`SingularityApkInstaller-win-x64-setup.exe`** from [Releases](https://github.com/LatePhoenix/singularity-apk-pilot/releases/latest) (or the button above). That stable name is always the current release (**v0.7.0** now).
+1. Get **`SingularityApkInstaller-win-x64-setup.exe`** from [Releases](https://github.com/LatePhoenix/singularity-apk-pilot/releases/latest) (or the button above). That stable name is always the current release (**v0.7.1** now).
 2. Run the setup wizard. No separate .NET install is required (self-contained win-x64).
 3. Launch **APK Pilot** from the Start menu, plug in the device, then choose the APK files to install. Pilot stays on the right and says the next step.
 
 The installer is unsigned unless `pack.ps1` is run with a code-signing certificate configured. Windows SmartScreen may warn on first run of an unsigned build. Choose **More info** → **Run anyway**.
 
-**v0.7.0** adds **Go Back** and **Start Over**, runs install-problem suggestions instead of a blind retry, opens connection help after a stuck headset Allow prompt, and ships Meta’s Quest USB drivers for **Install Quest USB support**. **v0.6.0** adds **Pilot**, skips extra Detected screens when one device is connected, and names Quest 3S and Quest Pro. See [`docs/SUPPORT_RUNBOOK.md`](docs/SUPPORT_RUNBOOK.md).
+**v0.7.1** fixes a launch crash in the Pilot mark (frozen WPF stroke). **v0.7.0** adds **Go Back** and **Start Over**, runs install-problem suggestions instead of a blind retry, opens connection help after a stuck headset Allow prompt, and ships Meta’s Quest USB drivers for **Install Quest USB support**. See [`docs/SUPPORT_RUNBOOK.md`](docs/SUPPORT_RUNBOOK.md).
 
 ## Legal
 
@@ -44,7 +44,7 @@ dotnet test SingularityTesterInstaller.sln
 powershell -ExecutionPolicy Bypass -File build\packaging\scripts\pack.ps1
 ```
 
-Requires .NET SDK 8.0.424 (`global.json`) and [Inno Setup 7](https://jrsoftware.org/isinfo.php). Output: `artifacts\installer\SingularityApkInstaller-0.7.0-win-x64-setup.exe` plus the stable `SingularityApkInstaller-win-x64-setup.exe` used by the download button above. Details: [`docs/PACKAGING.md`](docs/PACKAGING.md).
+Requires .NET SDK 8.0.424 (`global.json`) and [Inno Setup 7](https://jrsoftware.org/isinfo.php). Output: `artifacts\installer\SingularityApkInstaller-0.7.1-win-x64-setup.exe` plus the stable `SingularityApkInstaller-win-x64-setup.exe` used by the download button above. Details: [`docs/PACKAGING.md`](docs/PACKAGING.md).
 
 ## Docs
 
