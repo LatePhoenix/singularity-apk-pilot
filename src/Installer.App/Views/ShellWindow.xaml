@@ -183,6 +183,24 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <WrapPanel VerticalAlignment="Center">
+                    <Button x:Name="BackButton"
+                            Style="{StaticResource GhostPill}"
+                            Content="Go Back"
+                            Command="{Binding GoBackCommand}"
+                            TabIndex="7"
+                            Margin="0,0,8,0"
+                            AutomationProperties.Name="Go Back"
+                            AutomationProperties.AutomationId="GoBack"
+                            Visibility="{Binding ShowGoBack, Converter={StaticResource BoolToVisibility}}"/>
+                    <Button x:Name="StartOverButton"
+                            Style="{StaticResource GhostPill}"
+                            Content="Start Over"
+                            Command="{Binding StartOverCommand}"
+                            TabIndex="8"
+                            Margin="0,0,8,0"
+                            AutomationProperties.Name="Start Over"
+                            AutomationProperties.AutomationId="StartOver"
+                            Visibility="{Binding ShowStartOver, Converter={StaticResource BoolToVisibility}}"/>
                     <Button x:Name="ExportButton"
                             Style="{StaticResource SecondaryPill}"
                             Content="Send a report"

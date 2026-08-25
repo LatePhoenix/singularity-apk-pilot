@@ -62,27 +62,55 @@ else {
 }
 
 $infDestDir = Join-Path $RepoRoot "payloads\tools\oculus-adb-drivers"
-$infDest = Join-Path $infDestDir "android_winusb.inf"
-$infCandidates = @(
-    $env:OCULUS_ADB_INF
-    (Join-Path $RepoRoot "tools\oculus-adb-drivers\android_winusb.inf")
-    $infDest
-) | Where-Object { $_ }
 
-$infSource = $infCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
-if ($infSource) {
-    Write-Host "Copying Quest USB INF from $infSource"
+function Find-QuestUsbDriverDir {
+    $named = @()
+    if ($env:OCULUS_ADB_INF) {
+        $named += $env:OCULUS_ADB_INF
+    }
+    $named += @(
+        (Join-Path $RepoRoot "tools\oculus-adb-drivers\android_winusb.inf")
+        (Join-Path $infDestDir "android_winusb.inf")
+    )
+    foreach ($path in $named) {
+        if ([string]::IsNullOrWhiteSpace($path)) {
+            continue
+        }
+        if (Test-Path $path -PathType Leaf) {
+            return (Split-Path -Parent $path)
+        }
+        $nested = Join-Path $path "android_winusb.inf"
+        if ((Test-Path $path -PathType Container) -and (Test-Path $nested)) {
+            return $path
+        }
+    }
+
+    $odh = Join-Path $env:APPDATA "odh\packages\other-packages\oculus-adb-drivers"
+    if (Test-Path $odh) {
+        $found = Get-ChildItem -Path $odh -Recurse -Filter "android_winusb.inf" -ErrorAction SilentlyContinue |
+            Select-Object -First 1
+        if ($found) {
+            return $found.DirectoryName
+        }
+    }
+
+    return $null
+}
+
+$infSourceDir = Find-QuestUsbDriverDir
+if ($infSourceDir) {
+    Write-Host "Copying Quest USB driver package from $infSourceDir"
     if (-not $DryRun) {
         New-Item -ItemType Directory -Force -Path $infDestDir | Out-Null
-        $destFull = Join-Path $infDestDir "android_winusb.inf"
-        $srcFull = (Resolve-Path $infSource).Path
-        if ($srcFull -ne (Resolve-Path $destFull -ErrorAction SilentlyContinue).Path) {
-            Copy-Item -Path $srcFull -Destination $destFull -Force
+        $srcFull = (Resolve-Path $infSourceDir).Path
+        $destFull = (Resolve-Path $infDestDir).Path
+        if ($srcFull -ne $destFull) {
+            Copy-Item -Path (Join-Path $srcFull "*") -Destination $destFull -Recurse -Force
         }
     }
 }
 else {
-    Write-Host "Quest USB INF not found. Testers can still use Get Quest USB support in the helper."
+    Write-Warning "Quest USB driver package not found. Testers will get Get Quest USB support (Meta download page) instead of Install Quest USB support."
 }
 
 if (-not (Test-Path $manifest)) {

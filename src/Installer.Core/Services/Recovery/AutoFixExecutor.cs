@@ -25,9 +25,11 @@ public sealed class AutoFixExecutor
             return null;
         }
 
-        if (failure.Error is InstallError.MissingPayload)
+        if (failure.Error is InstallError.MissingPayload or InstallError.MissingSplit
+            or InstallError.UnauthorizedDevice or InstallError.DebuggingNotApproved
+            or InstallError.DeveloperModeLikelyDisabled)
         {
-            _logger.Info("Auto-fix skipped: selected APK file is missing.");
+            _logger.Info($"Auto-fix skipped: {failure.Error}.");
             return null;
         }
 

@@ -10,45 +10,50 @@ public sealed partial class InstallProblemPageViewModel : WizardPageViewModel
     public ObservableCollection<RecoveryAction> Actions { get; } = [];
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasMoreActions))]
+    private RecoveryAction? primaryRecovery;
+
+    [ObservableProperty]
     private string errorDetail = "";
 
-    [ObservableProperty]
-    private bool showReplace;
+    public override string PrimaryAction => PrimaryRecovery?.Title ?? Copy.PrimaryAction;
 
-    [ObservableProperty]
-    private bool showRemove;
+    public bool HasMoreActions => Actions.Count > 0;
 
-    public event Action<InstallPolicy>? PolicyRetryRequested;
+    public event Action<RecoveryAction>? ActionRequested;
 
     protected override void OnApplied(WizardState state)
     {
         Actions.Clear();
+        RecoveryAction? primary = null;
         foreach (var action in state.SuggestedActions)
         {
+            if (action.Kind == RecoveryActionKind.ExportDiagnostics)
+            {
+                continue;
+            }
+
+            if (primary is null)
+            {
+                primary = action;
+                continue;
+            }
+
             Actions.Add(action);
         }
 
+        PrimaryRecovery = primary;
         ErrorDetail = state.LastInstallResult?.RawOutput ?? "";
-        var error = state.LastInstallResult?.Error;
-        ShowReplace = error is InstallError.PackageAlreadyExists or InstallError.VersionDowngrade or InstallError.SignatureMismatch;
-        ShowRemove = error is InstallError.PackageAlreadyExists or InstallError.VersionDowngrade or InstallError.SignatureMismatch;
+        OnPropertyChanged(nameof(PrimaryAction));
+        OnPropertyChanged(nameof(HasMoreActions));
     }
 
     [RelayCommand]
-    private void ReplaceThisApp()
+    private void RunAction(RecoveryAction? action)
     {
-        if (ShowReplace)
+        if (action is not null)
         {
-            PolicyRetryRequested?.Invoke(InstallPolicy.ReinstallAllowDowngrade);
-        }
-    }
-
-    [RelayCommand]
-    private void RemoveThisApp()
-    {
-        if (ShowRemove)
-        {
-            PolicyRetryRequested?.Invoke(InstallPolicy.UninstallThenInstall);
+            ActionRequested?.Invoke(action);
         }
     }
 }

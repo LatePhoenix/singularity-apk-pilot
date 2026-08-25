@@ -34,7 +34,7 @@ Requires [Inno Setup 7](https://jrsoftware.org/isinfo.php). If `ISCC.exe` is mis
 .\build\packaging\scripts\pack.ps1 -SkipInstaller
 
 # Override version (must match csproj / release tag)
-.\build\packaging\scripts\pack.ps1 -Version 0.6.0
+.\build\packaging\scripts\pack.ps1 -Version 0.7.0
 ```
 
 Code signing runs from `pack.ps1` → `build/packaging/scripts/sign.ps1` when credentials are present. If unset, pack still succeeds and logs **unsigned**. Testers may see SmartScreen on first run of an unsigned build.
@@ -49,7 +49,7 @@ Purchase an OV or EV code-signing certificate from a public CA (or use Azure Tru
 $env:SIGNING_PFX = "C:\certs\codesign.pfx"
 $env:SIGNING_PFX_PASSWORD = "<password>"
 # optional: $env:SIGNING_TIMESTAMP_URL = "http://timestamp.digicert.com"
-.\build\packaging\scripts\pack.ps1 -Version 0.6.0
+.\build\packaging\scripts\pack.ps1 -Version 0.7.0
 ```
 
 **Azure Trusted Signing:**
@@ -60,7 +60,7 @@ $env:AZURE_TRUSTED_SIGNING_ENDPOINT = "https://<region>.codesigning.azure.net/"
 $env:AZURE_TRUSTED_SIGNING_CERTIFICATE_PROFILE = "<profile>"
 $env:AZURE_TRUSTED_SIGNING_DLIB = "C:\path\Azure.CodeSigning.Dlib.dll"
 # optional: $env:AZURE_TRUSTED_SIGNING_METADATA = "C:\path\metadata.json"
-.\build\packaging\scripts\pack.ps1 -Version 0.6.0
+.\build\packaging\scripts\pack.ps1 -Version 0.7.0
 ```
 
 `signtool.exe` must be on PATH or under Windows Kits 10 `bin\**\x64`. The published `SingularityApkInstaller.exe` is signed before Inno Setup compiles, then both setup exes are signed, then checksums are written.
@@ -72,25 +72,25 @@ $env:AZURE_TRUSTED_SIGNING_DLIB = "C:\path\Azure.CodeSigning.Dlib.dll"
 | `payloads/current/app-manifest.json` | yes | yes (install policy / notes only) |
 | `payloads/current/*.apk` | gitignored | **not packaged** — testers choose APKs in the app |
 | `payloads/tools/adb/` | gitignored | copied at pack time |
-| `payloads/tools/oculus-adb-drivers/android_winusb.inf` | optional, not required in git | copied at pack time **if present** |
+| `payloads/tools/oculus-adb-drivers/` | yes (Meta Oculus ADB Drivers 2.0) | yes — full INF + catalog + WinUSB co-installers |
 
 APK files in `payloads/current` are excluded from the setup. Testers pick files after a device is connected.
 
-Quest USB support: drop `android_winusb.inf` at `payloads/tools/oculus-adb-drivers/`, or set `OCULUS_ADB_INF` to a local file, before `bundle-payload.ps1` / `pack.ps1`. If the INF is missing, the helper keeps **Get Quest USB support** (Meta download page). Pack does not fetch the INF from the network. Samsung USB installers are not bundled.
+Quest USB support ships Meta’s official [Oculus ADB Drivers 2.0](https://developers.meta.com/horizon/downloads/package/oculus-adb-drivers/) under `payloads/tools/oculus-adb-drivers/`. Pack copies that folder into the setup. If the folder is missing, `bundle-payload.ps1` also looks at `OCULUS_ADB_INF`, `tools/oculus-adb-drivers/`, and a local Meta Quest Developer Hub install (`%APPDATA%\odh\...`). When the package is present, Need help connecting uses **Install Quest USB support** (`pnputil`, one Windows permission prompt). If it is missing, testers still get **Get Quest USB support** (Meta download page). Samsung USB installers are not bundled.
 
 ## Publish a GitHub Release
 
 1. Merge the work to `main`.
-2. Tag `v<version>` (example: `v0.6.0`).
+2. Tag `v<version>` (example: `v0.7.0`).
 3. Attach the three files from `artifacts/installer/`.
 
 ```powershell
-gh release create v0.6.0 `
-  --title "APK Pilot 0.6.0" `
-  --notes-file docs/releases/v0.6.0.md `
-  artifacts/installer/SingularityApkInstaller-0.6.0-win-x64-setup.exe `
+gh release create v0.7.0 `
+  --title "APK Pilot 0.7.0" `
+  --notes-file docs/releases/v0.7.0.md `
+  artifacts/installer/SingularityApkInstaller-0.7.0-win-x64-setup.exe `
   artifacts/installer/SingularityApkInstaller-win-x64-setup.exe `
-  artifacts/installer/SHA256SUMS-0.6.0.txt
+  artifacts/installer/SHA256SUMS-0.7.0.txt
 ```
 
 Keep the stable filename on every release so `/releases/latest/download/SingularityApkInstaller-win-x64-setup.exe` keeps working.

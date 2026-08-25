@@ -83,4 +83,4 @@ Log redacted command lines (pairing codes masked), exit codes, and sanitized out
 - `artifacts/installer/SingularityApkInstaller-<version>-win-x64-setup.exe`
 - `artifacts/installer/SingularityApkInstaller-win-x64-setup.exe` (stable name for GitHub `/releases/latest/download/`)
 
-Portable `adb` is resolved at pack time into `payloads/tools/adb/` (not committed). Optional Quest USB INF is copied into `payloads/tools/oculus-adb-drivers/` when present locally. See [`PACKAGING.md`](PACKAGING.md).
+Portable `adb` is resolved at pack time into `payloads/tools/adb/` (not committed). Quest USB support ships Meta’s Oculus ADB Drivers 2.0 under `payloads/tools/oculus-adb-drivers/` (INF, catalogs, WinUSB co-installers). See [`PACKAGING.md`](PACKAGING.md).

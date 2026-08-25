@@ -3,6 +3,8 @@ using Installer.Core.Models;
 using Installer.Core.Services.Adb;
 using Installer.Core.Services.Install;
 using Installer.Core.Services.Packages;
+using Installer.Core.Services.Recovery;
+using Installer.Core.Services.Support;
 
 namespace Installer.Core.Tests.Install;
 
@@ -68,6 +70,17 @@ public sealed class InstalledAppServiceTests
         var adb = new FakeAdb { UninstallExit = 1, UninstallOutput = "Failure [DELETE_FAILED_INTERNAL_ERROR]" };
         var result = await Create(adb).UninstallAsync("S1", "com.singularity.demo");
         Assert.False(result.Success);
+        Assert.Equal(InstallError.UninstallFailed, result.Error);
+    }
+
+    [Fact]
+    public async Task Uninstall_maps_unauthorized_to_connection_help()
+    {
+        var adb = new FakeAdb { UninstallExit = 1, UninstallOutput = "error: device unauthorized" };
+        var result = await Create(adb).UninstallAsync("S1", "com.singularity.demo");
+        Assert.False(result.Success);
+        Assert.Equal(InstallError.UnauthorizedDevice, result.Error);
+        Assert.Contains("permission", result.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -80,7 +93,7 @@ public sealed class InstalledAppServiceTests
     }
 
     private static InstalledAppService Create(FakeAdb adb) =>
-        new(adb, new AdbOutputParser(), new NoopLog());
+        new(adb, new AdbOutputParser(), new ErrorClassifier(), new FriendlyMessageService(), new NoopLog());
 
     private sealed class FakeAdb : IAdbClient
     {

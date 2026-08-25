@@ -47,6 +47,7 @@ public sealed class QuestUsbHelperService : IQuestUsbHelperService
         {
             FileName = "pnputil.exe",
             ArgumentList = { "/add-driver", inf, "/install" },
+            WorkingDirectory = Path.GetDirectoryName(inf) ?? "",
             UseShellExecute = true,
             Verb = "runas"
         };
