@@ -6,6 +6,7 @@
              IsTabStop="False">
     <UserControl.Resources>
         <SolidColorBrush x:Key="AvatarStroke" Color="#2FA8C8"/>
+        <SolidColorBrush x:Key="AvatarAccent" Color="#E020C8"/>
         <Style x:Key="Mark" TargetType="Shape">
             <Setter Property="Stroke" Value="{DynamicResource AvatarStroke}"/>
             <Setter Property="StrokeThickness" Value="2.25"/>
@@ -28,6 +29,13 @@
             <Line X1="44" Y1="36" X2="52" Y2="36" Style="{StaticResource Mark}"/>
             <Rectangle Canvas.Left="20" Canvas.Top="31" Width="24" Height="10" RadiusX="5" RadiusY="5"
                        Style="{StaticResource Mark}"/>
+            <Rectangle Canvas.Left="24" Canvas.Top="34" Width="16" Height="4" RadiusX="2" RadiusY="2"
+                       Stroke="{StaticResource AvatarAccent}"
+                       StrokeThickness="1.75"
+                       Fill="Transparent"
+                       StrokeStartLineCap="Round"
+                       StrokeEndLineCap="Round"
+                       StrokeLineJoin="Round"/>
         </Canvas>
     </Viewbox>
 </UserControl>
