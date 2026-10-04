@@ -137,6 +137,33 @@ public sealed class ApkInspectorTests
         }
     }
 
+    [Fact]
+    public void Groups_a_bundle_by_unpacking_it_once()
+    {
+        var inner = WriteApk(XmlManifest("com.singularity.demo", "3.0", 3, null, "Demo", ".MainActivity"));
+        var bundle = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N") + ".apks");
+        var temp = new Temp();
+        try
+        {
+            using (var zip = ZipFile.Open(bundle, ZipArchiveMode.Create))
+            {
+                zip.CreateEntryFromFile(inner, "base.apk");
+            }
+
+            var factory = new InstallSetFactory(new ApkInspector(), temp);
+            var first = Assert.Single(factory.Group([bundle]));
+            var second = Assert.Single(factory.Group([bundle]));
+
+            Assert.Equal(1, temp.Created);
+            Assert.Equal(first.ApkPaths, second.ApkPaths);
+        }
+        finally
+        {
+            File.Delete(inner);
+            File.Delete(bundle);
+        }
+    }
+
     private static string XmlManifest(string packageId, string versionName, int versionCode, string? split, string label, string? launcher)
     {
         var splitAttr = split is null ? "" : $" split=\"{split}\"";
@@ -173,11 +200,22 @@ public sealed class ApkInspectorTests
 
     private sealed class Temp : ITempFileService
     {
+        public int Created { get; private set; }
+
         public string CreateTempDirectory(string prefix = "sai-")
         {
+            Created++;
             var path = Path.Combine(Path.GetTempPath(), prefix + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(path);
             return path;
+        }
+
+        public void DeleteAll()
+        {
+        }
+
+        public void DeleteStale(TimeSpan age)
+        {
         }
     }
 }

@@ -30,6 +30,6 @@ public sealed class AdbProcessRunner : IAdbProcessRunner
                 Arguments: command.Arguments));
         }
 
-        return _process.RunAsync(adb, command.Arguments, cancellationToken, Path.GetDirectoryName(adb));
+        return _process.RunAsync(adb, command.Arguments, cancellationToken, Path.GetDirectoryName(adb), command.Timeout);
     }
 }

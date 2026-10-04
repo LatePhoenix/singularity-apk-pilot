@@ -154,21 +154,51 @@ public sealed partial class ReadyToInstallPageViewModel : WizardPageViewModel
             return;
         }
 
-        var identity = _inspector.Inspect(path);
-        ApkFiles.Add(new ApkFileItem(
-            path,
-            Path.GetFileName(path),
-            identity?.Summary ?? Path.GetFileName(path),
-            identity is { IsSplit: true } ? "This looks like only part of an app." : ""));
+        var item = new ApkFileItem(path, Path.GetFileName(path), Path.GetFileName(path), "");
+        ApkFiles.Add(item);
         LastFolder = Path.GetDirectoryName(path);
         Persist();
+        _ = DescribeAsync(item);
+    }
+
+    private async Task DescribeAsync(ApkFileItem item)
+    {
+        ApkIdentity? identity;
+        try
+        {
+            // Reading a bundle can mean inflating a large inner APK; keep that off the UI thread.
+            identity = await Task.Run(() => _inspector.Inspect(item.Path));
+        }
+        catch
+        {
+            return;
+        }
+
+        if (identity is null)
+        {
+            return;
+        }
+
+        var index = ApkFiles.IndexOf(item);
+        if (index < 0)
+        {
+            return;
+        }
+
+        ApkFiles[index] = item with
+        {
+            Summary = identity.Summary,
+            Warning = identity.IsSplit ? "This looks like only part of an app." : ""
+        };
     }
 
     private void RefreshWarnings()
     {
-        SplitWarning = !HasFiles
+        // Bundles (.apks / .xapk) carry their own splits; grouping them would unpack each one here.
+        var looseApks = SelectedPaths.Where(path => !IsBundleExtension(Path.GetExtension(path))).ToList();
+        SplitWarning = looseApks.Count == 0
             ? ""
-            : _sets.Group(SelectedPaths).Any(set => set.LooksLikeMissingSplits)
+            : _sets.Group(looseApks).Any(set => set.LooksLikeMissingSplits)
                 ? "This looks like only part of an app. Add the other files or an .apks package."
                 : "";
     }
@@ -186,6 +216,9 @@ public sealed partial class ReadyToInstallPageViewModel : WizardPageViewModel
 
     private static bool IsPackageExtension(string ext) =>
         ext.Equals(".apk", StringComparison.OrdinalIgnoreCase)
-        || ext.Equals(".apks", StringComparison.OrdinalIgnoreCase)
+        || IsBundleExtension(ext);
+
+    private static bool IsBundleExtension(string ext) =>
+        ext.Equals(".apks", StringComparison.OrdinalIgnoreCase)
         || ext.Equals(".xapk", StringComparison.OrdinalIgnoreCase);
 }

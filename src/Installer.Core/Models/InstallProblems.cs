@@ -11,6 +11,15 @@ public static class InstallProblems
             or InstallError.WirelessConnectFailed
             or InstallError.DeveloperModeLikelyDisabled;
 
+    /// <summary>Retrying the same file cannot help; the tester needs a different APK.</summary>
+    public static bool NeedsDifferentFile(InstallError? error) =>
+        error is InstallError.MissingPayload
+            or InstallError.MissingSplit
+            or InstallError.IncompatibleAbi
+            or InstallError.AppTargetsOldAndroid
+            or InstallError.DeviceAndroidTooOld
+            or InstallError.InvalidApk;
+
     public static InstallPolicy? PolicyFor(RecoveryActionKind kind) => kind switch
     {
         RecoveryActionKind.RetryWithDowngrade => InstallPolicy.ReinstallAllowDowngrade,

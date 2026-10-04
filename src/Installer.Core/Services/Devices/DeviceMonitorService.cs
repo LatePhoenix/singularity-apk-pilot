@@ -5,6 +5,8 @@ namespace Installer.Core.Services.Devices;
 
 public sealed class DeviceMonitorService : IDeviceMonitorService
 {
+    public const int FailuresBeforeEmpty = 3;
+
     private readonly IDeviceService _deviceService;
     private readonly IAppLogger _logger;
     private readonly TimeSpan _interval;
@@ -49,13 +51,28 @@ public sealed class DeviceMonitorService : IDeviceMonitorService
 
     private async Task RunAsync(CancellationToken cancellationToken)
     {
+        var failures = 0;
         while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
-                var devices = await _deviceService.DetectAsync(cancellationToken);
-                CurrentDevices = devices;
-                DevicesChanged?.Invoke(this, devices);
+                var devices = await _deviceService.TryDetectAsync(cancellationToken);
+                if (devices is null)
+                {
+                    // One failed adb call is not an unplug; keep the last list until failures persist.
+                    failures++;
+                    devices = failures >= FailuresBeforeEmpty ? [] : null;
+                }
+                else
+                {
+                    failures = 0;
+                }
+
+                if (devices is not null && !cancellationToken.IsCancellationRequested)
+                {
+                    CurrentDevices = devices;
+                    DevicesChanged?.Invoke(this, devices);
+                }
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {

@@ -5,6 +5,10 @@ namespace Installer.Core.Services.Adb;
 
 public sealed class AdbCommandFactory
 {
+    private static readonly TimeSpan InstallTimeout = TimeSpan.FromMinutes(30);
+    private static readonly TimeSpan UninstallTimeout = TimeSpan.FromMinutes(2);
+    private static readonly TimeSpan PropertyTimeout = TimeSpan.FromSeconds(10);
+
     public AdbCommand StartServer() => new(["start-server"], "Start connection helper");
 
     public AdbCommand KillServer() => new(["kill-server"], "Restart connection helper");
@@ -35,14 +39,14 @@ public sealed class AdbCommandFactory
         new(["-s", serial, "shell", "ip", "-o", "-4", "addr", "show", "scope", "global"], "Read Wi-Fi address");
 
     public AdbCommand GetProperty(string serial, string key) =>
-        new(["-s", serial, "shell", "getprop", key], $"Read device property {key}");
+        new(["-s", serial, "shell", "getprop", key], $"Read device property {key}") { Timeout = PropertyTimeout };
 
     public AdbCommand Install(string serial, string apkPath, IReadOnlyList<string> flags)
     {
         var args = new List<string> { "-s", serial, "install" };
         args.AddRange(flags.Where(flag => !string.IsNullOrWhiteSpace(flag)));
         args.Add(apkPath);
-        return new AdbCommand(args, "Install app");
+        return new AdbCommand(args, "Install app") { Timeout = InstallTimeout };
     }
 
     public AdbCommand InstallMultiple(string serial, IReadOnlyList<string> apkPaths, IReadOnlyList<string> flags)
@@ -50,11 +54,11 @@ public sealed class AdbCommandFactory
         var args = new List<string> { "-s", serial, "install-multiple" };
         args.AddRange(flags.Where(flag => !string.IsNullOrWhiteSpace(flag)));
         args.AddRange(apkPaths.Where(path => !string.IsNullOrWhiteSpace(path)));
-        return new AdbCommand(args, "Install app files");
+        return new AdbCommand(args, "Install app files") { Timeout = InstallTimeout };
     }
 
     public AdbCommand Uninstall(string serial, string packageId) =>
-        new(["-s", serial, "uninstall", packageId], "Remove previous app");
+        new(["-s", serial, "uninstall", packageId], "Remove previous app") { Timeout = UninstallTimeout };
 
     public AdbCommand ListPackages(string serial, string? packageId = null)
     {
