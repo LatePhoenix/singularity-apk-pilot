@@ -6,7 +6,7 @@
 #define MyAppExeName "SingularityApkInstaller.exe"
 
 #ifndef MyAppVersion
-  #define MyAppVersion "0.7.2"
+  #define MyAppVersion "0.7.3"
 #endif
 
 #ifndef PublishDir
