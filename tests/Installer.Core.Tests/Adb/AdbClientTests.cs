@@ -44,6 +44,37 @@ public sealed class AdbClientTests
         Assert.Equal(["kill-server", "start-server"], runner.Calls);
     }
 
+    [Fact]
+    public async Task ListDevices_throws_when_adb_cannot_answer()
+    {
+        var runner = new ScriptedRunner();
+        runner.Results["devices"] = new AdbProcessResult(1, "", "adb.exe: cannot connect to daemon", TimeSpan.Zero, ["devices", "-l"]);
+        var client = Create(runner);
+
+        await Assert.ThrowsAsync<AdbCommandException>(() => client.ListDevicesAsync());
+    }
+
+    [Fact]
+    public async Task ListDevices_returns_empty_when_adb_answers_with_no_devices()
+    {
+        var runner = new ScriptedRunner();
+        runner.Results["devices"] = new AdbProcessResult(0, "List of devices attached\n\n", "", TimeSpan.Zero, ["devices", "-l"]);
+        var client = Create(runner);
+
+        Assert.Empty(await client.ListDevicesAsync());
+    }
+
+    [Fact]
+    public void Install_commands_get_a_long_timeout_and_queries_a_short_one()
+    {
+        var commands = new AdbCommandFactory();
+
+        Assert.True(commands.Install("serial", "app.apk", []).Timeout >= TimeSpan.FromMinutes(10));
+        Assert.True(commands.InstallMultiple("serial", ["a.apk", "b.apk"], []).Timeout >= TimeSpan.FromMinutes(10));
+        Assert.True(commands.GetProperty("serial", "ro.product.model").Timeout <= TimeSpan.FromSeconds(30));
+        Assert.Equal(AdbCommand.DefaultTimeout, commands.Devices().Timeout);
+    }
+
     private static AdbClient Create(IAdbProcessRunner runner) =>
         new(runner, new AdbCommandFactory(), new AdbOutputParser(), new NoopLog());
 

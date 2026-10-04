@@ -46,6 +46,11 @@ public sealed class AdbClient : IAdbClient
     public async Task<IReadOnlyList<AdbDeviceRecord>> ListDevicesAsync(CancellationToken cancellationToken = default)
     {
         var result = await RunAsync(_commands.Devices(), cancellationToken);
+        if (!result.Succeeded && !result.CombinedOutput.Contains("List of devices attached", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new AdbCommandException($"adb devices exited {result.ExitCode}.", result);
+        }
+
         return _parser.ParseDevices(result.CombinedOutput);
     }
 

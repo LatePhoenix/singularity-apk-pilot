@@ -7,6 +7,12 @@ namespace Installer.Core.Services.Packages;
 
 public sealed class ApkInspector : IApkInspector
 {
+    // Inner APKs larger than this are staged on disk instead of in memory; Quest builds can be gigabytes.
+    private const long InMemoryLimit = 64L * 1024 * 1024;
+
+    // Real binary manifests are kilobytes; refuse anything that would inflate to a huge buffer.
+    private const long MaxManifestBytes = 16L * 1024 * 1024;
+
     public ApkIdentity? Inspect(string path)
     {
         try
@@ -20,7 +26,11 @@ public sealed class ApkInspector : IApkInspector
             if (ext.Equals(".apks", StringComparison.OrdinalIgnoreCase) || ext.Equals(".xapk", StringComparison.OrdinalIgnoreCase))
             {
                 using var zip = ZipFile.OpenRead(path);
-                foreach (var entry in zip.Entries.Where(e => e.Name.EndsWith(".apk", StringComparison.OrdinalIgnoreCase)))
+                var apkEntries = zip.Entries
+                    .Where(e => e.Name.EndsWith(".apk", StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(e => e.Name.Contains("base", StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+                    .ThenBy(e => e.Length);
+                foreach (var entry in apkEntries)
                 {
                     var identity = InspectEntry(entry, path);
                     if (identity?.HasPackageId == true && !identity.IsSplit)
@@ -36,7 +46,7 @@ public sealed class ApkInspector : IApkInspector
 
             using var apk = ZipFile.OpenRead(path);
             var manifest = apk.GetEntry("AndroidManifest.xml");
-            if (manifest is null)
+            if (manifest is null || manifest.Length > MaxManifestBytes)
             {
                 return null;
             }
@@ -88,12 +98,20 @@ public sealed class ApkInspector : IApkInspector
         try
         {
             using var apkStream = entry.Open();
-            using var apkCopy = new MemoryStream();
+            using Stream apkCopy = entry.Length > InMemoryLimit
+                ? new FileStream(
+                    Path.Combine(Path.GetTempPath(), "sai-inspect-" + Guid.NewGuid().ToString("N") + ".apk"),
+                    FileMode.CreateNew,
+                    FileAccess.ReadWrite,
+                    FileShare.None,
+                    81920,
+                    FileOptions.DeleteOnClose)
+                : new MemoryStream();
             apkStream.CopyTo(apkCopy);
             apkCopy.Position = 0;
-            using var inner = new ZipArchive(apkCopy, ZipArchiveMode.Read, leaveOpen: false);
+            using var inner = new ZipArchive(apkCopy, ZipArchiveMode.Read, leaveOpen: true);
             var manifest = inner.GetEntry("AndroidManifest.xml");
-            if (manifest is null)
+            if (manifest is null || manifest.Length > MaxManifestBytes)
             {
                 return null;
             }

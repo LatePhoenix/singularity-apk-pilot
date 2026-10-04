@@ -16,5 +16,11 @@ public enum InstallError
     MissingPayload = 11,
     WirelessConnectFailed = 12,
     MissingSplit = 13,
-    UninstallFailed = 14
+    UninstallFailed = 14,
+    IncompatibleAbi = 15,
+    AppTargetsOldAndroid = 16,
+    DeviceAndroidTooOld = 17,
+    InvalidApk = 18,
+    InstallBlockedOnDevice = 19,
+    ConnectionHelperFailed = 20
 }

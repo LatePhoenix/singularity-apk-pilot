@@ -7,6 +7,8 @@ public sealed class InstallSetFactory : IInstallSetFactory
 {
     private readonly IApkInspector _inspector;
     private readonly ITempFileService _temp;
+    private readonly object _gate = new();
+    private readonly Dictionary<string, ExtractedBundle> _bundles = new(StringComparer.OrdinalIgnoreCase);
 
     public InstallSetFactory(IApkInspector inspector, ITempFileService temp)
     {
@@ -24,8 +26,7 @@ public sealed class InstallSetFactory : IInstallSetFactory
             var ext = Path.GetExtension(path);
             if (ext.Equals(".apks", StringComparison.OrdinalIgnoreCase) || ext.Equals(".xapk", StringComparison.OrdinalIgnoreCase))
             {
-                var extracted = _inspector.InspectBundle(path, _temp.CreateTempDirectory("sai-bundle-"));
-                sets.Add(FromIdentities(extracted, path));
+                sets.Add(FromIdentities(ExtractBundle(path), path));
                 continue;
             }
 
@@ -46,6 +47,28 @@ public sealed class InstallSetFactory : IInstallSetFactory
         }
 
         return sets;
+    }
+
+    private IReadOnlyList<ApkIdentity> ExtractBundle(string path)
+    {
+        var info = new FileInfo(path);
+        var length = info.Exists ? info.Length : -1;
+        var written = info.Exists ? info.LastWriteTimeUtc : DateTime.MinValue;
+        lock (_gate)
+        {
+            // Bundles can be gigabytes; unpack each one once per session instead of on every list change.
+            if (_bundles.TryGetValue(path, out var cached)
+                && cached.Length == length
+                && cached.LastWriteUtc == written
+                && cached.Identities.All(identity => File.Exists(identity.SourcePath)))
+            {
+                return cached.Identities;
+            }
+
+            var identities = _inspector.InspectBundle(path, _temp.CreateTempDirectory("sai-bundle-"));
+            _bundles[path] = new ExtractedBundle(length, written, identities);
+            return identities;
+        }
     }
 
     private static InstallSet FromIdentities(IReadOnlyList<ApkIdentity> identities, string? bundlePath)
@@ -90,4 +113,6 @@ public sealed class InstallSetFactory : IInstallSetFactory
                || name.Contains("config.", StringComparison.OrdinalIgnoreCase)
                || name.Contains(".split.", StringComparison.OrdinalIgnoreCase);
     }
+
+    private sealed record ExtractedBundle(long Length, DateTime LastWriteUtc, IReadOnlyList<ApkIdentity> Identities);
 }

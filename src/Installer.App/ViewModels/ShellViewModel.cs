@@ -36,6 +36,7 @@ public sealed partial class ShellViewModel : ObservableObject
     private bool _helperOpen;
     private readonly Installer.Core.Services.Content.TroubleshootCopyDeck _troubleshootCopy;
     private readonly Dictionary<WizardStep, WizardPageViewModel> _pages;
+    private readonly ITempFileService _temp;
     private CancellationTokenSource? _installCts;
     private CancellationTokenSource? _uninstallCts;
     private InstallRequest? _lastRequest;
@@ -63,6 +64,7 @@ public sealed partial class ShellViewModel : ObservableObject
         IGuideUi guideUi,
         IGuideCoach guideCoach,
         Installer.Core.Services.Content.TroubleshootCopyDeck troubleshootCopy,
+        ITempFileService temp,
         IAppLogger logger)
     {
         _flow = flow;
@@ -86,6 +88,7 @@ public sealed partial class ShellViewModel : ObservableObject
         _guideUi = guideUi;
         _guideCoach = guideCoach;
         _troubleshootCopy = troubleshootCopy;
+        _temp = temp;
         _logger = logger;
         _pages = new Dictionary<WizardStep, WizardPageViewModel>
         {
@@ -149,6 +152,7 @@ public sealed partial class ShellViewModel : ObservableObject
         ApplyState();
         _monitor.DevicesChanged += OnDevicesChanged;
         _ = CheckForUpdateAsync();
+        _ = Task.Run(() => _temp.DeleteStale(TimeSpan.FromDays(1)));
         _ = _monitor.StartAsync();
     }
 
@@ -493,9 +497,9 @@ public sealed partial class ShellViewModel : ObservableObject
                 return;
             case RecoveryActionKind.RetryInstall:
                 if (InstallProblems.NeedsConnectionHelp(State.LastInstallResult?.Error)
-                    || State.LastInstallResult?.Error is InstallError.MissingPayload or InstallError.MissingSplit)
+                    || InstallProblems.NeedsDifferentFile(State.LastInstallResult?.Error))
                 {
-                    if (State.LastInstallResult?.Error is InstallError.MissingPayload or InstallError.MissingSplit)
+                    if (InstallProblems.NeedsDifferentFile(State.LastInstallResult?.Error))
                     {
                         Advance(WizardTrigger.Back, State.Device, readyDevices: State.Ready, health: State.Health);
                         return;
@@ -673,15 +677,32 @@ public sealed partial class ShellViewModel : ObservableObject
             return;
         }
 
-        var sets = _installSets.Group(paths);
-        if (sets.Count == 0)
+        if (Interlocked.CompareExchange(ref _installBusy, 1, 0) != 0)
         {
-            PayloadWarning = "Add at least one APK file.";
             return;
         }
 
-        if (Interlocked.CompareExchange(ref _installBusy, 1, 0) != 0)
+        IReadOnlyList<InstallSet> sets;
+        try
         {
+            // Bundles are unpacked here; that can take a while for large Quest builds.
+            sets = await Task.Run(() => _installSets.Group(paths));
+        }
+        catch (Exception ex)
+        {
+            _logger.Error("Preparing app files failed.", ex);
+            sets = [];
+        }
+
+        if (sets.Count == 0 || State.Device is null || State.CurrentStep != WizardStep.ReadyToInstall)
+        {
+            // The device or page may have changed while files were being prepared.
+            Interlocked.Exchange(ref _installBusy, 0);
+            if (sets.Count == 0)
+            {
+                PayloadWarning = "Add at least one APK file.";
+            }
+
             return;
         }
 
@@ -893,7 +914,8 @@ public sealed partial class ShellViewModel : ObservableObject
         try
         {
             AppsPage.IsLoading = true;
-            var listed = await _installedApps.ListAsync(State.Device.Serial, RecentPackageIds());
+            var recentIds = await RecentPackageIdsAsync();
+            var listed = await _installedApps.ListAsync(State.Device.Serial, recentIds);
             if (!listed.IsSuccess || listed.Value is null)
             {
                 AppsPage.IsLoading = false;
@@ -1008,7 +1030,7 @@ public sealed partial class ShellViewModel : ObservableObject
         }
     }
 
-    private HashSet<string> RecentPackageIds()
+    private Task<HashSet<string>> RecentPackageIdsAsync()
     {
         var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         if (State.Manifest.CanVerifyPackage)
@@ -1016,7 +1038,13 @@ public sealed partial class ShellViewModel : ObservableObject
             ids.Add(State.Manifest.AppId);
         }
 
-        foreach (var path in ChoosePage.SelectedPaths.Concat(ChoosePage.RecentFiles).Concat(_recents.Load().LastFiles))
+        var paths = ChoosePage.SelectedPaths.Concat(ChoosePage.RecentFiles).ToList();
+        return Task.Run(() => AddPackageIds(ids, paths.Concat(_recents.Load().LastFiles)));
+    }
+
+    private HashSet<string> AddPackageIds(HashSet<string> ids, IEnumerable<string> paths)
+    {
+        foreach (var path in paths.Distinct(StringComparer.OrdinalIgnoreCase))
         {
             try
             {
@@ -1306,5 +1334,6 @@ public sealed partial class ShellViewModel : ObservableObject
         _installCts?.Cancel();
         _uninstallCts?.Cancel();
         _monitor.Stop();
+        _temp.DeleteAll();
     }
 }

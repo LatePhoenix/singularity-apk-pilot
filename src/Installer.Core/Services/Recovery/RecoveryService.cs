@@ -58,6 +58,19 @@ public sealed class RecoveryService : IRecoveryService
             case InstallError.MissingSplit:
                 actions.Add(Action("splits", "Add the rest of the app", "This file is only part of the app. Add the other files or an .apks package.", RecoveryActionKind.RetryInstall, false));
                 break;
+            case InstallError.IncompatibleAbi:
+            case InstallError.AppTargetsOldAndroid:
+            case InstallError.DeviceAndroidTooOld:
+            case InstallError.InvalidApk:
+                actions.Add(Action("otherfile", "Choose a different APK", "This file cannot install on this device. Go back and add the right build.", RecoveryActionKind.RetryInstall, false));
+                break;
+            case InstallError.InstallBlockedOnDevice:
+                actions.Add(Action("retry", "Try again", "Allow the install on the device, then retry.", RecoveryActionKind.RetryInstall, true));
+                break;
+            case InstallError.ConnectionHelperFailed:
+                actions.Add(Action("restart", "Restart connection helper", "Close other Android tools, restart the helper, and try again.", RecoveryActionKind.RestartAdbServer, true));
+                actions.Add(Action("cable", "Check the cable", "Use a USB cable that can transfer files, not a charge-only cable.", RecoveryActionKind.ShowCableHelp, false));
+                break;
             case InstallError.UninstallFailed:
                 actions.Add(Action("retry", "Try again", "Keep the device awake and remove the app, then install this build.", RecoveryActionKind.UninstallThenInstall, true));
                 break;

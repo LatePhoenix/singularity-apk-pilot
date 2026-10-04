@@ -25,15 +25,15 @@ public sealed class AutoFixExecutor
             return null;
         }
 
-        if (failure.Error is InstallError.MissingPayload or InstallError.MissingSplit
-            or InstallError.UnauthorizedDevice or InstallError.DebuggingNotApproved
+        if (InstallProblems.NeedsDifferentFile(failure.Error)
+            || failure.Error is InstallError.UnauthorizedDevice or InstallError.DebuggingNotApproved
             or InstallError.DeveloperModeLikelyDisabled)
         {
             _logger.Info($"Auto-fix skipped: {failure.Error}.");
             return null;
         }
 
-        if (failure.Error is InstallError.NoDevicesFound or InstallError.CableOrUsbModeIssue)
+        if (failure.Error is InstallError.NoDevicesFound or InstallError.CableOrUsbModeIssue or InstallError.ConnectionHelperFailed)
         {
             _logger.Info("Auto-fix: restart adb server.");
             await _adb.RestartServerAsync(cancellationToken);

@@ -26,7 +26,10 @@ public sealed class DeviceDetectionService : IDeviceService
         _logger = logger;
     }
 
-    public async Task<IReadOnlyList<DeviceInfo>> DetectAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<DeviceInfo>> DetectAsync(CancellationToken cancellationToken = default) =>
+        await TryDetectAsync(cancellationToken) ?? [];
+
+    public async Task<IReadOnlyList<DeviceInfo>?> TryDetectAsync(CancellationToken cancellationToken = default)
     {
         IReadOnlyList<AdbDeviceRecord> records;
         try
@@ -34,10 +37,19 @@ public sealed class DeviceDetectionService : IDeviceService
             await _adb.StartServerAsync(cancellationToken);
             records = await _adb.ListDevicesAsync(cancellationToken);
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (AdbCommandException ex)
+        {
+            _logger.Warn($"Device list failed: {ex.Message}");
+            return null;
+        }
         catch (Exception ex)
         {
             _logger.Error("Device list failed.", ex);
-            return [];
+            return null;
         }
 
         var devices = new List<DeviceInfo>(records.Count);

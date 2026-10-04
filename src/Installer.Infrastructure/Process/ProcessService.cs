@@ -6,11 +6,14 @@ namespace Installer.Infrastructure.Process;
 
 public sealed class ProcessService
 {
+    public const int TimedOutExitCode = -1;
+
     public async Task<AdbProcessResult> RunAsync(
         string fileName,
         IReadOnlyList<string> arguments,
         CancellationToken cancellationToken = default,
-        string? workingDirectory = null)
+        string? workingDirectory = null,
+        TimeSpan? timeout = null)
     {
         var start = new ProcessStartInfo
         {
@@ -34,14 +37,20 @@ public sealed class ProcessService
         {
             if (e.Data is not null)
             {
-                stdout.AppendLine(e.Data);
+                lock (stdout)
+                {
+                    stdout.AppendLine(e.Data);
+                }
             }
         };
         process.ErrorDataReceived += (_, e) =>
         {
             if (e.Data is not null)
             {
-                stderr.AppendLine(e.Data);
+                lock (stderr)
+                {
+                    stderr.AppendLine(e.Data);
+                }
             }
         };
 
@@ -54,9 +63,34 @@ public sealed class ProcessService
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
 
+        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        if (timeout is { } limit && limit > TimeSpan.Zero && limit != Timeout.InfiniteTimeSpan)
+        {
+            timeoutCts.CancelAfter(limit);
+        }
+
         try
         {
-            await process.WaitForExitAsync(cancellationToken);
+            await process.WaitForExitAsync(timeoutCts.Token);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            TryKill(process);
+            sw.Stop();
+            string error;
+            lock (stderr)
+            {
+                stderr.AppendLine($"adb timed out after {sw.Elapsed.TotalSeconds:0} seconds.");
+                error = stderr.ToString();
+            }
+
+            string output;
+            lock (stdout)
+            {
+                output = stdout.ToString();
+            }
+
+            return new AdbProcessResult(TimedOutExitCode, output, error, sw.Elapsed, arguments);
         }
         catch (OperationCanceledException)
         {

@@ -23,6 +23,12 @@ public sealed class RecoveryServiceTests
     [InlineData(InstallError.WirelessConnectFailed)]
     [InlineData(InstallError.MissingSplit)]
     [InlineData(InstallError.UninstallFailed)]
+    [InlineData(InstallError.IncompatibleAbi)]
+    [InlineData(InstallError.AppTargetsOldAndroid)]
+    [InlineData(InstallError.DeviceAndroidTooOld)]
+    [InlineData(InstallError.InvalidApk)]
+    [InlineData(InstallError.InstallBlockedOnDevice)]
+    [InlineData(InstallError.ConnectionHelperFailed)]
     public void Suggests_at_most_three_actions(InstallError error)
     {
         var actions = _sut.Suggest(error, InstallManifest.Placeholder);
@@ -43,6 +49,36 @@ public sealed class RecoveryServiceTests
         var actions = _sut.Suggest(InstallError.PackageAlreadyExists, InstallManifest.Placeholder);
         Assert.Contains(actions, a => a.Kind == RecoveryActionKind.ReplaceExistingApp && a.Title.Contains("Replace", StringComparison.OrdinalIgnoreCase));
     }
+
+    [Theory]
+    [InlineData(InstallError.IncompatibleAbi)]
+    [InlineData(InstallError.AppTargetsOldAndroid)]
+    [InlineData(InstallError.DeviceAndroidTooOld)]
+    [InlineData(InstallError.InvalidApk)]
+    public void Wrong_file_errors_do_not_offer_automatic_retry(InstallError error)
+    {
+        var actions = _sut.Suggest(error, InstallManifest.Placeholder);
+        Assert.DoesNotContain(actions, a => a.IsAutomatic);
+        Assert.True(InstallProblems.NeedsDifferentFile(error));
+    }
+
+    [Fact]
+    public async Task Wrong_file_errors_skip_auto_fix()
+    {
+        var failure = InstallResult.Failed(InstallError.IncompatibleAbi, "Failure [INSTALL_FAILED_NO_MATCHING_ABIS]", []);
+        var request = new InstallRequest(InstallManifest.Placeholder, Device());
+        Assert.Null(await _sut.TryAutoFixAsync(request, failure));
+    }
+
+    [Fact]
+    public void Helper_failure_offers_automatic_restart()
+    {
+        var actions = _sut.Suggest(InstallError.ConnectionHelperFailed, InstallManifest.Placeholder);
+        Assert.Contains(actions, a => a.Kind == RecoveryActionKind.RestartAdbServer && a.IsAutomatic);
+    }
+
+    private static DeviceInfo Device() =>
+        new("1WMHH000000001", "Oculus", "Quest 3", "14", DeviceKind.MetaQuest, DeviceConnectionState.ConnectedReady, true, true, new Dictionary<string, string>());
 
     [Fact]
     public void Unauthorized_offers_approve_this_computer()

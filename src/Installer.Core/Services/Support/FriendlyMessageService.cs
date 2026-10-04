@@ -19,6 +19,12 @@ public sealed class FriendlyMessageService
         InstallError.WirelessConnectFailed => "Wi-Fi connection did not work",
         InstallError.MissingSplit => "This looks like only part of the app",
         InstallError.UninstallFailed => "The app could not be removed",
+        InstallError.IncompatibleAbi => "This APK was built for a different kind of device",
+        InstallError.AppTargetsOldAndroid => "This APK is too old for this device",
+        InstallError.DeviceAndroidTooOld => "This device's software is too old for this APK",
+        InstallError.InvalidApk => "This APK file is damaged or not signed",
+        InstallError.InstallBlockedOnDevice => "The device blocked the install",
+        InstallError.ConnectionHelperFailed => "The connection helper stopped responding",
         _ => "The install did not complete"
     };
 
@@ -37,6 +43,12 @@ public sealed class FriendlyMessageService
         InstallError.WirelessConnectFailed => "The headset or phone is not reachable over Wi-Fi. Use a USB cable, or confirm it is on the same network.",
         InstallError.MissingSplit => "Add the other app files or an .apks / .xapk package, then install again.",
         InstallError.UninstallFailed => "The app is still on the device. Keep the device awake and try again.",
+        InstallError.IncompatibleAbi => "The app's native code does not match this device's processor. Ask for the build made for this device (for example, the Quest build for a headset).",
+        InstallError.AppTargetsOldAndroid => "Newer Android versions refuse apps built for very old Android. Ask for a rebuilt APK.",
+        InstallError.DeviceAndroidTooOld => "Update the headset or phone, or ask for a build that supports this Android version.",
+        InstallError.InvalidApk => "Download the APK again. If it still fails, ask for a new copy of the file.",
+        InstallError.InstallBlockedOnDevice => "Look at the device for a prompt or a setting that blocks installs from a computer, allow it, then try again.",
+        InstallError.ConnectionHelperFailed => "Another Android tool may be running, or the helper hung. Close other Android tools, then restart the connection helper.",
         _ => "See advanced details or send a report."
     };
 }
