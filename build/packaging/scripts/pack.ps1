@@ -9,7 +9,7 @@ param(
     [string]$RepoRoot,
     [ValidateSet("Debug", "Release")]
     [string]$Configuration = "Release",
-    [string]$Version = "0.7.2",
+    [string]$Version = "0.7.3",
     [switch]$SkipInstaller,
     [switch]$DryRun
 )
